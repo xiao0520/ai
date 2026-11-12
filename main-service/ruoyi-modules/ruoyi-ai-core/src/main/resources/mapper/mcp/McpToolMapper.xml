@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.mcp.McpToolMapper">
+
+    <select id="selectToolList" resultType="org.ruoyi.domain.entity.mcp.McpTool">
+        SELECT id, server_id AS serverId, tool_name AS toolName, qualified_name AS qualifiedName,
+               display_name AS displayName, description, input_schema AS inputSchema,
+               output_schema AS outputSchema, annotations_json AS annotationsJson, meta_json AS metaJson,
+               schema_digest AS schemaDigest, source_type AS sourceType, discovery_status AS discoveryStatus,
+               admin_enabled AS adminEnabled, general_chat_enabled AS generalChatEnabled, risk_level AS riskLevel,
+               require_confirmation AS requireConfirmation, timeout_seconds AS timeoutSeconds,
+               visible_result_fields AS visibleResultFields, last_discovered_at AS lastDiscoveredAt,
+               create_time AS createTime, update_time AS updateTime
+        FROM mcp_tool_info
+        <where>
+            AND del_flag = 0
+            <if test="bo != null and bo.serverId != null">
+                AND server_id = #{bo.serverId}
+            </if>
+            <if test="bo != null and bo.toolName != null and bo.toolName != ''">
+                AND (tool_name LIKE CONCAT('%', #{bo.toolName}, '%')
+                    OR display_name LIKE CONCAT('%', #{bo.toolName}, '%')
+                    OR qualified_name LIKE CONCAT('%', #{bo.toolName}, '%'))
+            </if>
+            <if test="bo != null and bo.qualifiedName != null and bo.qualifiedName != ''">
+                AND qualified_name LIKE CONCAT('%', #{bo.qualifiedName}, '%')
+            </if>
+            <if test="bo != null and bo.riskLevel != null and bo.riskLevel != ''">
+                AND risk_level = #{bo.riskLevel}
+            </if>
+            <if test="bo != null and bo.adminEnabled != null and bo.adminEnabled != ''">
+                AND admin_enabled = #{bo.adminEnabled}
+            </if>
+            <if test="bo != null and bo.discoveryStatus != null and bo.discoveryStatus != ''">
+                AND discovery_status = #{bo.discoveryStatus}
+            </if>
+        </where>
+        ORDER BY server_id ASC, qualified_name ASC, id ASC
+    </select>
+
+    <sql id="toolColumns">
+        id, server_id AS serverId, tool_name AS toolName, qualified_name AS qualifiedName,
+        display_name AS displayName, description, input_schema AS inputSchema,
+        output_schema AS outputSchema, annotations_json AS annotationsJson, meta_json AS metaJson,
+        schema_digest AS schemaDigest, source_type AS sourceType, discovery_status AS discoveryStatus,
+        admin_enabled AS adminEnabled, general_chat_enabled AS generalChatEnabled, risk_level AS riskLevel, require_confirmation AS requireConfirmation,
+        timeout_seconds AS timeoutSeconds, visible_result_fields AS visibleResultFields,
+        last_discovered_at AS lastDiscoveredAt, create_time AS createTime, update_time AS updateTime
+    </sql>
+
+    <select id="selectEnabledDiscoveredTools" resultType="org.ruoyi.domain.entity.mcp.McpTool">
+        SELECT <include refid="toolColumns"/>
+        FROM mcp_tool_info
+        WHERE admin_enabled = #{adminEnabled}
+          AND discovery_status != #{removedStatus}
+        ORDER BY qualified_name ASC, id ASC
+    </select>
+
+    <select id="selectEnabledDiscoveredByIds" resultType="org.ruoyi.domain.entity.mcp.McpTool">
+        SELECT <include refid="toolColumns"/>
+        FROM mcp_tool_info
+        WHERE id IN
+        <foreach collection="toolIds" item="toolId" open="(" separator="," close=")">
+            #{toolId}
+        </foreach>
+          AND admin_enabled = #{adminEnabled}
+          AND discovery_status != #{removedStatus}
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectByServerId" resultType="org.ruoyi.domain.entity.mcp.McpTool">
+        SELECT <include refid="toolColumns"/>
+        FROM mcp_tool_info
+        WHERE server_id = #{serverId}
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectIdsByServerIds" resultType="java.lang.Long">
+        SELECT id
+        FROM mcp_tool_info
+        WHERE server_id IN
+        <foreach collection="serverIds" item="serverId" open="(" separator="," close=")">
+            #{serverId}
+        </foreach>
+        ORDER BY id ASC
+    </select>
+
+    <select id="existsByServerId" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM mcp_tool_info
+        WHERE server_id = #{serverId}
+    </select>
+
+    <delete id="deleteByServerIds">
+        DELETE FROM mcp_tool_info
+        WHERE server_id IN
+        <foreach collection="serverIds" item="serverId" open="(" separator="," close=")">
+            #{serverId}
+        </foreach>
+    </delete>
+</mapper>

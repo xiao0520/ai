@@ -1,0 +1,39 @@
+# Shared OS/editor rules are in ../.gitignore.
+# Keep pyproject.toml, uv.lock, .python-version, source and tests.
+
+# Local environments, credentials and caches
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.*.sample
+!.env.template
+!.env.*.template
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.hypothesis/
+.uv-cache/
+
+# Python distribution output
+/build/
+/dist/
+*.egg-info/
+*.egg
+.eggs/
+
+# Test output and logs
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+logs/
+*.log
+*.log.*

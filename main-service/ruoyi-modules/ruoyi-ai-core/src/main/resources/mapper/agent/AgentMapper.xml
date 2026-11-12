@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.agent.AgentMapper">
+
+    <select id="selectAgentList" resultType="org.ruoyi.domain.entity.agent.Agent">
+        SELECT id, agent_code AS agentCode, agent_name AS agentName, agent_type AS agentType,
+               agent_describe AS agentDescribe, agent_show AS agentShow, model_id AS modelId,
+               model_select_policy AS modelSelectPolicy, knowledge_scope_policy AS knowledgeScopePolicy,
+               enable_thinking AS enableThinking, system_prompt AS systemPrompt,
+               welcome_message AS welcomeMessage, suggested_questions AS suggestedQuestions,
+               execution_policy AS executionPolicy, skill_names AS skillNames,
+               knowledge_ids AS knowledgeIds, status, remark,
+               create_time AS createTime, update_time AS updateTime
+        FROM agent_info
+        <where>
+            AND del_flag = 0
+            <if test="bo != null and bo.agentName != null and bo.agentName != ''">
+                AND agent_name LIKE CONCAT('%', #{bo.agentName}, '%')
+            </if>
+            <if test="bo != null and bo.agentCode != null and bo.agentCode != ''">
+                AND agent_code LIKE CONCAT('%', #{bo.agentCode}, '%')
+            </if>
+            <if test="bo != null and bo.agentType != null and bo.agentType != ''">
+                AND agent_type = #{bo.agentType}
+            </if>
+            <if test="bo != null and bo.status != null and bo.status != ''">
+                AND status = #{bo.status}
+            </if>
+            <if test="bo != null and bo.modelId != null">
+                AND model_id = #{bo.modelId}
+            </if>
+        </where>
+        ORDER BY update_time DESC, id DESC
+    </select>
+
+    <select id="countByModelIds" resultType="long">
+        SELECT COUNT(1)
+        FROM agent_info
+        WHERE model_id IN
+        <foreach collection="modelIds" item="modelId" open="(" separator="," close=")">
+            #{modelId}
+        </foreach>
+    </select>
+    <select id="selectEnabledList" resultType="org.ruoyi.domain.entity.agent.Agent">
+        SELECT id, agent_code AS agentCode, agent_name AS agentName, agent_type AS agentType,
+               agent_describe AS agentDescribe, agent_show AS agentShow, model_id AS modelId,
+               model_select_policy AS modelSelectPolicy, knowledge_scope_policy AS knowledgeScopePolicy,
+               enable_thinking AS enableThinking, system_prompt AS systemPrompt,
+               welcome_message AS welcomeMessage, suggested_questions AS suggestedQuestions,
+               execution_policy AS executionPolicy, skill_names AS skillNames,
+               knowledge_ids AS knowledgeIds, status, remark, create_time AS createTime, update_time AS updateTime
+        FROM agent_info WHERE status = #{status}
+        ORDER BY update_time DESC, id DESC
+    </select>
+    <select id="existsByAgentCode" resultType="boolean">
+        SELECT COUNT(1) &gt; 0 FROM agent_info WHERE agent_code = #{agentCode}
+        <if test="excludeId != null">AND id != #{excludeId}</if>
+    </select>
+</mapper>

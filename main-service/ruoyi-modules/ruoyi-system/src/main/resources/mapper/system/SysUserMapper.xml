@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.system.mapper.SysUserMapper">
+
+    <resultMap type="org.ruoyi.system.domain.vo.SysUserVo" id="SysUserResult">
+        <id property="userId" column="user_id"/>
+    </resultMap>
+    <resultMap type="org.ruoyi.system.domain.vo.SysUserExportVo" id="SysUserExportResult">
+        <id property="userId" column="user_id"/>
+    </resultMap>
+
+    <select id="selectUserExportList" resultMap="SysUserExportResult">
+        select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.sex,
+            u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,
+            d.dept_name, d.leader as leaderName
+        from sys_user u
+            left join sys_dept d on u.dept_id = d.dept_id
+        ${ew.getCustomSqlSegment}
+    </select>
+
+    <select id="selectAllocatedList" resultMap="SysUserResult">
+        select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time
+        from sys_user u
+             left join sys_dept d on u.dept_id = d.dept_id
+        ${ew.getCustomSqlSegment}
+    </select>
+
+    <select id="selectUnallocatedList" resultMap="SysUserResult">
+        select distinct u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.phonenumber, u.status, u.create_time
+        from sys_user u
+             left join sys_dept d on u.dept_id = d.dept_id
+        ${ew.getCustomSqlSegment}
+    </select>
+
+</mapper>

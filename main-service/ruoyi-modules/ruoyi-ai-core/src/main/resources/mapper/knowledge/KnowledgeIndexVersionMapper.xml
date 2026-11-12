@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.knowledge.KnowledgeIndexVersionMapper">
+    <select id="selectVoListByKnowledgeId" resultType="org.ruoyi.domain.vo.knowledge.KnowledgeIndexVersionVo">
+        SELECT id, knowledge_id AS knowledgeId, index_version AS indexVersion,
+               embedding_profile_id AS embeddingProfileId,
+               embedding_profile_revision AS embeddingProfileRevision,
+               multimodal_embedding_profile_id AS multimodalEmbeddingProfileId,
+               multimodal_embedding_profile_revision AS multimodalEmbeddingProfileRevision,
+               splitter_config AS splitterConfig, status, document_count AS documentCount,
+               fragment_count AS fragmentCount, activated_at AS activatedAt,
+               create_time AS createTime, update_time AS updateTime
+        FROM knowledge_index_version
+        WHERE knowledge_id = #{knowledgeId} AND status != #{deletedStatus}
+        ORDER BY create_time DESC, id DESC
+    </select>
+    <update id="softDeleteRemovableById">
+        UPDATE knowledge_index_version i
+        SET status = #{deletedStatus}, update_time = NOW()
+        WHERE i.id = #{id}
+          AND i.status != #{deletedStatus}
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_info k
+              WHERE k.id = i.knowledge_id
+                AND k.current_index_version = i.index_version
+          )
+          AND (
+              i.status != #{activeStatus}
+              OR NOT EXISTS (
+                  SELECT 1 FROM knowledge_index_document d
+                  WHERE d.index_version_id = i.id
+              )
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_parse_job j
+              WHERE j.knowledge_id = i.knowledge_id
+                AND j.target_index_version = i.index_version
+                AND j.status IN
+                <foreach collection="activeStatuses" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+          )
+    </update>
+    <select id="selectMaintenanceCandidates" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeIndexVersion">
+        SELECT /* knowledge_periodic_scan */
+               id, knowledge_id, index_version, embedding_profile_id, embedding_profile_revision,
+               multimodal_embedding_profile_id, multimodal_embedding_profile_revision,
+               rerank_profile_id, rerank_profile_revision, splitter_config, status,
+               document_count, fragment_count, activated_at, create_time, update_time
+        FROM knowledge_index_version
+        WHERE status IN ('BUILDING', 'READY', 'ACTIVE')
+        ORDER BY id LIMIT #{limit}
+    </select>
+    <select id="selectByKnowledgeAndVersion" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeIndexVersion">
+        SELECT id, knowledge_id, index_version, embedding_profile_id, embedding_profile_revision,
+               multimodal_embedding_profile_id, multimodal_embedding_profile_revision,
+               rerank_profile_id, rerank_profile_revision, splitter_config, status, document_count,
+               fragment_count, activated_at, create_time, update_time
+        FROM knowledge_index_version
+        WHERE knowledge_id = #{knowledgeId} AND index_version = #{indexVersion}
+        LIMIT 1
+    </select>
+    <select id="selectByKnowledgeAndVersionForUpdate"
+            resultType="org.ruoyi.domain.entity.knowledge.KnowledgeIndexVersion">
+        SELECT id, knowledge_id, index_version, embedding_profile_id, embedding_profile_revision,
+               multimodal_embedding_profile_id, multimodal_embedding_profile_revision,
+               rerank_profile_id, rerank_profile_revision, splitter_config, status, document_count,
+               fragment_count, activated_at, create_time, update_time
+        FROM knowledge_index_version
+        WHERE knowledge_id = #{knowledgeId} AND index_version = #{indexVersion}
+        LIMIT 1
+        FOR UPDATE
+    </select>
+    <select id="existsByKnowledgeAndVersion" resultType="boolean">
+        SELECT COUNT(1) &gt; 0 FROM knowledge_index_version
+        WHERE knowledge_id = #{knowledgeId} AND index_version = #{indexVersion}
+        <if test="excludeId != null">AND id != #{excludeId}</if>
+    </select>
+    <update id="archiveActiveByKnowledgeId">
+        UPDATE knowledge_index_version SET status = #{archivedStatus}
+        WHERE knowledge_id = #{knowledgeId} AND status = #{activeStatus} AND id != #{excludeId}
+    </update>
+    <update id="activateAvailableById">
+        UPDATE knowledge_index_version
+        SET status = #{activeStatus}, activated_at = #{activatedAt}
+        WHERE id = #{id}
+          AND status IN (#{readyStatus}, #{archivedStatus}, #{activeStatus})
+    </update>
+    <update id="publishMemberDocuments">
+        UPDATE knowledge_document d
+        JOIN knowledge_index_document m ON m.document_id = d.id
+            AND m.index_version_id = #{indexVersionId}
+        JOIN knowledge_document_version v ON v.id = m.document_version_id
+            AND v.document_id = d.id AND v.knowledge_id = d.knowledge_id
+        SET d.current_version_id = v.id, d.current_version_no = v.version_no,
+            d.status = 'READY', d.update_time = NOW()
+        WHERE d.status != 'DELETED'
+    </update>
+</mapper>

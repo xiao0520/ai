@@ -1,0 +1,4068 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://contracts.mjn-ai.invalid/rag-v1/schema.json",
+  "$defs": {
+    "ArtifactManifest": {
+      "additionalProperties": false,
+      "description": "单文档单批次不可变清单；文件哈希由 Java 按收到的原始字节计算。\n\n清单是入库产物验收的核心凭证，包含：\n  - 路由标识 — job/attempt/generation/knowledge 的全链路追踪\n  - 索引配置 — index_version / config_hash / 向量维度\n  - 条目列表 — 每个 chunk 的完整定位和模态信息",
+      "properties": {
+        "contractVersion": {
+          "const": "rag-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "jobId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Jobid",
+          "type": "string"
+        },
+        "attemptId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Attemptid",
+          "type": "string"
+        },
+        "generationId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Generationid",
+          "type": "string"
+        },
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "documentId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentid",
+          "type": "string"
+        },
+        "documentVersionId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentversionid",
+          "type": "string"
+        },
+        "configHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Confighash",
+          "type": "string"
+        },
+        "sourceHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sourcehash",
+          "type": "string"
+        },
+        "vectorDimensions": {
+          "maximum": 65536,
+          "minimum": 1,
+          "title": "Vectordimensions",
+          "type": "integer"
+        },
+        "visionVectorDimensions": {
+          "anyOf": [
+            {
+              "maximum": 65536,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Visionvectordimensions"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "title": "Createdat",
+          "type": "string"
+        },
+        "entries": {
+          "items": {
+            "$ref": "#/$defs/ArtifactManifestEntry"
+          },
+          "maxItems": 100000,
+          "minItems": 1,
+          "title": "Entries",
+          "type": "array"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "jobId",
+        "attemptId",
+        "generationId",
+        "knowledgeId",
+        "indexVersion",
+        "documentId",
+        "documentVersionId",
+        "configHash",
+        "sourceHash",
+        "vectorDimensions",
+        "visionVectorDimensions",
+        "createdAt",
+        "entries"
+      ],
+      "title": "ArtifactManifest",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "ArtifactManifestEntry": {
+      "additionalProperties": false,
+      "description": "pointId 与稳定来源一起验收，图片片段额外绑定原始媒体摘要。\n\n每个 entry 对应 Qdrant 中的一个 point，记录其 ID、序号、模态和来源。",
+      "properties": {
+        "pointId": {
+          "pattern": "^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$",
+          "title": "Pointid",
+          "type": "string"
+        },
+        "chunkOrdinal": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Chunkordinal",
+          "type": "integer"
+        },
+        "tokenCount": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Tokencount",
+          "type": "integer"
+        },
+        "modality": {
+          "enum": [
+            "TEXT",
+            "IMAGE"
+          ],
+          "title": "Modality",
+          "type": "string"
+        },
+        "mediaHash": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Mediahash"
+        },
+        "location": {
+          "$ref": "#/$defs/SourceLocation"
+        }
+      },
+      "required": [
+        "pointId",
+        "chunkOrdinal",
+        "tokenCount",
+        "modality",
+        "mediaHash",
+        "location"
+      ],
+      "title": "ArtifactManifestEntry",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "ArtifactTicket": {
+      "additionalProperties": false,
+      "description": "Java 签发的对象级短期能力；禁止传递 OSS 全局密钥。\n\n每个 ticket 绑定单个 OSS object_id 和单一操作权限，包含：\n  - object_id / operation — 操作对象与权限类型\n  - url / token — 实际访问 URL 和临时认证 Token\n  - expires_at — 过期时间，过期后票据失效\n  - content_hash / max_bytes — 可选的下载校验用哈希和大小上限",
+      "properties": {
+        "objectId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Objectid",
+          "type": "string"
+        },
+        "operation": {
+          "enum": [
+            "READ_SOURCE",
+            "WRITE_MANIFEST",
+            "READ_MANIFEST"
+          ],
+          "title": "Operation",
+          "type": "string"
+        },
+        "url": {
+          "maxLength": 8192,
+          "pattern": "^https?://[^\\s#]+$",
+          "title": "Url",
+          "type": "string"
+        },
+        "token": {
+          "maxLength": 4096,
+          "minLength": 16,
+          "title": "Token",
+          "type": "string"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "title": "Expiresat",
+          "type": "string"
+        },
+        "contentHash": {
+          "anyOf": [
+            {
+              "pattern": "^[a-f0-9]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Contenthash"
+        },
+        "maxBytes": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxbytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "objectId",
+        "operation",
+        "url",
+        "token",
+        "expiresAt",
+        "contentHash",
+        "maxBytes"
+      ],
+      "title": "ArtifactTicket",
+      "type": "object"
+    },
+    "ArtifactTicketRequest": {
+      "additionalProperties": false,
+      "description": "请求刷新已绑定对象的短期票据，不接受任意 URL 或路径。\n\nJava 通过此请求为 Python 获取 OSS 对象的短期访问票据，\noperation 限定了票据的操作权限。",
+      "properties": {
+        "contractVersion": {
+          "const": "rag-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 6,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "attemptId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Attemptid",
+          "type": "string"
+        },
+        "generationId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Generationid",
+          "type": "string"
+        },
+        "workerId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Workerid",
+          "type": "string"
+        },
+        "operation": {
+          "enum": [
+            "READ_SOURCE",
+            "WRITE_MANIFEST",
+            "READ_MANIFEST"
+          ],
+          "title": "Operation",
+          "type": "string"
+        },
+        "objectId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Objectid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "requestId",
+        "attemptId",
+        "generationId",
+        "workerId",
+        "operation",
+        "objectId"
+      ],
+      "title": "ArtifactTicketRequest",
+      "type": "object"
+    },
+    "ArtifactTicketResponse": {
+      "additionalProperties": false,
+      "description": "只返回与当前任务关联的单对象票据。",
+      "properties": {
+        "ticket": {
+          "$ref": "#/$defs/ArtifactTicket"
+        }
+      },
+      "required": [
+        "ticket"
+      ],
+      "title": "ArtifactTicketResponse",
+      "type": "object"
+    },
+    "ArtifactUploadResponse": {
+      "additionalProperties": false,
+      "description": "Java 保存清单原始字节后返回实际 OSS 对象及可复核摘要。\n\nPython 上传清单到 OSS 后，Java 返回此响应确认保存成功，\n包含对象 ID、内容哈希和实际大小，供 Python 在 IngestionResult 中引用。",
+      "properties": {
+        "objectId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Objectid",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        },
+        "sizeBytes": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Sizebytes",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "objectId",
+        "contentHash",
+        "sizeBytes"
+      ],
+      "title": "ArtifactUploadResponse",
+      "type": "object"
+    },
+    "CandidateValidationResponse": {
+      "additionalProperties": false,
+      "description": "票据绑定允许集合及期限，不能凭此扩大原快照的范围。\n\nallowed_candidates 是 candidates 的子集，仅包含通过复核的引用。\nvalidation_ticket 是 Java 后续访问 OSS 的凭证。",
+      "properties": {
+        "scopeSnapshotId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Scopesnapshotid",
+          "type": "string"
+        },
+        "allowedCandidates": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 500,
+          "title": "Allowedcandidates",
+          "type": "array"
+        },
+        "validationTicket": {
+          "maxLength": 4096,
+          "minLength": 16,
+          "title": "Validationticket",
+          "type": "string"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "title": "Expiresat",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scopeSnapshotId",
+        "allowedCandidates",
+        "validationTicket",
+        "expiresAt"
+      ],
+      "title": "CandidateValidationResponse",
+      "type": "object"
+    },
+    "ChatActor": {
+      "description": "由 Java 签名下发的调用主体快照。\n\nroles 列表由 Java 在请求时从会话权限中提取，Python 不做鉴权。",
+      "properties": {
+        "userId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Userid",
+          "type": "string"
+        },
+        "roles": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Roles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "userId"
+      ],
+      "title": "ChatActor",
+      "type": "object"
+    },
+    "ChatInput": {
+      "description": "本次模型调用的完整消息输入。",
+      "properties": {
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/ChatMessage"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Messages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "messages"
+      ],
+      "title": "ChatInput",
+      "type": "object"
+    },
+    "ChatMessage": {
+      "description": "单条已受 Java 会话权限约束的上下文消息。",
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "ChatMessage",
+      "type": "object"
+    },
+    "Citation": {
+      "additionalProperties": false,
+      "description": "当前回答内的引用标识绑定不可变来源，不能指向更新后的文件。\n\ncitation_id 在本条回答内唯一，location 指向已通过候选复核的不可变来源。\nexcerpt 是引用文本的摘录片段（最多 2000 字符），用于前端展示。",
+      "properties": {
+        "citationId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Citationid",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/SourceLocation"
+        },
+        "excerpt": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Excerpt",
+          "type": "string"
+        }
+      },
+      "required": [
+        "citationId",
+        "location",
+        "excerpt"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "DeltaPayload": {
+      "description": "SSE 增量文本事件的数据体。\n\nDelta 事件在流式生成过程中持续发送，客户端拼接所有 delta.text\n形成完整的生成内容。",
+      "properties": {
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "text"
+      ],
+      "title": "DeltaPayload",
+      "type": "object"
+    },
+    "DocumentProcessingSnapshot": {
+      "additionalProperties": false,
+      "description": "Java 为一个物理文档版本固化的处理与查询路由配置。\n\n字段分为三组：\n  模式 — TEXT 或 MULTIMODAL，决定需要哪些模型\n  向量模型 — 文本（必选）和视觉（多模态必选）的 Embedding 配置\n  辅助模型 — 视觉处理和重排策略",
+      "properties": {
+        "configurationRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Configurationrevision",
+          "type": "integer"
+        },
+        "processingMode": {
+          "enum": [
+            "TEXT",
+            "MULTIMODAL"
+          ],
+          "title": "Processingmode",
+          "type": "string"
+        },
+        "textEmbedding": {
+          "$ref": "#/$defs/EmbeddingProfile"
+        },
+        "multimodalEmbedding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EmbeddingProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "visionProfile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VisionProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rerankPolicy": {
+          "$ref": "#/$defs/DocumentRerankPolicy"
+        }
+      },
+      "required": [
+        "configurationRevision",
+        "processingMode",
+        "textEmbedding",
+        "multimodalEmbedding",
+        "visionProfile",
+        "rerankPolicy"
+      ],
+      "title": "DocumentProcessingSnapshot",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "DocumentRerankPolicy": {
+      "additionalProperties": false,
+      "description": "保留旧文档处理快照的 Rerank 字段，仅用于历史契约兼容。\n\n新查询不读取该字段，运行时只使用 KnowledgeScope.retrievalSettings。\nNONE — 旧快照关闭重排\nPROFILE — 旧快照曾绑定重排模型",
+      "properties": {
+        "mode": {
+          "enum": [
+            "NONE",
+            "PROFILE"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "textProfile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RerankProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "multimodalProfile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RerankProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "mode",
+        "textProfile",
+        "multimodalProfile"
+      ],
+      "title": "DocumentRerankPolicy",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "DocxBlockLocator": {
+      "additionalProperties": false,
+      "description": "DOCX 块序号从 0 开始，标题路径保存在来源对象上。",
+      "properties": {
+        "kind": {
+          "const": "DOCX_BLOCK",
+          "title": "Kind",
+          "type": "string"
+        },
+        "blockIndex": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Blockindex",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "blockIndex"
+      ],
+      "title": "DocxBlockLocator",
+      "type": "object"
+    },
+    "EmbeddingProfile": {
+      "additionalProperties": false,
+      "description": "模型管理发布的向量执行快照；供应商能力由 Python 适配器注册表裁定。\n\n字段分为三组：\n  标识 — 配置引用 + 模型定位\n  连接 — API 端点与凭证\n  能力 — 向量维度、输入模式、归一化、Token 与超时限制",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "providerCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "apiHost": {
+          "maxLength": 2048,
+          "pattern": "^https?://[^\\s?#]+$",
+          "title": "Apihost",
+          "type": "string"
+        },
+        "apiMode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Apimode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "dimensions": {
+          "maximum": 65536,
+          "minimum": 1,
+          "title": "Dimensions",
+          "type": "integer"
+        },
+        "documentInputMode": {
+          "enum": [
+            "TEXT_SINGLE",
+            "MULTIMODAL_SINGLE"
+          ],
+          "title": "Documentinputmode",
+          "type": "string"
+        },
+        "queryInputMode": {
+          "const": "TEXT_SINGLE",
+          "title": "Queryinputmode",
+          "type": "string"
+        },
+        "normalized": {
+          "title": "Normalized",
+          "type": "boolean"
+        },
+        "maxInputTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "providerCode",
+        "modelName",
+        "apiHost",
+        "apiMode",
+        "credentialKey",
+        "dimensions",
+        "documentInputMode",
+        "queryInputMode",
+        "normalized",
+        "maxInputTokens",
+        "timeoutSeconds"
+      ],
+      "title": "EmbeddingProfile",
+      "type": "object"
+    },
+    "ExecutionPolicy": {
+      "description": "Java 在本次调用已核定的预算和超时限制。",
+      "properties": {
+        "maxInputTokens": {
+          "exclusiveMinimum": 0,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "maxOutputTokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 2000000,
+          "title": "Maxoutputtokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 300,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "maxInputTokens",
+        "maxOutputTokens",
+        "timeoutSeconds"
+      ],
+      "title": "ExecutionPolicy",
+      "type": "object"
+    },
+    "ExecutionUsageItem": {
+      "additionalProperties": false,
+      "description": "Java 按调用标识去重计费；Python 不计算价格。\n\n每条用量记录绑定唯一的 (stage, call_id, attempt_id, profile) 四元组，\nJava 端按此去重。measurement 通过 discriminator 按 unit 分发到具体计量类型。",
+      "properties": {
+        "stage": {
+          "enum": [
+            "VISION",
+            "EMBEDDING",
+            "RERANK",
+            "CHAT"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "callId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Callid",
+          "type": "string"
+        },
+        "attemptId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Attemptid",
+          "type": "string"
+        },
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "measurement": {
+          "discriminator": {
+            "mapping": {
+              "DOCUMENT_PAIRS": "#/$defs/RequestMeasurement",
+              "REQUESTS": "#/$defs/RequestMeasurement",
+              "TOKENS": "#/$defs/TokenMeasurement",
+              "UNKNOWN": "#/$defs/UnknownMeasurement"
+            },
+            "propertyName": "unit"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/TokenMeasurement"
+            },
+            {
+              "$ref": "#/$defs/RequestMeasurement"
+            },
+            {
+              "$ref": "#/$defs/UnknownMeasurement"
+            }
+          ],
+          "title": "Measurement"
+        }
+      },
+      "required": [
+        "stage",
+        "callId",
+        "attemptId",
+        "profile",
+        "measurement"
+      ],
+      "title": "ExecutionUsageItem",
+      "type": "object"
+    },
+    "ImageLocator": {
+      "additionalProperties": false,
+      "description": "图片来源定位到原文件容器；媒体摘要用于防止位置复用到不同内容。",
+      "properties": {
+        "kind": {
+          "const": "IMAGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "container": {
+          "enum": [
+            "PDF",
+            "DOCX",
+            "MARKDOWN",
+            "PPTX",
+            "XLSX"
+          ],
+          "title": "Container",
+          "type": "string"
+        },
+        "imageIndex": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Imageindex",
+          "type": "integer"
+        },
+        "pageNumber": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pagenumber"
+        },
+        "slideNumber": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Slidenumber"
+        },
+        "startOffset": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Startoffset"
+        },
+        "endOffset": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Endoffset"
+        },
+        "sheetName": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sheetname"
+        },
+        "rowNumber": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rownumber"
+        },
+        "columnNumber": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Columnnumber"
+        },
+        "contentHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        },
+        "mediaType": {
+          "maxLength": 32,
+          "pattern": "^image/(?:png|jpeg)$",
+          "title": "Mediatype",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "container",
+        "imageIndex",
+        "pageNumber",
+        "slideNumber",
+        "startOffset",
+        "endOffset",
+        "sheetName",
+        "rowNumber",
+        "columnNumber",
+        "contentHash",
+        "mediaType"
+      ],
+      "title": "ImageLocator",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "IndexSnapshot": {
+      "additionalProperties": false,
+      "description": "不可变索引配置；collection 与全部编码版本必须与 Java 发布记录一致。\n\n字段分为三组：\n  集合定义 — 知识库归属、索引版本、collection 名称和距离度量\n  向量定义 — 文本 dense + 图片 dense + 文本 sparse 的名称和模型配置\n  处理链 — 解析、分割、分词、稀疏编码和清单的版本号",
+      "properties": {
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "collectionName": {
+          "pattern": "^[A-Za-z0-9_-]{1,128}$",
+          "title": "Collectionname",
+          "type": "string"
+        },
+        "distance": {
+          "enum": [
+            "COSINE",
+            "DOT",
+            "EUCLID"
+          ],
+          "title": "Distance",
+          "type": "string"
+        },
+        "denseVectorName": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Densevectorname",
+          "type": "string"
+        },
+        "denseVisionVectorName": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Densevisionvectorname"
+        },
+        "sparseVectorName": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sparsevectorname",
+          "type": "string"
+        },
+        "embedding": {
+          "$ref": "#/$defs/EmbeddingProfile"
+        },
+        "multimodalEmbedding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EmbeddingProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parserRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Parserrevision",
+          "type": "string"
+        },
+        "splitterRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Splitterrevision",
+          "type": "string"
+        },
+        "tokenizerRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Tokenizerrevision",
+          "type": "string"
+        },
+        "sparseRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sparserevision",
+          "type": "string"
+        },
+        "sparseCorpusRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sparsecorpusrevision",
+          "type": "string"
+        },
+        "chunkSizeTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Chunksizetokens",
+          "type": "integer"
+        },
+        "chunkOverlapTokens": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Chunkoverlaptokens",
+          "type": "integer"
+        },
+        "configHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Confighash",
+          "type": "string"
+        },
+        "manifestRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Manifestrevision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "knowledgeId",
+        "indexVersion",
+        "collectionName",
+        "distance",
+        "denseVectorName",
+        "denseVisionVectorName",
+        "sparseVectorName",
+        "embedding",
+        "multimodalEmbedding",
+        "parserRevision",
+        "splitterRevision",
+        "tokenizerRevision",
+        "sparseRevision",
+        "sparseCorpusRevision",
+        "chunkSizeTokens",
+        "chunkOverlapTokens",
+        "configHash",
+        "manifestRevision"
+      ],
+      "title": "IndexSnapshot",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "IngestionResult": {
+      "additionalProperties": false,
+      "description": "入库产物只在 Java 验收后发布；向量写完不等于可检索。\n\n入库完成后 Python 上报此结果，Java 验证 manifest 后才激活 generation。\n字段分为三组：\n  路由 — job_type + manifest 的定位和哈希\n  向量统计 — 文本 dense/sparse 和图片视觉向量的数量与维度\n  解析与用量 — 解析统计和模型调用用量",
+      "properties": {
+        "jobType": {
+          "const": "INGESTION",
+          "title": "Jobtype",
+          "type": "string"
+        },
+        "manifestObjectId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Manifestobjectid",
+          "type": "string"
+        },
+        "manifestHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Manifesthash",
+          "type": "string"
+        },
+        "chunkCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Chunkcount",
+          "type": "integer"
+        },
+        "denseCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Densecount",
+          "type": "integer"
+        },
+        "sparseCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Sparsecount",
+          "type": "integer"
+        },
+        "visionCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Visioncount",
+          "type": "integer"
+        },
+        "vectorDimensions": {
+          "maximum": 65536,
+          "minimum": 1,
+          "title": "Vectordimensions",
+          "type": "integer"
+        },
+        "visionVectorDimensions": {
+          "anyOf": [
+            {
+              "maximum": 65536,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Visionvectordimensions"
+        },
+        "parseStats": {
+          "$ref": "#/$defs/ParseStats"
+        },
+        "usageItems": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Usageitems",
+          "type": "array"
+        }
+      },
+      "required": [
+        "jobType",
+        "manifestObjectId",
+        "manifestHash",
+        "chunkCount",
+        "denseCount",
+        "sparseCount",
+        "visionCount",
+        "vectorDimensions",
+        "visionVectorDimensions",
+        "parseStats",
+        "usageItems"
+      ],
+      "title": "IngestionResult",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "InternalError": {
+      "additionalProperties": false,
+      "description": "HTTP 非成功响应只返回稳定错误，不携带上游正文或密钥。",
+      "properties": {
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "errorCode": {
+          "enum": [
+            "VALIDATION",
+            "AUTHORIZATION",
+            "PROVIDER_AUTHORIZATION",
+            "MODEL_UNAVAILABLE",
+            "RATE_LIMITED",
+            "CANCELLED",
+            "TIMEOUT",
+            "INTERNAL",
+            "KNOWLEDGE_NOT_READY",
+            "SCOPE_EXPIRED",
+            "VECTOR_UNAVAILABLE",
+            "EMBEDDING_UNAVAILABLE",
+            "RERANK_UNAVAILABLE",
+            "DOCUMENT_UNSUPPORTED",
+            "PARSE_FAILED",
+            "INDEX_MISMATCH",
+            "LEASE_EXPIRED",
+            "STALE_ATTEMPT",
+            "BUDGET_EXCEEDED",
+            "CITATION_INVALID",
+            "TOOL_REJECTED",
+            "TOOL_CREDENTIAL_MISSING",
+            "TOOL_TIMEOUT"
+          ],
+          "title": "Errorcode",
+          "type": "string"
+        },
+        "retryable": {
+          "title": "Retryable",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "requestId",
+        "errorCode",
+        "retryable"
+      ],
+      "title": "InternalError",
+      "type": "object"
+    },
+    "KeepalivePayload": {
+      "description": "模型等待期间维持 Java 连接的非计费事件数据体。\n\nKeepalive 在模型响应较慢时发送，防止 HTTP 连接超时断开。\n不传递任何内容，不计入 Token 用量。",
+      "properties": {
+        "requestId": {
+          "title": "Requestid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requestId"
+      ],
+      "title": "KeepalivePayload",
+      "type": "object"
+    },
+    "KnowledgeArtifactsEvent": {
+      "additionalProperties": false,
+      "description": "技术产物就绪后仍须 Java 验收；不能据此直接激活索引。\n\nARTIFACTS_READY 表示向量已写入 Qdrant 且清单已上传 OSS，但 generation\n在 Java 执行候选复核并激活前仍为不可检索状态。",
+      "properties": {
+        "eventType": {
+          "const": "ARTIFACTS_READY",
+          "title": "Eventtype",
+          "type": "string"
+        },
+        "result": {
+          "$ref": "#/$defs/IngestionResult"
+        }
+      },
+      "required": [
+        "eventType",
+        "result"
+      ],
+      "title": "KnowledgeArtifactsEvent",
+      "type": "object"
+    },
+    "KnowledgeCancelledEvent": {
+      "additionalProperties": false,
+      "description": "仅报告当前 attempt 已停止，不能取消其他批次。\n\nCANCELLED 由 Python 在消费到 KnowledgeJobControl 后发出，表示本 worker\n已主动终止当前 attempt，不会继续消费同 attempt 的消息。",
+      "properties": {
+        "eventType": {
+          "const": "CANCELLED",
+          "title": "Eventtype",
+          "type": "string"
+        },
+        "usageItems": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Usageitems",
+          "type": "array"
+        }
+      },
+      "required": [
+        "eventType",
+        "usageItems"
+      ],
+      "title": "KnowledgeCancelledEvent",
+      "type": "object"
+    },
+    "KnowledgeCleanupTask": {
+      "additionalProperties": false,
+      "description": "删除 Java 已确认无发布引用的单个 generation。",
+      "properties": {
+        "jobType": {
+          "const": "CLEANUP",
+          "title": "Jobtype",
+          "type": "string"
+        },
+        "targetIndexVersion": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Targetindexversion",
+          "type": "string"
+        },
+        "targetGenerationId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Targetgenerationid",
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "FAILED",
+            "CANCELLED",
+            "EXPIRED",
+            "SUPERSEDED",
+            "ORPHANED"
+          ],
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "jobType",
+        "targetIndexVersion",
+        "targetGenerationId",
+        "reason"
+      ],
+      "title": "KnowledgeCleanupTask",
+      "type": "object"
+    },
+    "KnowledgeDeadLetter": {
+      "additionalProperties": false,
+      "description": "毒消息只记录定位和摘要；原记录仍保留于原 Topic，避免复制正文或票据。\n\n当 Python 无法解析或校验 Kafka 消息时，将消息的 Kafka 元信息和哈希写入\n死信 Topic，供运维排查。原始消息体不复制，防止敏感信息扩散。",
+      "properties": {
+        "contractVersion": {
+          "const": "knowledge-kafka-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "sourceTopic": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sourcetopic",
+          "type": "string"
+        },
+        "sourcePartition": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Sourcepartition",
+          "type": "integer"
+        },
+        "sourceOffset": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Sourceoffset",
+          "type": "integer"
+        },
+        "payloadHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Payloadhash",
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "INVALID_MESSAGE",
+            "KEY_MISMATCH",
+            "UNSUPPORTED_RESULT"
+          ],
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "sourceTopic",
+        "sourcePartition",
+        "sourceOffset",
+        "payloadHash",
+        "reason"
+      ],
+      "title": "KnowledgeDeadLetter",
+      "type": "object"
+    },
+    "KnowledgeDocumentTask": {
+      "additionalProperties": false,
+      "description": "传递 Java 已校验的文档引用；不在消息中复制 OSS 密钥或临时下载票据。",
+      "properties": {
+        "jobType": {
+          "const": "INGESTION",
+          "title": "Jobtype",
+          "type": "string"
+        },
+        "documentId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentid",
+          "type": "string"
+        },
+        "documentVersionId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentversionid",
+          "type": "string"
+        },
+        "ossId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Ossid",
+          "type": "string"
+        },
+        "sourceHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Sourcehash",
+          "type": "string"
+        },
+        "mediaType": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Mediatype",
+          "type": "string"
+        },
+        "sourceName": {
+          "anyOf": [
+            {
+              "maxLength": 512,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sourcename"
+        },
+        "fileSizeBytes": {
+          "maximum": 1073741824,
+          "minimum": 1,
+          "title": "Filesizebytes",
+          "type": "integer"
+        },
+        "targetIndexVersion": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Targetindexversion",
+          "type": "string"
+        }
+      },
+      "required": [
+        "jobType",
+        "documentId",
+        "documentVersionId",
+        "ossId",
+        "sourceHash",
+        "mediaType",
+        "fileSizeBytes",
+        "targetIndexVersion"
+      ],
+      "title": "KnowledgeDocumentTask",
+      "type": "object"
+    },
+    "KnowledgeExecutionBudget": {
+      "additionalProperties": false,
+      "description": "Java 为单个入库 attempt 批准的模型 Token 上限。\n\n仅 INGESTION 任务携带此预算；CLEANUP/RECONCILE 不消耗模型资源。",
+      "properties": {
+        "maxTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxtokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "maxTokens"
+      ],
+      "title": "KnowledgeExecutionBudget",
+      "type": "object"
+    },
+    "KnowledgeFailedEvent": {
+      "additionalProperties": false,
+      "description": "执行失败由 Java 决定重试；执行器未实现必须明确失败，禁止伪造成功。\n\nerror_code 语义：\n  EXECUTOR_NOT_READY — worker 启动中 / 依赖未就绪，可重试\n  COMMAND_EXPIRED     — 消息超过 deadline，不可重试\n  DOCUMENT_UNSUPPORTED — 文件格式/编码不支持\n  PARSE_FAILED        — 解析器返回截断或异常\n  EMBEDDING_UNAVAILABLE — 向量模型不可用\n  VECTOR_UNAVAILABLE  — Qdrant 写入失败\n  MODEL_UNAVAILABLE   — 模型供应商不可用\n  INDEX_MISMATCH      — 快照与索引不一致\n  BUDGET_EXCEEDED     — Token 预算不足\n  TIMEOUT             — 执行超时\n  INTERNAL            — 未知内部错误",
+      "properties": {
+        "eventType": {
+          "const": "FAILED",
+          "title": "Eventtype",
+          "type": "string"
+        },
+        "errorCode": {
+          "enum": [
+            "EXECUTOR_NOT_READY",
+            "COMMAND_EXPIRED",
+            "DOCUMENT_UNSUPPORTED",
+            "PARSE_FAILED",
+            "EMBEDDING_UNAVAILABLE",
+            "VECTOR_UNAVAILABLE",
+            "MODEL_UNAVAILABLE",
+            "INDEX_MISMATCH",
+            "BUDGET_EXCEEDED",
+            "TIMEOUT",
+            "INTERNAL"
+          ],
+          "title": "Errorcode",
+          "type": "string"
+        },
+        "usageItems": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Usageitems",
+          "type": "array"
+        }
+      },
+      "required": [
+        "eventType",
+        "errorCode",
+        "usageItems"
+      ],
+      "title": "KnowledgeFailedEvent",
+      "type": "object"
+    },
+    "KnowledgeJobCommand": {
+      "additionalProperties": false,
+      "description": "同一 attempt 重复投递时，消息标识与全部执行快照保持不变。\n\n字段按职责分为四层：\n  路由 — Kafka 分区 key 与链路追踪\n  任务 — 入库/清理/对账的不可变参数\n  快照 — 索引和目标文档的发布版本固化\n  预算 — 仅入库任务携带的 Token 上限",
+      "properties": {
+        "contractVersion": {
+          "const": "knowledge-kafka-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "messageId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Messageid",
+          "type": "string"
+        },
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "jobId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Jobid",
+          "type": "string"
+        },
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "attemptId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Attemptid",
+          "type": "string"
+        },
+        "generationId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Generationid",
+          "type": "string"
+        },
+        "attemptNumber": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Attemptnumber",
+          "type": "integer"
+        },
+        "createdAt": {
+          "format": "date-time",
+          "title": "Createdat",
+          "type": "string"
+        },
+        "deadline": {
+          "format": "date-time",
+          "title": "Deadline",
+          "type": "string"
+        },
+        "task": {
+          "discriminator": {
+            "mapping": {
+              "CLEANUP": "#/$defs/KnowledgeCleanupTask",
+              "INGESTION": "#/$defs/KnowledgeDocumentTask",
+              "RECONCILE": "#/$defs/KnowledgeReconcileTask"
+            },
+            "propertyName": "jobType"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/KnowledgeDocumentTask"
+            },
+            {
+              "$ref": "#/$defs/KnowledgeCleanupTask"
+            },
+            {
+              "$ref": "#/$defs/KnowledgeReconcileTask"
+            }
+          ],
+          "title": "Task"
+        },
+        "indexSnapshot": {
+          "$ref": "#/$defs/IndexSnapshot"
+        },
+        "documentProcessingSnapshot": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/DocumentProcessingSnapshot"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "executionBudget": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/KnowledgeExecutionBudget"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "contractVersion",
+        "messageId",
+        "requestId",
+        "jobId",
+        "knowledgeId",
+        "attemptId",
+        "generationId",
+        "attemptNumber",
+        "createdAt",
+        "deadline",
+        "task",
+        "indexSnapshot",
+        "documentProcessingSnapshot",
+        "executionBudget"
+      ],
+      "title": "KnowledgeJobCommand",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "KnowledgeJobControl": {
+      "additionalProperties": false,
+      "description": "取消通过独立 Topic 广播，避免排在同一分区的长任务之后。\n\nPython 消费到 CANCEL 指令后应立即停止当前 attempt 的处理，发出\nKnowledgeCancelledEvent，并停止消费同 attempt 的消息。",
+      "properties": {
+        "contractVersion": {
+          "const": "knowledge-kafka-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "messageId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Messageid",
+          "type": "string"
+        },
+        "jobId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Jobid",
+          "type": "string"
+        },
+        "attemptId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Attemptid",
+          "type": "string"
+        },
+        "action": {
+          "const": "CANCEL",
+          "title": "Action",
+          "type": "string"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "title": "Expiresat",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "messageId",
+        "jobId",
+        "attemptId",
+        "action",
+        "expiresAt"
+      ],
+      "title": "KnowledgeJobControl",
+      "type": "object"
+    },
+    "KnowledgeJobEvent": {
+      "additionalProperties": false,
+      "description": "序列在单个 attempt 内递增；原消息 key 必须与 jobId 一致。\n\n字段分为两层：\n  路由 — 关联原始命令的标识，确保 Java 可定位到对应 attempt\n  负载 — 按 event_type 区分的事件体，sequence 保证同 attempt 内有序",
+      "properties": {
+        "contractVersion": {
+          "const": "knowledge-kafka-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "messageId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Messageid",
+          "type": "string"
+        },
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "jobId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Jobid",
+          "type": "string"
+        },
+        "attemptId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Attemptid",
+          "type": "string"
+        },
+        "generationId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Generationid",
+          "type": "string"
+        },
+        "workerId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Workerid",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "event": {
+          "discriminator": {
+            "mapping": {
+              "ARTIFACTS_READY": "#/$defs/KnowledgeArtifactsEvent",
+              "CANCELLED": "#/$defs/KnowledgeCancelledEvent",
+              "FAILED": "#/$defs/KnowledgeFailedEvent",
+              "MAINTENANCE_COMPLETED": "#/$defs/KnowledgeMaintenanceEvent",
+              "PROGRESS": "#/$defs/KnowledgeProgressEvent",
+              "STARTED": "#/$defs/KnowledgeStartedEvent"
+            },
+            "propertyName": "eventType"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/KnowledgeStartedEvent"
+            },
+            {
+              "$ref": "#/$defs/KnowledgeProgressEvent"
+            },
+            {
+              "$ref": "#/$defs/KnowledgeFailedEvent"
+            },
+            {
+              "$ref": "#/$defs/KnowledgeCancelledEvent"
+            },
+            {
+              "$ref": "#/$defs/KnowledgeArtifactsEvent"
+            },
+            {
+              "$ref": "#/$defs/KnowledgeMaintenanceEvent"
+            }
+          ],
+          "title": "Event"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "messageId",
+        "requestId",
+        "jobId",
+        "attemptId",
+        "generationId",
+        "workerId",
+        "sequence",
+        "event"
+      ],
+      "title": "KnowledgeJobEvent",
+      "type": "object"
+    },
+    "KnowledgeMaintenanceEvent": {
+      "additionalProperties": false,
+      "description": "维护结果仍由 Java 对照当前成员关系验收后落库。",
+      "properties": {
+        "eventType": {
+          "const": "MAINTENANCE_COMPLETED",
+          "title": "Eventtype",
+          "type": "string"
+        },
+        "result": {
+          "$ref": "#/$defs/KnowledgeMaintenanceResult"
+        }
+      },
+      "required": [
+        "eventType",
+        "result"
+      ],
+      "title": "KnowledgeMaintenanceEvent",
+      "type": "object"
+    },
+    "KnowledgeMaintenanceResult": {
+      "additionalProperties": false,
+      "description": "清理或对账只回报 generation 摘要，不携带向量、正文或凭证。\n\n字段分为三组：\n  操作目标 — 清理时指向单个 generation，对账时为 None\n  盘点结果 — Qdrant 中实际观察到的 generation 集合\n  删除明细 — 本次实际删除的 generation 及点数",
+      "properties": {
+        "jobType": {
+          "enum": [
+            "CLEANUP",
+            "RECONCILE"
+          ],
+          "title": "Jobtype",
+          "type": "string"
+        },
+        "targetGenerationId": {
+          "anyOf": [
+            {
+              "pattern": "^[1-9][0-9]{0,18}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Targetgenerationid"
+        },
+        "observedGenerationIds": {
+          "items": {
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "title": "Observedgenerationids",
+          "type": "array"
+        },
+        "observedPointCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Observedpointcount",
+          "type": "integer"
+        },
+        "deletedGenerationIds": {
+          "items": {
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "title": "Deletedgenerationids",
+          "type": "array"
+        },
+        "deletedPointCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Deletedpointcount",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "jobType",
+        "targetGenerationId",
+        "observedGenerationIds",
+        "observedPointCount",
+        "deletedGenerationIds",
+        "deletedPointCount"
+      ],
+      "title": "KnowledgeMaintenanceResult",
+      "type": "object"
+    },
+    "KnowledgeProgressEvent": {
+      "additionalProperties": false,
+      "description": "有限进度和续租信号，不承载正文或供应商原始响应。\n\nprogress 为 0-99 的百分比，不代表精确完成度，仅用于 UI 展示和 lease 续约判断。",
+      "properties": {
+        "eventType": {
+          "const": "PROGRESS",
+          "title": "Eventtype",
+          "type": "string"
+        },
+        "stage": {
+          "enum": [
+            "PREPARING",
+            "PARSING",
+            "EMBEDDING",
+            "WRITING",
+            "VALIDATING",
+            "CLEANING",
+            "RECONCILING"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "progress": {
+          "maximum": 99,
+          "minimum": 0,
+          "title": "Progress",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "eventType",
+        "stage",
+        "progress"
+      ],
+      "title": "KnowledgeProgressEvent",
+      "type": "object"
+    },
+    "KnowledgeReconcileTask": {
+      "additionalProperties": false,
+      "description": "盘点 Qdrant generation；冻结保留集合仅供审计，删除由 Java 最新状态复核后另发 CLEANUP。",
+      "properties": {
+        "jobType": {
+          "const": "RECONCILE",
+          "title": "Jobtype",
+          "type": "string"
+        },
+        "targetIndexVersion": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Targetindexversion",
+          "type": "string"
+        },
+        "retainedGenerationIds": {
+          "items": {
+            "pattern": "^[1-9][0-9]{0,18}$",
+            "type": "string"
+          },
+          "maxItems": 100000,
+          "title": "Retainedgenerationids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "jobType",
+        "targetIndexVersion",
+        "retainedGenerationIds"
+      ],
+      "title": "KnowledgeReconcileTask",
+      "type": "object"
+    },
+    "KnowledgeRetrievalSettings": {
+      "additionalProperties": false,
+      "description": "单个知识库在本次请求中冻结的召回、重排和命中阈值。",
+      "properties": {
+        "denseEnabled": {
+          "title": "Denseenabled",
+          "type": "boolean"
+        },
+        "sparseEnabled": {
+          "title": "Sparseenabled",
+          "type": "boolean"
+        },
+        "recallCount": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Recallcount",
+          "type": "integer"
+        },
+        "rrfK": {
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Rrfk",
+          "type": "integer"
+        },
+        "rerankEnabled": {
+          "title": "Rerankenabled",
+          "type": "boolean"
+        },
+        "rerankProfile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RerankProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rerankInputCount": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Rerankinputcount",
+          "type": "integer"
+        },
+        "rerankOutputCount": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Rerankoutputcount",
+          "type": "integer"
+        },
+        "relevanceThreshold": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Relevancethreshold"
+        }
+      },
+      "required": [
+        "denseEnabled",
+        "sparseEnabled",
+        "recallCount",
+        "rrfK",
+        "rerankEnabled",
+        "rerankProfile",
+        "rerankInputCount",
+        "rerankOutputCount",
+        "relevanceThreshold"
+      ],
+      "title": "KnowledgeRetrievalSettings",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "KnowledgeScope": {
+      "additionalProperties": false,
+      "description": "Java 授权后固定库、索引和修订号，不能独立笛卡尔积过滤。\n\n每个 scope 绑定一个 (knowledge_id, index_version)，permission_revision\n和 manifest_revision 用于 Java 端判断快照是否过期。",
+      "properties": {
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "permissionRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Permissionrevision",
+          "type": "integer"
+        },
+        "manifestRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Manifestrevision",
+          "type": "integer"
+        },
+        "retrievalSettings": {
+          "$ref": "#/$defs/KnowledgeRetrievalSettings"
+        }
+      },
+      "required": [
+        "knowledgeId",
+        "indexVersion",
+        "permissionRevision",
+        "manifestRevision",
+        "retrievalSettings"
+      ],
+      "title": "KnowledgeScope",
+      "type": "object"
+    },
+    "KnowledgeStartedEvent": {
+      "additionalProperties": false,
+      "description": "消费开始只推进 RUNNING，不表示任务成功。\n\nSTARTED 事件是 Python 消费到 Kafka 消息后的第一个回执，证明消息已被\nworker 接收并开始处理，但尚未完成任何实质工作。",
+      "properties": {
+        "eventType": {
+          "const": "STARTED",
+          "title": "Eventtype",
+          "type": "string"
+        }
+      },
+      "required": [
+        "eventType"
+      ],
+      "title": "KnowledgeStartedEvent",
+      "type": "object"
+    },
+    "ManifestMember": {
+      "additionalProperties": false,
+      "description": "每个成员绑定已发布的文档版本与 generation。",
+      "properties": {
+        "documentId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentid",
+          "type": "string"
+        },
+        "documentVersionId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentversionid",
+          "type": "string"
+        },
+        "generationId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Generationid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "documentId",
+        "documentVersionId",
+        "generationId"
+      ],
+      "title": "ManifestMember",
+      "type": "object"
+    },
+    "ManifestPageRequest": {
+      "additionalProperties": false,
+      "description": "snapshotId 位于路径；游标绑定同一快照和 manifestRevision。\n\n首次请求 cursor 传 null，后续翻页使用上一页返回的 nextCursor。",
+      "properties": {
+        "contractVersion": {
+          "const": "rag-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 6,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "manifestRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Manifestrevision",
+          "type": "integer"
+        },
+        "cursor": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 16,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Cursor"
+        },
+        "pageSize": {
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Pagesize",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "requestId",
+        "knowledgeId",
+        "indexVersion",
+        "manifestRevision",
+        "cursor",
+        "pageSize"
+      ],
+      "title": "ManifestPageRequest",
+      "type": "object"
+    },
+    "ManifestPageResponse": {
+      "additionalProperties": false,
+      "description": "nextCursor 为 null 才是完整分页结束；空成员不得变成无过滤查询。",
+      "properties": {
+        "scopeSnapshotId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Scopesnapshotid",
+          "type": "string"
+        },
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "manifestRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Manifestrevision",
+          "type": "integer"
+        },
+        "members": {
+          "items": {
+            "$ref": "#/$defs/ManifestMember"
+          },
+          "maxItems": 1000,
+          "title": "Members",
+          "type": "array"
+        },
+        "nextCursor": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 16,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Nextcursor"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "title": "Expiresat",
+          "type": "string"
+        }
+      },
+      "required": [
+        "scopeSnapshotId",
+        "knowledgeId",
+        "indexVersion",
+        "manifestRevision",
+        "members",
+        "nextCursor",
+        "expiresAt"
+      ],
+      "title": "ManifestPageResponse",
+      "type": "object"
+    },
+    "McpToolGrant": {
+      "additionalProperties": false,
+      "description": "只描述本次可执行工具；凭证仅以别名传递。",
+      "properties": {
+        "serverId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Serverid",
+          "type": "string"
+        },
+        "serverCode": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Servercode",
+          "type": "string"
+        },
+        "endpoint": {
+          "maxLength": 2048,
+          "pattern": "^https?://[^\\s?#]+$",
+          "title": "Endpoint",
+          "type": "string"
+        },
+        "authType": {
+          "enum": [
+            "NONE",
+            "BEARER"
+          ],
+          "title": "Authtype",
+          "type": "string"
+        },
+        "credentialKey": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Credentialkey"
+        },
+        "connectTimeoutSeconds": {
+          "maximum": 60,
+          "minimum": 1,
+          "title": "Connecttimeoutseconds",
+          "type": "integer"
+        },
+        "toolId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Toolid",
+          "type": "string"
+        },
+        "toolName": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Toolname",
+          "type": "string"
+        },
+        "qualifiedName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Qualifiedname",
+          "type": "string"
+        },
+        "inputSchema": {
+          "maxLength": 100000,
+          "minLength": 2,
+          "title": "Inputschema",
+          "type": "string"
+        },
+        "timeoutSeconds": {
+          "maximum": 120,
+          "minimum": 1,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "serverId",
+        "serverCode",
+        "endpoint",
+        "authType",
+        "credentialKey",
+        "connectTimeoutSeconds",
+        "toolId",
+        "toolName",
+        "qualifiedName",
+        "inputSchema",
+        "timeoutSeconds"
+      ],
+      "title": "McpToolGrant",
+      "type": "object"
+    },
+    "ModelProfile": {
+      "description": "不含明文凭证的已发布模型配置快照。\n\ncredential_key 是凭证别名，Python 通过内部注册表查找实际 API Key，\n不在消息中传递明文凭证。",
+      "properties": {
+        "id": {
+          "exclusiveMinimum": 0,
+          "title": "Id",
+          "type": "integer"
+        },
+        "revision": {
+          "exclusiveMinimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "providerCode": {
+          "maxLength": 50,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "apiHost": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Apihost",
+          "type": "string"
+        },
+        "apiMode": {
+          "default": "CHAT_COMPLETIONS",
+          "enum": [
+            "CHAT_COMPLETIONS",
+            "RESPONSES"
+          ],
+          "title": "Apimode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "maxInputTokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 2000000,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "maxOutputTokens": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 2000000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maxoutputtokens"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "modelName",
+        "providerCode",
+        "apiHost",
+        "credentialKey",
+        "maxInputTokens"
+      ],
+      "title": "ModelProfile",
+      "type": "object"
+    },
+    "ParseStats": {
+      "additionalProperties": false,
+      "description": "解析验收数据用于识别空文本、图片处理和截断；不是质量达标声明。\n\n解析器完成文档处理后输出此统计，Java 据此判断是否需要重试或降级处理。",
+      "properties": {
+        "pageCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Pagecount",
+          "type": "integer"
+        },
+        "blockCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Blockcount",
+          "type": "integer"
+        },
+        "characterCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Charactercount",
+          "type": "integer"
+        },
+        "imageCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Imagecount",
+          "type": "integer"
+        },
+        "ocrCharacterCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Ocrcharactercount",
+          "type": "integer"
+        },
+        "skippedBlockCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Skippedblockcount",
+          "type": "integer"
+        },
+        "skippedImageCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Skippedimagecount",
+          "type": "integer"
+        },
+        "truncated": {
+          "title": "Truncated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "pageCount",
+        "blockCount",
+        "characterCount",
+        "imageCount",
+        "ocrCharacterCount",
+        "skippedBlockCount",
+        "skippedImageCount",
+        "truncated"
+      ],
+      "title": "ParseStats",
+      "type": "object"
+    },
+    "PdfPageLocator": {
+      "additionalProperties": false,
+      "description": "PDF 页码从 1 开始，不以预览页排序替代原文件位置。",
+      "properties": {
+        "kind": {
+          "const": "PDF_PAGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "pageNumber": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Pagenumber",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "pageNumber"
+      ],
+      "title": "PdfPageLocator",
+      "type": "object"
+    },
+    "PresentationBlockLocator": {
+      "additionalProperties": false,
+      "description": "PPTX 内容定位到幻灯片、形状及可选表格行。",
+      "properties": {
+        "kind": {
+          "const": "PRESENTATION_BLOCK",
+          "title": "Kind",
+          "type": "string"
+        },
+        "container": {
+          "const": "PPTX",
+          "title": "Container",
+          "type": "string"
+        },
+        "slideNumber": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Slidenumber",
+          "type": "integer"
+        },
+        "shapeIndex": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Shapeindex",
+          "type": "integer"
+        },
+        "rowIndex": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rowindex"
+        }
+      },
+      "required": [
+        "kind",
+        "container",
+        "slideNumber",
+        "shapeIndex",
+        "rowIndex"
+      ],
+      "title": "PresentationBlockLocator",
+      "type": "object"
+    },
+    "ProfileRef": {
+      "additionalProperties": false,
+      "description": "引用 Java 已发布配置；执行请求还需携带对应完整快照。",
+      "properties": {
+        "id": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "revision"
+      ],
+      "title": "ProfileRef",
+      "type": "object"
+    },
+    "RagChatActor": {
+      "additionalProperties": false,
+      "description": "RAG 调用主体使用严格字段，原普通聊天模型保持兼容。\n\n通过多重继承，在 ChatActor 字段基础上叠加 RagModel 的严格校验策略\n（extra=\"forbid\", strict=True），防止 Java 误传未知字段。",
+      "properties": {
+        "userId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Userid",
+          "type": "string"
+        },
+        "roles": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 50,
+          "title": "Roles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "userId"
+      ],
+      "title": "RagChatActor",
+      "type": "object"
+    },
+    "RagChatInput": {
+      "additionalProperties": false,
+      "description": "严格校验每条上下文消息，不改变原聊天输入协议。",
+      "properties": {
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/RagChatMessage"
+          },
+          "maxItems": 50,
+          "minItems": 1,
+          "title": "Messages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "messages"
+      ],
+      "title": "RagChatInput",
+      "type": "object"
+    },
+    "RagChatMessage": {
+      "additionalProperties": false,
+      "description": "RAG 上下文消息拒绝未知字段与隐式类型转换。\n\n同样通过多重继承叠加严格校验，确保 RAG 场景下消息结构完全受控。",
+      "properties": {
+        "role": {
+          "enum": [
+            "system",
+            "user",
+            "assistant"
+          ],
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "RagChatMessage",
+      "type": "object"
+    },
+    "RagChatModelProfile": {
+      "additionalProperties": false,
+      "description": "仅用于 RAG 改写的模型快照；普通聊天原 DTO 的数值 ID 不变。",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "providerCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "apiHost": {
+          "maxLength": 2048,
+          "pattern": "^https?://[^\\s?#]+$",
+          "title": "Apihost",
+          "type": "string"
+        },
+        "apiMode": {
+          "enum": [
+            "CHAT_COMPLETIONS",
+            "RESPONSES"
+          ],
+          "title": "Apimode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "maxInputTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "maxOutputTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxoutputtokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "modelName",
+        "providerCode",
+        "apiHost",
+        "apiMode",
+        "credentialKey",
+        "maxInputTokens",
+        "maxOutputTokens",
+        "timeoutSeconds"
+      ],
+      "title": "RagChatModelProfile",
+      "type": "object"
+    },
+    "RagChatStreamRequest": {
+      "additionalProperties": false,
+      "description": "启用 RAG 时的请求变体；普通聊天继续使用原 InternalChatStreamRequest。\n\n与 InternalChatStreamRequest 的区别：\n  - actor/input/model_profile/execution_policy 使用 Rag 严格变体\n  - 新增 rag 字段携带检索范围与执行配置\n  - 最后一条消息必须是 user（由 validate_current_question 校验）",
+      "properties": {
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 6,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "clientRequestId": {
+          "maxLength": 128,
+          "minLength": 6,
+          "title": "Clientrequestid",
+          "type": "string"
+        },
+        "sessionId": {
+          "maxLength": 64,
+          "minLength": 1,
+          "title": "Sessionid",
+          "type": "string"
+        },
+        "actor": {
+          "$ref": "#/$defs/RagChatActor"
+        },
+        "input": {
+          "$ref": "#/$defs/RagChatInput"
+        },
+        "modelProfile": {
+          "$ref": "#/$defs/RagGenerationProfile"
+        },
+        "executionPolicy": {
+          "$ref": "#/$defs/RagExecutionPolicy"
+        },
+        "rag": {
+          "$ref": "#/$defs/RagExecutionScope"
+        },
+        "tools": {
+          "items": {
+            "$ref": "#/$defs/McpToolGrant"
+          },
+          "maxItems": 20,
+          "title": "Tools",
+          "type": "array"
+        }
+      },
+      "required": [
+        "requestId",
+        "clientRequestId",
+        "sessionId",
+        "actor",
+        "input",
+        "modelProfile",
+        "executionPolicy",
+        "rag"
+      ],
+      "title": "RagChatStreamRequest",
+      "type": "object"
+    },
+    "RagCitationPayload": {
+      "additionalProperties": false,
+      "description": "citation 事件仅提供候选映射，不表示回答实际使用了该来源。\n\n此事件在流式生成过程中发送，客户端可用于构建引用预览，\n但最终生效的引用以 RagCompletedPayload.citations 为准。",
+      "properties": {
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "citation": {
+          "$ref": "#/$defs/Citation"
+        }
+      },
+      "required": [
+        "requestId",
+        "citation"
+      ],
+      "title": "RagCitationPayload",
+      "type": "object"
+    },
+    "RagCompletedPayload": {
+      "additionalProperties": false,
+      "description": "完成引用是已复核的实际使用子集；usage 兼容原聊天但不可重复计费。\n\n字段分为四组：\n  生成结果 — content 与 usage（兼容原聊天协议）\n  答案状态 — 是否有证据支持的判定\n  引用 — 已复核的实际使用引用集合\n  凭证与用量 — 验证票据和执行用量（供 Java 结算）",
+      "properties": {
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "content": {
+          "maxLength": 200000,
+          "title": "Content",
+          "type": "string"
+        },
+        "usage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RagGenerationUsage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "answerStatus": {
+          "enum": [
+            "ANSWERED",
+            "PARTIAL",
+            "NO_EVIDENCE",
+            "NEEDS_CLARIFICATION"
+          ],
+          "title": "Answerstatus",
+          "type": "string"
+        },
+        "citations": {
+          "items": {
+            "$ref": "#/$defs/Citation"
+          },
+          "maxItems": 100,
+          "title": "Citations",
+          "type": "array"
+        },
+        "validationTicket": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "minLength": 16,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Validationticket"
+        },
+        "executionUsage": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Executionusage",
+          "type": "array"
+        }
+      },
+      "required": [
+        "requestId",
+        "content",
+        "usage",
+        "answerStatus",
+        "citations",
+        "validationTicket",
+        "executionUsage"
+      ],
+      "title": "RagCompletedPayload",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "RagExecutionPolicy": {
+      "additionalProperties": false,
+      "description": "RAG 生成预算由 Java 核定；工具多轮执行另带总 Token 上限。",
+      "properties": {
+        "maxInputTokens": {
+          "exclusiveMinimum": 0,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "maxOutputTokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 2000000,
+          "title": "Maxoutputtokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 300,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        },
+        "maxTotalTokens": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maxtotaltokens"
+        }
+      },
+      "required": [
+        "maxInputTokens",
+        "maxOutputTokens",
+        "timeoutSeconds"
+      ],
+      "title": "RagExecutionPolicy",
+      "type": "object"
+    },
+    "RagExecutionScope": {
+      "additionalProperties": false,
+      "description": "Java 为单次调用绑定授权和执行配置；空范围禁止执行检索。\n\n字段分为四层：\n  授权 — 快照 ID + 过期时间 + 知识库范围列表\n  检索 — 检索策略引用与完整快照\n  索引 — 每个知识库的完整索引配置快照\n  限额 — 模型可使用的知识上下文预算",
+      "properties": {
+        "contractVersion": {
+          "const": "rag-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "mode": {
+          "const": "KNOWLEDGE_QA",
+          "title": "Mode",
+          "type": "string"
+        },
+        "scopeSnapshotId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Scopesnapshotid",
+          "type": "string"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "title": "Expiresat",
+          "type": "string"
+        },
+        "knowledgeScopes": {
+          "items": {
+            "$ref": "#/$defs/KnowledgeScope"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Knowledgescopes",
+          "type": "array"
+        },
+        "retrievalProfile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "retrievalSnapshot": {
+          "$ref": "#/$defs/RetrievalProfile"
+        },
+        "indexSnapshots": {
+          "items": {
+            "$ref": "#/$defs/IndexSnapshot"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Indexsnapshots",
+          "type": "array"
+        },
+        "contextBudgetTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Contextbudgettokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "mode",
+        "scopeSnapshotId",
+        "expiresAt",
+        "knowledgeScopes",
+        "retrievalProfile",
+        "retrievalSnapshot",
+        "indexSnapshots",
+        "contextBudgetTokens"
+      ],
+      "title": "RagExecutionScope",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "RagFailedPayload": {
+      "additionalProperties": false,
+      "description": "RAG 失败终态包含已发生用量，避免异常路径漏记调用成本。\n\n与普通聊天 FailedPayload 的区别：\n  - error_code 使用 RAG 统一错误码（ErrorCode），范围更广\n  - 增加 execution_usage 上报已发生的模型调用成本",
+      "properties": {
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "errorCode": {
+          "enum": [
+            "VALIDATION",
+            "AUTHORIZATION",
+            "PROVIDER_AUTHORIZATION",
+            "MODEL_UNAVAILABLE",
+            "RATE_LIMITED",
+            "CANCELLED",
+            "TIMEOUT",
+            "INTERNAL",
+            "KNOWLEDGE_NOT_READY",
+            "SCOPE_EXPIRED",
+            "VECTOR_UNAVAILABLE",
+            "EMBEDDING_UNAVAILABLE",
+            "RERANK_UNAVAILABLE",
+            "DOCUMENT_UNSUPPORTED",
+            "PARSE_FAILED",
+            "INDEX_MISMATCH",
+            "LEASE_EXPIRED",
+            "STALE_ATTEMPT",
+            "BUDGET_EXCEEDED",
+            "CITATION_INVALID",
+            "TOOL_REJECTED",
+            "TOOL_CREDENTIAL_MISSING",
+            "TOOL_TIMEOUT"
+          ],
+          "title": "Errorcode",
+          "type": "string"
+        },
+        "executionUsage": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Executionusage",
+          "type": "array"
+        }
+      },
+      "required": [
+        "requestId",
+        "errorCode",
+        "executionUsage"
+      ],
+      "title": "RagFailedPayload",
+      "type": "object"
+    },
+    "RagGenerationProfile": {
+      "additionalProperties": false,
+      "description": "复用既有生成模型字段和默认值，仅收紧 RAG 边界的结构校验。",
+      "properties": {
+        "id": {
+          "exclusiveMinimum": 0,
+          "title": "Id",
+          "type": "integer"
+        },
+        "revision": {
+          "exclusiveMinimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "providerCode": {
+          "maxLength": 50,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "apiHost": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Apihost",
+          "type": "string"
+        },
+        "apiMode": {
+          "default": "CHAT_COMPLETIONS",
+          "enum": [
+            "CHAT_COMPLETIONS",
+            "RESPONSES"
+          ],
+          "title": "Apimode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "maxInputTokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 2000000,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "maxOutputTokens": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 2000000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maxoutputtokens"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "modelName",
+        "providerCode",
+        "apiHost",
+        "credentialKey",
+        "maxInputTokens"
+      ],
+      "title": "RagGenerationProfile",
+      "type": "object"
+    },
+    "RagGenerationUsage": {
+      "additionalProperties": false,
+      "description": "完成事件保留原聊天用量字段；未知用量仍可为 null。",
+      "properties": {
+        "inputTokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputtokens"
+        },
+        "outputTokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputtokens"
+        },
+        "totalTokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Totaltokens"
+        }
+      },
+      "title": "RagGenerationUsage",
+      "type": "object"
+    },
+    "RequestMeasurement": {
+      "additionalProperties": false,
+      "description": "按请求或文档对计量，不伪装为 Token。",
+      "properties": {
+        "unit": {
+          "enum": [
+            "REQUESTS",
+            "DOCUMENT_PAIRS"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "quality": {
+          "enum": [
+            "ACTUAL",
+            "ESTIMATED"
+          ],
+          "title": "Quality",
+          "type": "string"
+        },
+        "quantity": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Quantity",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "unit",
+        "quality",
+        "quantity"
+      ],
+      "title": "RequestMeasurement",
+      "type": "object"
+    },
+    "RerankProfile": {
+      "additionalProperties": false,
+      "description": "发布后的重排适配契约；不指定尚未选择的供应商或模型。",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "providerCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "apiHost": {
+          "maxLength": 2048,
+          "pattern": "^https?://[^\\s?#]+$",
+          "title": "Apihost",
+          "type": "string"
+        },
+        "adapterCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Adaptercode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "inputMode": {
+          "enum": [
+            "TEXT",
+            "MULTIMODAL"
+          ],
+          "title": "Inputmode",
+          "type": "string"
+        },
+        "maxDocumentTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxdocumenttokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "providerCode",
+        "modelName",
+        "apiHost",
+        "adapterCode",
+        "credentialKey",
+        "inputMode",
+        "maxDocumentTokens",
+        "timeoutSeconds"
+      ],
+      "title": "RerankProfile",
+      "type": "object"
+    },
+    "RetrievalProfile": {
+      "additionalProperties": false,
+      "description": "生产与检索测试共用的候选数量和上下文参数。\n\n两阶段检索流水线：\n  DENSE_BM25_RRF_RERANK — 生产模式，dense + sparse → RRF 融合 → Rerank → 最终 Top-K\n  DEVELOPMENT_NO_RERANK — 开发模式，跳过 Rerank 阶段",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "mode": {
+          "enum": [
+            "DENSE_BM25_RRF_RERANK",
+            "DEVELOPMENT_NO_RERANK"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "denseTopK": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Densetopk",
+          "type": "integer"
+        },
+        "sparseTopK": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Sparsetopk",
+          "type": "integer"
+        },
+        "rrfK": {
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Rrfk",
+          "type": "integer"
+        },
+        "rerankTopK": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Reranktopk",
+          "type": "integer"
+        },
+        "finalTopK": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Finaltopk",
+          "type": "integer"
+        },
+        "neighborWindow": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Neighborwindow",
+          "type": "integer"
+        },
+        "maxContextChunks": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Maxcontextchunks",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "mode",
+        "denseTopK",
+        "sparseTopK",
+        "rrfK",
+        "rerankTopK",
+        "finalTopK",
+        "neighborWindow",
+        "maxContextChunks"
+      ],
+      "title": "RetrievalProfile",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "RetrievalStageStats": {
+      "additionalProperties": false,
+      "description": "只提供脱敏阶段耗时和数量，跳过阶段不能伪装为已完成。",
+      "properties": {
+        "stage": {
+          "enum": [
+            "DENSE",
+            "SPARSE",
+            "RRF",
+            "RERANK",
+            "CONTEXT"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "SKIPPED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "durationMs": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Durationms",
+          "type": "integer"
+        },
+        "inputCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Inputcount",
+          "type": "integer"
+        },
+        "outputCount": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Outputcount",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "stage",
+        "status",
+        "durationMs",
+        "inputCount",
+        "outputCount"
+      ],
+      "title": "RetrievalStageStats",
+      "type": "object"
+    },
+    "RetrievalTestRequest": {
+      "additionalProperties": false,
+      "description": "Java 先完成权限和预算检查，Python 执行相同的生产检索链。",
+      "properties": {
+        "contractVersion": {
+          "const": "rag-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 6,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "query": {
+          "maxLength": 20000,
+          "minLength": 1,
+          "title": "Query",
+          "type": "string"
+        },
+        "rag": {
+          "$ref": "#/$defs/RagExecutionScope"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "requestId",
+        "query",
+        "rag"
+      ],
+      "title": "RetrievalTestRequest",
+      "type": "object"
+    },
+    "RetrievalTestResponse": {
+      "additionalProperties": false,
+      "description": "返回受控诊断与完整来源，不返回向量库或供应商原始响应。",
+      "properties": {
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "scopeSnapshotId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Scopesnapshotid",
+          "type": "string"
+        },
+        "chunks": {
+          "items": {
+            "$ref": "#/$defs/RetrievedChunk"
+          },
+          "maxItems": 100,
+          "title": "Chunks",
+          "type": "array"
+        },
+        "validationTicket": {
+          "maxLength": 4096,
+          "minLength": 16,
+          "title": "Validationticket",
+          "type": "string"
+        },
+        "executionUsage": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Executionusage",
+          "type": "array"
+        },
+        "stages": {
+          "items": {
+            "$ref": "#/$defs/RetrievalStageStats"
+          },
+          "maxItems": 6,
+          "title": "Stages",
+          "type": "array"
+        }
+      },
+      "required": [
+        "requestId",
+        "scopeSnapshotId",
+        "chunks",
+        "validationTicket",
+        "executionUsage",
+        "stages"
+      ],
+      "title": "RetrievalTestResponse",
+      "type": "object"
+    },
+    "RetrievedChunk": {
+      "additionalProperties": false,
+      "description": "阶段分数为 null 表示未执行该阶段；Java 仍需做候选复核。",
+      "properties": {
+        "location": {
+          "$ref": "#/$defs/SourceLocation"
+        },
+        "text": {
+          "maxLength": 40000,
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "denseScore": {
+          "anyOf": [
+            {
+              "maximum": 1e+308,
+              "minimum": -1e+308,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Densescore"
+        },
+        "sparseScore": {
+          "anyOf": [
+            {
+              "maximum": 1e+308,
+              "minimum": -1e+308,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sparsescore"
+        },
+        "rrfScore": {
+          "anyOf": [
+            {
+              "maximum": 1e+308,
+              "minimum": -1e+308,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rrfscore"
+        },
+        "rerankScore": {
+          "anyOf": [
+            {
+              "maximum": 1e+308,
+              "minimum": -1e+308,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rerankscore"
+        }
+      },
+      "required": [
+        "location",
+        "text",
+        "denseScore",
+        "sparseScore",
+        "rrfScore",
+        "rerankScore"
+      ],
+      "title": "RetrievedChunk",
+      "type": "object"
+    },
+    "SourceLocation": {
+      "additionalProperties": false,
+      "description": "可持久化引用位置；不包含对象存储下载链接。\n\n三个组成部分：\n  source  — 不可变的来源元组引用\n  title   — 文档标题与标题路径（面包屑）\n  locator — 文件内具体位置（按 kind 区分定位器类型）",
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/SourceRef"
+        },
+        "title": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "titlePath": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Titlepath",
+          "type": "array"
+        },
+        "locator": {
+          "discriminator": {
+            "mapping": {
+              "DOCX_BLOCK": "#/$defs/DocxBlockLocator",
+              "IMAGE": "#/$defs/ImageLocator",
+              "PDF_PAGE": "#/$defs/PdfPageLocator",
+              "PRESENTATION_BLOCK": "#/$defs/PresentationBlockLocator",
+              "SPREADSHEET_RANGE": "#/$defs/SpreadsheetRangeLocator",
+              "TABLE_RANGE": "#/$defs/TableRangeLocator",
+              "TEXT_RANGE": "#/$defs/TextRangeLocator"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/PdfPageLocator"
+            },
+            {
+              "$ref": "#/$defs/TextRangeLocator"
+            },
+            {
+              "$ref": "#/$defs/DocxBlockLocator"
+            },
+            {
+              "$ref": "#/$defs/PresentationBlockLocator"
+            },
+            {
+              "$ref": "#/$defs/SpreadsheetRangeLocator"
+            },
+            {
+              "$ref": "#/$defs/TableRangeLocator"
+            },
+            {
+              "$ref": "#/$defs/ImageLocator"
+            }
+          ],
+          "title": "Locator"
+        }
+      },
+      "required": [
+        "source",
+        "title",
+        "titlePath",
+        "locator"
+      ],
+      "title": "SourceLocation",
+      "type": "object"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "description": "候选复核使用完整不可变来源元组，禁止只按 chunkId 授权。\n\n六元组唯一标识一个 chunk：(knowledge_id, index_version, document_id,\ndocument_version_id, generation_id, chunk_id)，加上 content_hash\n确保指向的内容未被篡改。",
+      "properties": {
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "documentId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentid",
+          "type": "string"
+        },
+        "documentVersionId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentversionid",
+          "type": "string"
+        },
+        "generationId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Generationid",
+          "type": "string"
+        },
+        "chunkId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Chunkid",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "knowledgeId",
+        "indexVersion",
+        "documentId",
+        "documentVersionId",
+        "generationId",
+        "chunkId",
+        "contentHash"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    },
+    "SpreadsheetRangeLocator": {
+      "additionalProperties": false,
+      "description": "CSV/XLSX 单行内容的工作表和单元格范围，坐标从 1 开始。",
+      "properties": {
+        "kind": {
+          "const": "SPREADSHEET_RANGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "container": {
+          "enum": [
+            "CSV",
+            "XLSX"
+          ],
+          "title": "Container",
+          "type": "string"
+        },
+        "sheetName": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sheetname",
+          "type": "string"
+        },
+        "rowStart": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Rowstart",
+          "type": "integer"
+        },
+        "rowEnd": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Rowend",
+          "type": "integer"
+        },
+        "columnStart": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Columnstart",
+          "type": "integer"
+        },
+        "columnEnd": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Columnend",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "container",
+        "sheetName",
+        "rowStart",
+        "rowEnd",
+        "columnStart",
+        "columnEnd"
+      ],
+      "title": "SpreadsheetRangeLocator",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "TableRangeLocator": {
+      "additionalProperties": false,
+      "description": "表格与行列序号从 0 开始，结束行列为不包含的边界。",
+      "properties": {
+        "kind": {
+          "const": "TABLE_RANGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "tableIndex": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Tableindex",
+          "type": "integer"
+        },
+        "rowStart": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Rowstart",
+          "type": "integer"
+        },
+        "rowEnd": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Rowend",
+          "type": "integer"
+        },
+        "columnStart": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Columnstart",
+          "type": "integer"
+        },
+        "columnEnd": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Columnend",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "tableIndex",
+        "rowStart",
+        "rowEnd",
+        "columnStart",
+        "columnEnd"
+      ],
+      "title": "TableRangeLocator",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "TextRangeLocator": {
+      "additionalProperties": false,
+      "description": "文本偏移按 Unicode 码点，区间为左闭右开。",
+      "properties": {
+        "kind": {
+          "const": "TEXT_RANGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "startOffset": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Startoffset",
+          "type": "integer"
+        },
+        "endOffset": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Endoffset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "startOffset",
+        "endOffset"
+      ],
+      "title": "TextRangeLocator",
+      "type": "object",
+      "x-invariant-validator": "Python model_validator / Java isContractConsistent; see RAG机器契约说明.md"
+    },
+    "TokenMeasurement": {
+      "additionalProperties": false,
+      "description": "有实际或估算 Token 用量时才发送数量。",
+      "properties": {
+        "unit": {
+          "const": "TOKENS",
+          "title": "Unit",
+          "type": "string"
+        },
+        "quality": {
+          "enum": [
+            "ACTUAL",
+            "ESTIMATED"
+          ],
+          "title": "Quality",
+          "type": "string"
+        },
+        "inputTokens": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Inputtokens",
+          "type": "integer"
+        },
+        "outputTokens": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Outputtokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "unit",
+        "quality",
+        "inputTokens",
+        "outputTokens"
+      ],
+      "title": "TokenMeasurement",
+      "type": "object"
+    },
+    "UnknownMeasurement": {
+      "additionalProperties": false,
+      "description": "供应商未报告用量时不使用零占位。",
+      "properties": {
+        "unit": {
+          "const": "UNKNOWN",
+          "title": "Unit",
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "NOT_REPORTED",
+            "INTERRUPTED"
+          ],
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "unit",
+        "reason"
+      ],
+      "title": "UnknownMeasurement",
+      "type": "object"
+    },
+    "Usage": {
+      "description": "归一化后的模型 Token 用量。",
+      "properties": {
+        "inputTokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Inputtokens"
+        },
+        "outputTokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outputtokens"
+        },
+        "totalTokens": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Totaltokens"
+        }
+      },
+      "title": "Usage",
+      "type": "object"
+    },
+    "ValidateCandidatesRequest": {
+      "additionalProperties": false,
+      "description": "仅复核当前请求快照的候选；空集合用于签发无命中的受限票据。\n\npurpose 说明复核目的：\n  MODEL_CONTEXT  — 生成模型上下文，需要可读文本\n  COMPLETION     — 补全，仅验证有效性\n  CHUNK_PREVIEW  — 管理后台预览，允许更宽松的校验",
+      "properties": {
+        "contractVersion": {
+          "const": "rag-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 6,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "candidates": {
+          "items": {
+            "$ref": "#/$defs/SourceRef"
+          },
+          "maxItems": 500,
+          "title": "Candidates",
+          "type": "array"
+        },
+        "purpose": {
+          "enum": [
+            "MODEL_CONTEXT",
+            "COMPLETION",
+            "CHUNK_PREVIEW"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "requestId",
+        "candidates",
+        "purpose"
+      ],
+      "title": "ValidateCandidatesRequest",
+      "type": "object"
+    },
+    "VersionedRequest": {
+      "additionalProperties": false,
+      "description": "每个独立请求显式声明版本及追踪标识，拒绝静默降级。",
+      "properties": {
+        "contractVersion": {
+          "const": "rag-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 6,
+          "title": "Requestid",
+          "type": "string"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "requestId"
+      ],
+      "title": "VersionedRequest",
+      "type": "object"
+    },
+    "VisionProfile": {
+      "additionalProperties": false,
+      "description": "文档图片/OCR 处理模型快照；只保存凭证别名和精确发布修订。",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "providerCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "apiHost": {
+          "maxLength": 2048,
+          "pattern": "^https?://[^\\s?#]+$",
+          "title": "Apihost",
+          "type": "string"
+        },
+        "apiMode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Apimode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "maxInputTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "providerCode",
+        "modelName",
+        "apiHost",
+        "apiMode",
+        "credentialKey",
+        "maxInputTokens",
+        "timeoutSeconds"
+      ],
+      "title": "VisionProfile",
+      "type": "object"
+    }
+  }
+}

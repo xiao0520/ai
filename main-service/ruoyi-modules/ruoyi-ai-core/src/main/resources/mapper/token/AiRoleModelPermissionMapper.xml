@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.token.AiRoleModelPermissionMapper">
+
+    <sql id="permissionColumns">
+        id, role_id, model_id, status, effective_time, expire_time, remark, create_dept,
+        create_by, create_time, update_by, update_time
+    </sql>
+
+    <select id="selectByRoleIds" resultType="org.ruoyi.domain.entity.token.AiRoleModelPermission">
+        SELECT <include refid="permissionColumns"/>
+        FROM role_model_permission
+        WHERE role_id IN
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+        ORDER BY role_id ASC, model_id ASC
+    </select>
+
+    <select id="selectEffectiveModelIds" resultType="java.lang.Long">
+        SELECT DISTINCT model_id
+        FROM role_model_permission
+        WHERE role_id IN
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+            #{roleId}
+        </foreach>
+          AND status = #{status}
+          AND (effective_time IS NULL OR effective_time <![CDATA[<=]]> #{now})
+          AND (expire_time IS NULL OR expire_time <![CDATA[>]]> #{now})
+        ORDER BY model_id ASC
+    </select>
+
+    <delete id="deleteByRoleId">
+        DELETE FROM role_model_permission
+        WHERE role_id = #{roleId}
+    </delete>
+</mapper>

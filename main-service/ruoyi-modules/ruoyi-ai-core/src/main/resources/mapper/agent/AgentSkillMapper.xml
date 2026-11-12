@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.agent.AgentSkillMapper">
+
+    <sql id="bindingColumns">
+        id, agent_id AS agentId, skill_name AS skillName, config_json AS configJson, status,
+        create_time AS createTime, update_time AS updateTime
+    </sql>
+
+    <select id="selectBySkillName" resultType="org.ruoyi.domain.entity.agent.AgentSkill">
+        SELECT <include refid="bindingColumns"/>
+        FROM agent_skill
+        WHERE skill_name = #{skillName}
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectBySkillNames" resultType="org.ruoyi.domain.entity.agent.AgentSkill">
+        SELECT <include refid="bindingColumns"/>
+        FROM agent_skill
+        WHERE skill_name IN
+        <foreach collection="skillNames" item="skillName" open="(" separator="," close=")">
+            #{skillName}
+        </foreach>
+        ORDER BY skill_name ASC, id ASC
+    </select>
+
+    <delete id="deleteByAgentIds">
+        DELETE FROM agent_skill
+        WHERE agent_id IN
+        <foreach collection="agentIds" item="agentId" open="(" separator="," close=")">#{agentId}</foreach>
+    </delete>
+    <select id="selectEnabledSkillNamesByAgentId" resultType="java.lang.String">
+        SELECT skill_name FROM agent_skill WHERE agent_id = #{agentId} AND status = #{status}
+        ORDER BY skill_name ASC
+    </select>
+</mapper>

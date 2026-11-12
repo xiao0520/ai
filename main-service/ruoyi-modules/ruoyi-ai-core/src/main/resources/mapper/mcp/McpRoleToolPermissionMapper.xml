@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.mcp.McpRoleToolPermissionMapper">
+
+    <select id="countByToolIds" resultType="long">
+        SELECT COUNT(1)
+        FROM mcp_role_tool_permission
+        WHERE tool_id IN
+        <foreach collection="toolIds" item="toolId" open="(" separator="," close=")">
+            #{toolId}
+        </foreach>
+    </select>
+
+    <select id="selectByRoleIds" resultType="org.ruoyi.domain.entity.mcp.McpRoleToolPermission">
+        SELECT id, role_id AS roleId, tool_id AS toolId, status,
+               effective_time AS effectiveTime, expire_time AS expireTime, remark,
+               create_time AS createTime, update_time AS updateTime
+        FROM mcp_role_tool_permission
+        WHERE role_id IN
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">#{roleId}</foreach>
+        ORDER BY role_id ASC, tool_id ASC
+    </select>
+
+    <select id="selectByRoleId" resultType="org.ruoyi.domain.entity.mcp.McpRoleToolPermission">
+        SELECT id, role_id AS roleId, tool_id AS toolId, status,
+               effective_time AS effectiveTime, expire_time AS expireTime, remark,
+               create_time AS createTime, update_time AS updateTime
+        FROM mcp_role_tool_permission
+        WHERE role_id = #{roleId}
+        ORDER BY tool_id ASC
+    </select>
+
+    <select id="selectEffectiveToolIds" resultType="java.lang.Long">
+        SELECT DISTINCT tool_id
+        FROM mcp_role_tool_permission
+        WHERE role_id IN
+        <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">#{roleId}</foreach>
+          AND status = #{status}
+          AND (effective_time IS NULL OR effective_time &lt;= #{effectiveAt})
+          AND (expire_time IS NULL OR expire_time &gt; #{effectiveAt})
+        ORDER BY tool_id ASC
+    </select>
+
+    <delete id="deleteByRoleId">
+        DELETE FROM mcp_role_tool_permission WHERE role_id = #{roleId}
+    </delete>
+</mapper>

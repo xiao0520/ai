@@ -1,0 +1,55 @@
+{
+  "format": "knowledge-kafka-manifest-v1",
+  "contractVersion": "knowledge-kafka-v1",
+  "delivery": "at-least-once",
+  "businessStateOwner": "Java",
+  "authentication": "Broker service credentials and topic ACL; localhost PLAINTEXT for development only",
+  "executionImplemented": false,
+  "messages": [
+    {
+      "topic": "knowledge.ingestion.command.v1",
+      "producer": "Java",
+      "consumer": "Python",
+      "key": "jobId",
+      "payload": {
+        "$ref": "schema.json#/$defs/KnowledgeJobCommand"
+      }
+    },
+    {
+      "topic": "knowledge.job.result.v1",
+      "producer": "Python",
+      "consumer": "Java",
+      "key": "jobId",
+      "payload": {
+        "$ref": "schema.json#/$defs/KnowledgeJobEvent"
+      }
+    },
+    {
+      "topic": "knowledge.job.control.v1",
+      "producer": "Java",
+      "consumer": "Python (broadcast)",
+      "key": "jobId",
+      "payload": {
+        "$ref": "schema.json#/$defs/KnowledgeJobControl"
+      }
+    },
+    {
+      "topic": "knowledge.dlq.v1",
+      "producer": "Java/Python",
+      "consumer": "Operations",
+      "key": "original key or null",
+      "payload": {
+        "$ref": "schema.json#/$defs/KnowledgeDeadLetter"
+      }
+    }
+  ],
+  "commandAck": "after confirmed terminal result or DLQ marker",
+  "resultAck": "after Java database commit or confirmed DLQ marker",
+  "identity": [
+    "jobId",
+    "attemptId",
+    "generationId"
+  ],
+  "sequenceScope": "one worker execution owner within an attempt",
+  "replayPolicy": "first accepted workerId owns the attempt; other executions are stale; lease expiry creates a new attempt"
+}

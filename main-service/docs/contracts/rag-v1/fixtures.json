@@ -1,0 +1,4621 @@
+[
+  {
+    "name": "ProfileRef",
+    "model": "ProfileRef",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "id": "11",
+      "revision": 1
+    }
+  },
+  {
+    "name": "EmbeddingProfile",
+    "model": "EmbeddingProfile",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "profile": {
+        "id": "11",
+        "revision": 1
+      },
+      "providerCode": "doubao",
+      "modelName": "doubao-embedding-vision",
+      "apiHost": "https://model.example.invalid/api/v3/",
+      "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+      "credentialKey": "embedding-test-key",
+      "dimensions": 2048,
+      "documentInputMode": "TEXT_SINGLE",
+      "queryInputMode": "TEXT_SINGLE",
+      "normalized": true,
+      "maxInputTokens": 4096,
+      "timeoutSeconds": 60
+    }
+  },
+  {
+    "name": "RerankProfile",
+    "model": "RerankProfile",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "profile": {
+        "id": "12",
+        "revision": 1
+      },
+      "providerCode": "test-provider",
+      "modelName": "synthetic-rerank",
+      "apiHost": "https://rerank.example.invalid/",
+      "adapterCode": "SYNTHETIC_TEST",
+      "credentialKey": "rerank-test-key",
+      "inputMode": "TEXT",
+      "maxDocumentTokens": 2048,
+      "timeoutSeconds": 60
+    }
+  },
+  {
+    "name": "VisionProfile",
+    "model": "VisionProfile",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "profile": {
+        "id": "15",
+        "revision": 1
+      },
+      "providerCode": "test-provider",
+      "modelName": "synthetic-vision",
+      "apiHost": "https://vision.example.invalid/",
+      "apiMode": "SYNTHETIC_VISION",
+      "credentialKey": "vision-test-key",
+      "maxInputTokens": 4096,
+      "timeoutSeconds": 60
+    }
+  },
+  {
+    "name": "DocumentRerankPolicy",
+    "model": "DocumentRerankPolicy",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "mode": "PROFILE",
+      "textProfile": {
+        "profile": {
+          "id": "12",
+          "revision": 1
+        },
+        "providerCode": "test-provider",
+        "modelName": "synthetic-rerank",
+        "apiHost": "https://rerank.example.invalid/",
+        "adapterCode": "SYNTHETIC_TEST",
+        "credentialKey": "rerank-test-key",
+        "inputMode": "TEXT",
+        "maxDocumentTokens": 2048,
+        "timeoutSeconds": 60
+      },
+      "multimodalProfile": null
+    }
+  },
+  {
+    "name": "DocumentProcessingSnapshot",
+    "model": "DocumentProcessingSnapshot",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "configurationRevision": 1,
+      "processingMode": "TEXT",
+      "textEmbedding": {
+        "profile": {
+          "id": "11",
+          "revision": 1
+        },
+        "providerCode": "doubao",
+        "modelName": "doubao-embedding-vision",
+        "apiHost": "https://model.example.invalid/api/v3/",
+        "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+        "credentialKey": "embedding-test-key",
+        "dimensions": 2048,
+        "documentInputMode": "TEXT_SINGLE",
+        "queryInputMode": "TEXT_SINGLE",
+        "normalized": true,
+        "maxInputTokens": 4096,
+        "timeoutSeconds": 60
+      },
+      "multimodalEmbedding": null,
+      "visionProfile": null,
+      "rerankPolicy": {
+        "mode": "PROFILE",
+        "textProfile": {
+          "profile": {
+            "id": "12",
+            "revision": 1
+          },
+          "providerCode": "test-provider",
+          "modelName": "synthetic-rerank",
+          "apiHost": "https://rerank.example.invalid/",
+          "adapterCode": "SYNTHETIC_TEST",
+          "credentialKey": "rerank-test-key",
+          "inputMode": "TEXT",
+          "maxDocumentTokens": 2048,
+          "timeoutSeconds": 60
+        },
+        "multimodalProfile": null
+      }
+    }
+  },
+  {
+    "name": "RagChatModelProfile",
+    "model": "RagChatModelProfile",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "profile": {
+        "id": "13",
+        "revision": 1
+      },
+      "modelName": "synthetic-chat",
+      "providerCode": "test-provider",
+      "apiHost": "https://model.example.invalid/",
+      "apiMode": "CHAT_COMPLETIONS",
+      "credentialKey": "chat-test-key",
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000,
+      "timeoutSeconds": 60
+    }
+  },
+  {
+    "name": "IndexSnapshot",
+    "model": "IndexSnapshot",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "collectionName": "kb_101_v20260924-01",
+      "denseVectorName": "dense",
+      "denseVisionVectorName": null,
+      "sparseVectorName": "sparse",
+      "distance": "COSINE",
+      "embedding": {
+        "profile": {
+          "id": "11",
+          "revision": 1
+        },
+        "providerCode": "doubao",
+        "modelName": "doubao-embedding-vision",
+        "apiHost": "https://model.example.invalid/api/v3/",
+        "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+        "credentialKey": "embedding-test-key",
+        "dimensions": 2048,
+        "documentInputMode": "TEXT_SINGLE",
+        "queryInputMode": "TEXT_SINGLE",
+        "normalized": true,
+        "maxInputTokens": 4096,
+        "timeoutSeconds": 60
+      },
+      "multimodalEmbedding": null,
+      "parserRevision": "parser-v1",
+      "splitterRevision": "split-v1",
+      "tokenizerRevision": "tokenizer-test-v1",
+      "sparseRevision": "bm25-test-v1",
+      "sparseCorpusRevision": "corpus-v1",
+      "chunkSizeTokens": 512,
+      "chunkOverlapTokens": 64,
+      "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "manifestRevision": 1
+    }
+  },
+  {
+    "name": "TokenMeasurement",
+    "model": "TokenMeasurement",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "unit": "TOKENS",
+      "quality": "ACTUAL",
+      "inputTokens": 8,
+      "outputTokens": 2
+    }
+  },
+  {
+    "name": "RequestMeasurement",
+    "model": "RequestMeasurement",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "unit": "DOCUMENT_PAIRS",
+      "quality": "ACTUAL",
+      "quantity": 3
+    }
+  },
+  {
+    "name": "UnknownMeasurement",
+    "model": "UnknownMeasurement",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "unit": "UNKNOWN",
+      "reason": "NOT_REPORTED"
+    }
+  },
+  {
+    "name": "ExecutionUsageItem",
+    "model": "ExecutionUsageItem",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "stage": "EMBEDDING",
+      "callId": "call-0001",
+      "attemptId": "attempt-0001",
+      "profile": {
+        "id": "11",
+        "revision": 1
+      },
+      "measurement": {
+        "unit": "TOKENS",
+        "quality": "ACTUAL",
+        "inputTokens": 8,
+        "outputTokens": 2
+      }
+    }
+  },
+  {
+    "name": "InternalError",
+    "model": "InternalError",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "errorCode": "SCOPE_EXPIRED",
+      "retryable": false
+    }
+  },
+  {
+    "name": "VersionedRequest",
+    "model": "VersionedRequest",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "requestId": "request-0001"
+    }
+  },
+  {
+    "name": "SourceRef",
+    "model": "SourceRef",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "documentId": "301",
+      "documentVersionId": "401",
+      "generationId": "501",
+      "chunkId": "chunk-0001",
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "name": "PdfPageLocator",
+    "model": "PdfPageLocator",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "kind": "PDF_PAGE",
+      "pageNumber": 1
+    }
+  },
+  {
+    "name": "TextRangeLocator",
+    "model": "TextRangeLocator",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "kind": "TEXT_RANGE",
+      "startOffset": 0,
+      "endOffset": 24
+    }
+  },
+  {
+    "name": "DocxBlockLocator",
+    "model": "DocxBlockLocator",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "kind": "DOCX_BLOCK",
+      "blockIndex": 0
+    }
+  },
+  {
+    "name": "PresentationBlockLocator",
+    "model": "PresentationBlockLocator",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "kind": "PRESENTATION_BLOCK",
+      "container": "PPTX",
+      "slideNumber": 1,
+      "shapeIndex": 0,
+      "rowIndex": null
+    }
+  },
+  {
+    "name": "SpreadsheetRangeLocator",
+    "model": "SpreadsheetRangeLocator",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "kind": "SPREADSHEET_RANGE",
+      "container": "XLSX",
+      "sheetName": "制度",
+      "rowStart": 1,
+      "rowEnd": 2,
+      "columnStart": 1,
+      "columnEnd": 3
+    }
+  },
+  {
+    "name": "ImageLocator",
+    "model": "ImageLocator",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "kind": "IMAGE",
+      "container": "PDF",
+      "imageIndex": 0,
+      "pageNumber": 1,
+      "slideNumber": null,
+      "startOffset": null,
+      "endOffset": null,
+      "sheetName": null,
+      "rowNumber": null,
+      "columnNumber": null,
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mediaType": "image/png"
+    }
+  },
+  {
+    "name": "TableRangeLocator",
+    "model": "TableRangeLocator",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "kind": "TABLE_RANGE",
+      "tableIndex": 0,
+      "rowStart": 0,
+      "rowEnd": 2,
+      "columnStart": 0,
+      "columnEnd": 2
+    }
+  },
+  {
+    "name": "SourceLocation",
+    "model": "SourceLocation",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "source": {
+        "knowledgeId": "101",
+        "indexVersion": "201",
+        "documentId": "301",
+        "documentVersionId": "401",
+        "generationId": "501",
+        "chunkId": "chunk-0001",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "title": "脱敏测试资料",
+      "titlePath": [
+        "第一章"
+      ],
+      "locator": {
+        "kind": "PDF_PAGE",
+        "pageNumber": 1
+      }
+    }
+  },
+  {
+    "name": "KnowledgeRetrievalSettings",
+    "model": "KnowledgeRetrievalSettings",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "denseEnabled": true,
+      "sparseEnabled": false,
+      "recallCount": 10,
+      "rrfK": 60,
+      "rerankEnabled": false,
+      "rerankProfile": null,
+      "rerankInputCount": 10,
+      "rerankOutputCount": 5,
+      "relevanceThreshold": null
+    }
+  },
+  {
+    "name": "KnowledgeScope",
+    "model": "KnowledgeScope",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "permissionRevision": 1,
+      "manifestRevision": 1,
+      "retrievalSettings": {
+        "denseEnabled": true,
+        "sparseEnabled": false,
+        "recallCount": 10,
+        "rrfK": 60,
+        "rerankEnabled": false,
+        "rerankProfile": null,
+        "rerankInputCount": 10,
+        "rerankOutputCount": 5,
+        "relevanceThreshold": null
+      }
+    }
+  },
+  {
+    "name": "RetrievalProfile",
+    "model": "RetrievalProfile",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "profile": {
+        "id": "14",
+        "revision": 1
+      },
+      "mode": "DENSE_BM25_RRF_RERANK",
+      "denseTopK": 10,
+      "sparseTopK": 10,
+      "rrfK": 60,
+      "rerankTopK": 10,
+      "finalTopK": 5,
+      "neighborWindow": 1,
+      "maxContextChunks": 10
+    }
+  },
+  {
+    "name": "RagExecutionScope",
+    "model": "RagExecutionScope",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "mode": "KNOWLEDGE_QA",
+      "scopeSnapshotId": "601",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "knowledgeScopes": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "permissionRevision": 1,
+          "manifestRevision": 1,
+          "retrievalSettings": {
+            "denseEnabled": true,
+            "sparseEnabled": false,
+            "recallCount": 10,
+            "rrfK": 60,
+            "rerankEnabled": false,
+            "rerankProfile": null,
+            "rerankInputCount": 10,
+            "rerankOutputCount": 5,
+            "relevanceThreshold": null
+          }
+        }
+      ],
+      "retrievalProfile": {
+        "id": "14",
+        "revision": 1
+      },
+      "retrievalSnapshot": {
+        "profile": {
+          "id": "14",
+          "revision": 1
+        },
+        "mode": "DENSE_BM25_RRF_RERANK",
+        "denseTopK": 10,
+        "sparseTopK": 10,
+        "rrfK": 60,
+        "rerankTopK": 10,
+        "finalTopK": 5,
+        "neighborWindow": 1,
+        "maxContextChunks": 10
+      },
+      "indexSnapshots": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "collectionName": "kb_101_v20260924-01",
+          "denseVectorName": "dense",
+          "denseVisionVectorName": null,
+          "sparseVectorName": "sparse",
+          "distance": "COSINE",
+          "embedding": {
+            "profile": {
+              "id": "11",
+              "revision": 1
+            },
+            "providerCode": "doubao",
+            "modelName": "doubao-embedding-vision",
+            "apiHost": "https://model.example.invalid/api/v3/",
+            "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+            "credentialKey": "embedding-test-key",
+            "dimensions": 2048,
+            "documentInputMode": "TEXT_SINGLE",
+            "queryInputMode": "TEXT_SINGLE",
+            "normalized": true,
+            "maxInputTokens": 4096,
+            "timeoutSeconds": 60
+          },
+          "multimodalEmbedding": null,
+          "parserRevision": "parser-v1",
+          "splitterRevision": "split-v1",
+          "tokenizerRevision": "tokenizer-test-v1",
+          "sparseRevision": "bm25-test-v1",
+          "sparseCorpusRevision": "corpus-v1",
+          "chunkSizeTokens": 512,
+          "chunkOverlapTokens": 64,
+          "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "manifestRevision": 1
+        }
+      ],
+      "contextBudgetTokens": 4000
+    }
+  },
+  {
+    "name": "ArtifactTicket",
+    "model": "ArtifactTicket",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "objectId": "source-object-001",
+      "operation": "READ_SOURCE",
+      "url": "https://objects.example.invalid/source?ticket=synthetic",
+      "token": "synthetic-ticket-0001",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "maxBytes": 1048576
+    }
+  },
+  {
+    "name": "ParseStats",
+    "model": "ParseStats",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "pageCount": 1,
+      "blockCount": 1,
+      "characterCount": 24,
+      "imageCount": 0,
+      "ocrCharacterCount": 0,
+      "skippedBlockCount": 0,
+      "skippedImageCount": 0,
+      "truncated": false
+    }
+  },
+  {
+    "name": "IngestionResult",
+    "model": "IngestionResult",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "jobType": "INGESTION",
+      "manifestObjectId": "manifest-object-001",
+      "manifestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "chunkCount": 1,
+      "denseCount": 1,
+      "sparseCount": 1,
+      "visionCount": 0,
+      "vectorDimensions": 2048,
+      "visionVectorDimensions": null,
+      "parseStats": {
+        "pageCount": 1,
+        "blockCount": 1,
+        "characterCount": 24,
+        "imageCount": 0,
+        "ocrCharacterCount": 0,
+        "skippedBlockCount": 0,
+        "skippedImageCount": 0,
+        "truncated": false
+      },
+      "usageItems": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "ArtifactTicketRequest",
+    "model": "ArtifactTicketRequest",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "requestId": "request-0001",
+      "attemptId": "attempt-0001",
+      "generationId": "501",
+      "workerId": "worker-0001",
+      "operation": "READ_SOURCE",
+      "objectId": "source-object-001"
+    }
+  },
+  {
+    "name": "ArtifactTicketResponse",
+    "model": "ArtifactTicketResponse",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "ticket": {
+        "objectId": "source-object-001",
+        "operation": "READ_SOURCE",
+        "url": "https://objects.example.invalid/source?ticket=synthetic",
+        "token": "synthetic-ticket-0001",
+        "expiresAt": "2026-09-15T12:00:00+08:00",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "maxBytes": 1048576
+      }
+    }
+  },
+  {
+    "name": "ArtifactUploadResponse",
+    "model": "ArtifactUploadResponse",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "objectId": "manifest-object-001",
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sizeBytes": 4096
+    }
+  },
+  {
+    "name": "ManifestPageRequest",
+    "model": "ManifestPageRequest",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "requestId": "request-0001",
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "manifestRevision": 1,
+      "cursor": null,
+      "pageSize": 100
+    }
+  },
+  {
+    "name": "ManifestMember",
+    "model": "ManifestMember",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "documentId": "301",
+      "documentVersionId": "401",
+      "generationId": "501"
+    }
+  },
+  {
+    "name": "ManifestPageResponse",
+    "model": "ManifestPageResponse",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "scopeSnapshotId": "601",
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "manifestRevision": 1,
+      "members": [
+        {
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501"
+        }
+      ],
+      "nextCursor": null,
+      "expiresAt": "2026-09-15T12:00:00+08:00"
+    }
+  },
+  {
+    "name": "ValidateCandidatesRequest",
+    "model": "ValidateCandidatesRequest",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "requestId": "request-0001",
+      "candidates": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "purpose": "MODEL_CONTEXT"
+    }
+  },
+  {
+    "name": "CandidateValidationResponse",
+    "model": "CandidateValidationResponse",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "scopeSnapshotId": "601",
+      "allowedCandidates": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "validationTicket": "synthetic-ticket-0001",
+      "expiresAt": "2026-09-15T12:00:00+08:00"
+    }
+  },
+  {
+    "name": "RetrievalTestRequest",
+    "model": "RetrievalTestRequest",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "requestId": "request-0001",
+      "query": "资料的主要内容是什么？",
+      "rag": {
+        "contractVersion": "rag-v1",
+        "mode": "KNOWLEDGE_QA",
+        "scopeSnapshotId": "601",
+        "expiresAt": "2026-09-15T12:00:00+08:00",
+        "knowledgeScopes": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "permissionRevision": 1,
+            "manifestRevision": 1,
+            "retrievalSettings": {
+              "denseEnabled": true,
+              "sparseEnabled": false,
+              "recallCount": 10,
+              "rrfK": 60,
+              "rerankEnabled": false,
+              "rerankProfile": null,
+              "rerankInputCount": 10,
+              "rerankOutputCount": 5,
+              "relevanceThreshold": null
+            }
+          }
+        ],
+        "retrievalProfile": {
+          "id": "14",
+          "revision": 1
+        },
+        "retrievalSnapshot": {
+          "profile": {
+            "id": "14",
+            "revision": 1
+          },
+          "mode": "DENSE_BM25_RRF_RERANK",
+          "denseTopK": 10,
+          "sparseTopK": 10,
+          "rrfK": 60,
+          "rerankTopK": 10,
+          "finalTopK": 5,
+          "neighborWindow": 1,
+          "maxContextChunks": 10
+        },
+        "indexSnapshots": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "collectionName": "kb_101_v20260924-01",
+            "denseVectorName": "dense",
+            "denseVisionVectorName": null,
+            "sparseVectorName": "sparse",
+            "distance": "COSINE",
+            "embedding": {
+              "profile": {
+                "id": "11",
+                "revision": 1
+              },
+              "providerCode": "doubao",
+              "modelName": "doubao-embedding-vision",
+              "apiHost": "https://model.example.invalid/api/v3/",
+              "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+              "credentialKey": "embedding-test-key",
+              "dimensions": 2048,
+              "documentInputMode": "TEXT_SINGLE",
+              "queryInputMode": "TEXT_SINGLE",
+              "normalized": true,
+              "maxInputTokens": 4096,
+              "timeoutSeconds": 60
+            },
+            "multimodalEmbedding": null,
+            "parserRevision": "parser-v1",
+            "splitterRevision": "split-v1",
+            "tokenizerRevision": "tokenizer-test-v1",
+            "sparseRevision": "bm25-test-v1",
+            "sparseCorpusRevision": "corpus-v1",
+            "chunkSizeTokens": 512,
+            "chunkOverlapTokens": 64,
+            "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "manifestRevision": 1
+          }
+        ],
+        "contextBudgetTokens": 4000
+      }
+    }
+  },
+  {
+    "name": "RetrievedChunk",
+    "model": "RetrievedChunk",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "location": {
+        "source": {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "title": "脱敏测试资料",
+        "titlePath": [
+          "第一章"
+        ],
+        "locator": {
+          "kind": "PDF_PAGE",
+          "pageNumber": 1
+        }
+      },
+      "text": "这是一份脱敏测试资料。",
+      "denseScore": 0.8,
+      "sparseScore": 0.4,
+      "rrfScore": 0.025,
+      "rerankScore": 0.9
+    }
+  },
+  {
+    "name": "RetrievalStageStats",
+    "model": "RetrievalStageStats",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "stage": "DENSE",
+      "status": "COMPLETED",
+      "durationMs": 12,
+      "inputCount": 1,
+      "outputCount": 1
+    }
+  },
+  {
+    "name": "RetrievalTestResponse",
+    "model": "RetrievalTestResponse",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "scopeSnapshotId": "601",
+      "chunks": [
+        {
+          "location": {
+            "source": {
+              "knowledgeId": "101",
+              "indexVersion": "201",
+              "documentId": "301",
+              "documentVersionId": "401",
+              "generationId": "501",
+              "chunkId": "chunk-0001",
+              "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "title": "脱敏测试资料",
+            "titlePath": [
+              "第一章"
+            ],
+            "locator": {
+              "kind": "PDF_PAGE",
+              "pageNumber": 1
+            }
+          },
+          "text": "这是一份脱敏测试资料。",
+          "denseScore": 0.8,
+          "sparseScore": 0.4,
+          "rrfScore": 0.025,
+          "rerankScore": 0.9
+        }
+      ],
+      "validationTicket": "synthetic-ticket-0001",
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ],
+      "stages": [
+        {
+          "stage": "DENSE",
+          "status": "COMPLETED",
+          "durationMs": 12,
+          "inputCount": 1,
+          "outputCount": 1
+        }
+      ]
+    }
+  },
+  {
+    "name": "ChatMessage",
+    "model": "ChatMessage",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "role": "user",
+      "content": "你好"
+    }
+  },
+  {
+    "name": "ChatInput",
+    "model": "ChatInput",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "你好"
+        }
+      ]
+    }
+  },
+  {
+    "name": "ChatActor",
+    "model": "ChatActor",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "userId": "21",
+      "roles": [
+        "employee"
+      ]
+    }
+  },
+  {
+    "name": "ModelProfile",
+    "model": "ModelProfile",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "id": 15,
+      "revision": 1,
+      "modelName": "synthetic-chat",
+      "providerCode": "test-provider",
+      "apiHost": "https://model.example.invalid/",
+      "apiMode": "CHAT_COMPLETIONS",
+      "credentialKey": "chat-test-key",
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000
+    }
+  },
+  {
+    "name": "McpToolGrant",
+    "model": "McpToolGrant",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "serverId": "31",
+      "serverCode": "weather",
+      "endpoint": "https://mcp.example.invalid/mcp",
+      "authType": "NONE",
+      "credentialKey": null,
+      "connectTimeoutSeconds": 10,
+      "toolId": "32",
+      "toolName": "get_forecast",
+      "qualifiedName": "weather:get_forecast",
+      "inputSchema": "{\"type\":\"object\",\"properties\":{\"city\":{\"type\":\"string\"}}}",
+      "timeoutSeconds": 30
+    }
+  },
+  {
+    "name": "ExecutionPolicy",
+    "model": "ExecutionPolicy",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000,
+      "timeoutSeconds": 60
+    }
+  },
+  {
+    "name": "RagChatStreamRequest",
+    "model": "RagChatStreamRequest",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "clientRequestId": "client-0001",
+      "sessionId": "session-0001",
+      "actor": {
+        "userId": "21",
+        "roles": [
+          "employee"
+        ]
+      },
+      "input": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "你好"
+          }
+        ]
+      },
+      "modelProfile": {
+        "id": 15,
+        "revision": 1,
+        "modelName": "synthetic-chat",
+        "providerCode": "test-provider",
+        "apiHost": "https://model.example.invalid/",
+        "apiMode": "CHAT_COMPLETIONS",
+        "credentialKey": "chat-test-key",
+        "maxInputTokens": 8000,
+        "maxOutputTokens": 1000
+      },
+      "executionPolicy": {
+        "maxInputTokens": 8000,
+        "maxOutputTokens": 1000,
+        "timeoutSeconds": 60,
+        "maxTotalTokens": null
+      },
+      "rag": {
+        "contractVersion": "rag-v1",
+        "mode": "KNOWLEDGE_QA",
+        "scopeSnapshotId": "601",
+        "expiresAt": "2026-09-15T12:00:00+08:00",
+        "knowledgeScopes": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "permissionRevision": 1,
+            "manifestRevision": 1,
+            "retrievalSettings": {
+              "denseEnabled": true,
+              "sparseEnabled": false,
+              "recallCount": 10,
+              "rrfK": 60,
+              "rerankEnabled": false,
+              "rerankProfile": null,
+              "rerankInputCount": 10,
+              "rerankOutputCount": 5,
+              "relevanceThreshold": null
+            }
+          }
+        ],
+        "retrievalProfile": {
+          "id": "14",
+          "revision": 1
+        },
+        "retrievalSnapshot": {
+          "profile": {
+            "id": "14",
+            "revision": 1
+          },
+          "mode": "DENSE_BM25_RRF_RERANK",
+          "denseTopK": 10,
+          "sparseTopK": 10,
+          "rrfK": 60,
+          "rerankTopK": 10,
+          "finalTopK": 5,
+          "neighborWindow": 1,
+          "maxContextChunks": 10
+        },
+        "indexSnapshots": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "collectionName": "kb_101_v20260924-01",
+            "denseVectorName": "dense",
+            "denseVisionVectorName": null,
+            "sparseVectorName": "sparse",
+            "distance": "COSINE",
+            "embedding": {
+              "profile": {
+                "id": "11",
+                "revision": 1
+              },
+              "providerCode": "doubao",
+              "modelName": "doubao-embedding-vision",
+              "apiHost": "https://model.example.invalid/api/v3/",
+              "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+              "credentialKey": "embedding-test-key",
+              "dimensions": 2048,
+              "documentInputMode": "TEXT_SINGLE",
+              "queryInputMode": "TEXT_SINGLE",
+              "normalized": true,
+              "maxInputTokens": 4096,
+              "timeoutSeconds": 60
+            },
+            "multimodalEmbedding": null,
+            "parserRevision": "parser-v1",
+            "splitterRevision": "split-v1",
+            "tokenizerRevision": "tokenizer-test-v1",
+            "sparseRevision": "bm25-test-v1",
+            "sparseCorpusRevision": "corpus-v1",
+            "chunkSizeTokens": 512,
+            "chunkOverlapTokens": 64,
+            "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "manifestRevision": 1
+          }
+        ],
+        "contextBudgetTokens": 4000
+      },
+      "tools": [
+        {
+          "serverId": "31",
+          "serverCode": "weather",
+          "endpoint": "https://mcp.example.invalid/mcp",
+          "authType": "NONE",
+          "credentialKey": null,
+          "connectTimeoutSeconds": 10,
+          "toolId": "32",
+          "toolName": "get_forecast",
+          "qualifiedName": "weather:get_forecast",
+          "inputSchema": "{\"type\":\"object\",\"properties\":{\"city\":{\"type\":\"string\"}}}",
+          "timeoutSeconds": 30
+        }
+      ]
+    }
+  },
+  {
+    "name": "Usage",
+    "model": "Usage",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "inputTokens": 8,
+      "outputTokens": 2,
+      "totalTokens": 10
+    }
+  },
+  {
+    "name": "DeltaPayload",
+    "model": "DeltaPayload",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "text": "你好"
+    }
+  },
+  {
+    "name": "KeepalivePayload",
+    "model": "KeepalivePayload",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001"
+    }
+  },
+  {
+    "name": "Citation",
+    "model": "Citation",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "citationId": "cite-1",
+      "location": {
+        "source": {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "title": "脱敏测试资料",
+        "titlePath": [
+          "第一章"
+        ],
+        "locator": {
+          "kind": "PDF_PAGE",
+          "pageNumber": 1
+        }
+      },
+      "excerpt": "这是一份脱敏测试资料。"
+    }
+  },
+  {
+    "name": "RagCitationPayload",
+    "model": "RagCitationPayload",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "citation": {
+        "citationId": "cite-1",
+        "location": {
+          "source": {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "documentId": "301",
+            "documentVersionId": "401",
+            "generationId": "501",
+            "chunkId": "chunk-0001",
+            "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "title": "脱敏测试资料",
+          "titlePath": [
+            "第一章"
+          ],
+          "locator": {
+            "kind": "PDF_PAGE",
+            "pageNumber": 1
+          }
+        },
+        "excerpt": "这是一份脱敏测试资料。"
+      }
+    }
+  },
+  {
+    "name": "RagCompletedPayload",
+    "model": "RagCompletedPayload",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "content": "资料示例。[cite-1]",
+      "usage": {
+        "inputTokens": 8,
+        "outputTokens": 2,
+        "totalTokens": 10
+      },
+      "answerStatus": "ANSWERED",
+      "citations": [
+        {
+          "citationId": "cite-1",
+          "location": {
+            "source": {
+              "knowledgeId": "101",
+              "indexVersion": "201",
+              "documentId": "301",
+              "documentVersionId": "401",
+              "generationId": "501",
+              "chunkId": "chunk-0001",
+              "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "title": "脱敏测试资料",
+            "titlePath": [
+              "第一章"
+            ],
+            "locator": {
+              "kind": "PDF_PAGE",
+              "pageNumber": 1
+            }
+          },
+          "excerpt": "这是一份脱敏测试资料。"
+        }
+      ],
+      "validationTicket": "synthetic-ticket-0001",
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "RagFailedPayload",
+    "model": "RagFailedPayload",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "errorCode": "VECTOR_UNAVAILABLE",
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "ArtifactManifestEntry",
+    "model": "ArtifactManifestEntry",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "pointId": "00000000-0000-4000-8000-000000000001",
+      "chunkOrdinal": 0,
+      "tokenCount": 24,
+      "modality": "TEXT",
+      "mediaHash": null,
+      "location": {
+        "source": {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "title": "脱敏测试资料",
+        "titlePath": [
+          "第一章"
+        ],
+        "locator": {
+          "kind": "PDF_PAGE",
+          "pageNumber": 1
+        }
+      }
+    }
+  },
+  {
+    "name": "ArtifactManifest",
+    "model": "ArtifactManifest",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "jobId": "701",
+      "attemptId": "attempt-0001",
+      "generationId": "501",
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "documentId": "301",
+      "documentVersionId": "401",
+      "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "vectorDimensions": 2048,
+      "visionVectorDimensions": null,
+      "createdAt": "2026-09-15T12:00:00+08:00",
+      "entries": [
+        {
+          "pointId": "00000000-0000-4000-8000-000000000001",
+          "chunkOrdinal": 0,
+          "tokenCount": 24,
+          "modality": "TEXT",
+          "mediaHash": null,
+          "location": {
+            "source": {
+              "knowledgeId": "101",
+              "indexVersion": "201",
+              "documentId": "301",
+              "documentVersionId": "401",
+              "generationId": "501",
+              "chunkId": "chunk-0001",
+              "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "title": "脱敏测试资料",
+            "titlePath": [
+              "第一章"
+            ],
+            "locator": {
+              "kind": "PDF_PAGE",
+              "pageNumber": 1
+            }
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "RagChatActor",
+    "model": "RagChatActor",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "userId": "21",
+      "roles": [
+        "employee"
+      ]
+    }
+  },
+  {
+    "name": "RagChatMessage",
+    "model": "RagChatMessage",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "role": "user",
+      "content": "你好"
+    }
+  },
+  {
+    "name": "RagChatInput",
+    "model": "RagChatInput",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "messages": [
+        {
+          "role": "user",
+          "content": "你好"
+        }
+      ]
+    }
+  },
+  {
+    "name": "RagGenerationProfile",
+    "model": "RagGenerationProfile",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "id": 15,
+      "revision": 1,
+      "modelName": "synthetic-chat",
+      "providerCode": "test-provider",
+      "apiHost": "https://model.example.invalid/",
+      "apiMode": "CHAT_COMPLETIONS",
+      "credentialKey": "chat-test-key",
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000
+    }
+  },
+  {
+    "name": "RagGenerationUsage",
+    "model": "RagGenerationUsage",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "inputTokens": 8,
+      "outputTokens": 2,
+      "totalTokens": 10
+    }
+  },
+  {
+    "name": "RagExecutionPolicy",
+    "model": "RagExecutionPolicy",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000,
+      "timeoutSeconds": 60,
+      "maxTotalTokens": null
+    }
+  },
+  {
+    "name": "KnowledgeDocumentTask",
+    "model": "KnowledgeDocumentTask",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "jobType": "INGESTION",
+      "documentId": "21",
+      "documentVersionId": "22",
+      "ossId": "23",
+      "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mediaType": "text/plain",
+      "sourceName": "制度说明.txt",
+      "fileSizeBytes": 100,
+      "targetIndexVersion": "201"
+    }
+  },
+  {
+    "name": "KnowledgeCleanupTask",
+    "model": "KnowledgeCleanupTask",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "jobType": "CLEANUP",
+      "targetIndexVersion": "201",
+      "targetGenerationId": "25",
+      "reason": "FAILED"
+    }
+  },
+  {
+    "name": "KnowledgeReconcileTask",
+    "model": "KnowledgeReconcileTask",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "jobType": "RECONCILE",
+      "targetIndexVersion": "201",
+      "retainedGenerationIds": [
+        "25"
+      ]
+    }
+  },
+  {
+    "name": "KnowledgeExecutionBudget",
+    "model": "KnowledgeExecutionBudget",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "maxTokens": 200000
+    }
+  },
+  {
+    "name": "KnowledgeJobCommand",
+    "model": "KnowledgeJobCommand",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "message-1",
+      "requestId": "request-1",
+      "jobId": "24",
+      "knowledgeId": "20",
+      "attemptId": "attempt-1",
+      "generationId": "25",
+      "attemptNumber": 1,
+      "createdAt": "2026-09-15T12:00:00+08:00",
+      "deadline": "2026-09-15T12:00:00+08:00",
+      "task": {
+        "jobType": "INGESTION",
+        "documentId": "21",
+        "documentVersionId": "22",
+        "ossId": "23",
+        "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mediaType": "text/plain",
+        "sourceName": "制度说明.txt",
+        "fileSizeBytes": 100,
+        "targetIndexVersion": "201"
+      },
+      "indexSnapshot": {
+        "knowledgeId": "20",
+        "indexVersion": "201",
+        "collectionName": "kb_101_v20260924-01",
+        "denseVectorName": "dense",
+        "denseVisionVectorName": null,
+        "sparseVectorName": "sparse",
+        "distance": "COSINE",
+        "embedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "parserRevision": "parser-v1",
+        "splitterRevision": "split-v1",
+        "tokenizerRevision": "tokenizer-test-v1",
+        "sparseRevision": "bm25-test-v1",
+        "sparseCorpusRevision": "corpus-v1",
+        "chunkSizeTokens": 512,
+        "chunkOverlapTokens": 64,
+        "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifestRevision": 1
+      },
+      "documentProcessingSnapshot": {
+        "configurationRevision": 1,
+        "processingMode": "TEXT",
+        "textEmbedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "visionProfile": null,
+        "rerankPolicy": {
+          "mode": "PROFILE",
+          "textProfile": {
+            "profile": {
+              "id": "12",
+              "revision": 1
+            },
+            "providerCode": "test-provider",
+            "modelName": "synthetic-rerank",
+            "apiHost": "https://rerank.example.invalid/",
+            "adapterCode": "SYNTHETIC_TEST",
+            "credentialKey": "rerank-test-key",
+            "inputMode": "TEXT",
+            "maxDocumentTokens": 2048,
+            "timeoutSeconds": 60
+          },
+          "multimodalProfile": null
+        }
+      },
+      "executionBudget": {
+        "maxTokens": 200000
+      }
+    }
+  },
+  {
+    "name": "KnowledgeStartedEvent",
+    "model": "KnowledgeStartedEvent",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "eventType": "STARTED"
+    }
+  },
+  {
+    "name": "KnowledgeProgressEvent",
+    "model": "KnowledgeProgressEvent",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "eventType": "PROGRESS",
+      "stage": "PARSING",
+      "progress": 20
+    }
+  },
+  {
+    "name": "KnowledgeFailedEvent",
+    "model": "KnowledgeFailedEvent",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "eventType": "FAILED",
+      "errorCode": "EXECUTOR_NOT_READY",
+      "usageItems": []
+    }
+  },
+  {
+    "name": "KnowledgeCancelledEvent",
+    "model": "KnowledgeCancelledEvent",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "eventType": "CANCELLED",
+      "usageItems": []
+    }
+  },
+  {
+    "name": "KnowledgeArtifactsEvent",
+    "model": "KnowledgeArtifactsEvent",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "eventType": "ARTIFACTS_READY",
+      "result": {
+        "jobType": "INGESTION",
+        "manifestObjectId": "manifest-object-001",
+        "manifestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "chunkCount": 1,
+        "denseCount": 1,
+        "sparseCount": 1,
+        "visionCount": 0,
+        "vectorDimensions": 2048,
+        "visionVectorDimensions": null,
+        "parseStats": {
+          "pageCount": 1,
+          "blockCount": 1,
+          "characterCount": 24,
+          "imageCount": 0,
+          "ocrCharacterCount": 0,
+          "skippedBlockCount": 0,
+          "skippedImageCount": 0,
+          "truncated": false
+        },
+        "usageItems": [
+          {
+            "stage": "EMBEDDING",
+            "callId": "call-0001",
+            "attemptId": "attempt-0001",
+            "profile": {
+              "id": "11",
+              "revision": 1
+            },
+            "measurement": {
+              "unit": "TOKENS",
+              "quality": "ACTUAL",
+              "inputTokens": 8,
+              "outputTokens": 2
+            }
+          }
+        ]
+      }
+    }
+  },
+  {
+    "name": "KnowledgeMaintenanceResult",
+    "model": "KnowledgeMaintenanceResult",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "jobType": "CLEANUP",
+      "targetGenerationId": "25",
+      "observedGenerationIds": [
+        "25"
+      ],
+      "deletedGenerationIds": [
+        "25"
+      ],
+      "observedPointCount": 3,
+      "deletedPointCount": 3
+    }
+  },
+  {
+    "name": "KnowledgeMaintenanceEvent",
+    "model": "KnowledgeMaintenanceEvent",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "eventType": "MAINTENANCE_COMPLETED",
+      "result": {
+        "jobType": "CLEANUP",
+        "targetGenerationId": "25",
+        "observedGenerationIds": [
+          "25"
+        ],
+        "deletedGenerationIds": [
+          "25"
+        ],
+        "observedPointCount": 3,
+        "deletedPointCount": 3
+      }
+    }
+  },
+  {
+    "name": "KnowledgeJobEvent",
+    "model": "KnowledgeJobEvent",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "event-1",
+      "requestId": "request-1",
+      "jobId": "24",
+      "attemptId": "attempt-1",
+      "generationId": "25",
+      "workerId": "worker-1",
+      "sequence": 1,
+      "event": {
+        "eventType": "STARTED"
+      }
+    }
+  },
+  {
+    "name": "KnowledgeJobControl",
+    "model": "KnowledgeJobControl",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "control-1",
+      "jobId": "24",
+      "attemptId": "attempt-1",
+      "action": "CANCEL",
+      "expiresAt": "2026-09-15T12:00:00+08:00"
+    }
+  },
+  {
+    "name": "KnowledgeDeadLetter",
+    "model": "KnowledgeDeadLetter",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "sourceTopic": "knowledge.test",
+      "sourcePartition": 0,
+      "sourceOffset": 1,
+      "payloadHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "reason": "INVALID_MESSAGE"
+    }
+  },
+  {
+    "name": "rag-chat-numeric-string-id",
+    "model": "RagChatStreamRequest",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "requestId": "request-0001",
+      "clientRequestId": "client-0001",
+      "sessionId": "session-0001",
+      "actor": {
+        "userId": "21",
+        "roles": [
+          "employee"
+        ]
+      },
+      "input": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "你好"
+          }
+        ]
+      },
+      "modelProfile": {
+        "id": "15",
+        "revision": 1,
+        "modelName": "synthetic-chat",
+        "providerCode": "test-provider",
+        "apiHost": "https://model.example.invalid/",
+        "apiMode": "CHAT_COMPLETIONS",
+        "credentialKey": "chat-test-key",
+        "maxInputTokens": 8000,
+        "maxOutputTokens": 1000
+      },
+      "executionPolicy": {
+        "maxInputTokens": 8000,
+        "maxOutputTokens": 1000,
+        "timeoutSeconds": 60,
+        "maxTotalTokens": null
+      },
+      "rag": {
+        "contractVersion": "rag-v1",
+        "mode": "KNOWLEDGE_QA",
+        "scopeSnapshotId": "601",
+        "expiresAt": "2026-09-15T12:00:00+08:00",
+        "knowledgeScopes": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "permissionRevision": 1,
+            "manifestRevision": 1,
+            "retrievalSettings": {
+              "denseEnabled": true,
+              "sparseEnabled": false,
+              "recallCount": 10,
+              "rrfK": 60,
+              "rerankEnabled": false,
+              "rerankProfile": null,
+              "rerankInputCount": 10,
+              "rerankOutputCount": 5,
+              "relevanceThreshold": null
+            }
+          }
+        ],
+        "retrievalProfile": {
+          "id": "14",
+          "revision": 1
+        },
+        "retrievalSnapshot": {
+          "profile": {
+            "id": "14",
+            "revision": 1
+          },
+          "mode": "DENSE_BM25_RRF_RERANK",
+          "denseTopK": 10,
+          "sparseTopK": 10,
+          "rrfK": 60,
+          "rerankTopK": 10,
+          "finalTopK": 5,
+          "neighborWindow": 1,
+          "maxContextChunks": 10
+        },
+        "indexSnapshots": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "collectionName": "kb_101_v20260924-01",
+            "denseVectorName": "dense",
+            "denseVisionVectorName": null,
+            "sparseVectorName": "sparse",
+            "distance": "COSINE",
+            "embedding": {
+              "profile": {
+                "id": "11",
+                "revision": 1
+              },
+              "providerCode": "doubao",
+              "modelName": "doubao-embedding-vision",
+              "apiHost": "https://model.example.invalid/api/v3/",
+              "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+              "credentialKey": "embedding-test-key",
+              "dimensions": 2048,
+              "documentInputMode": "TEXT_SINGLE",
+              "queryInputMode": "TEXT_SINGLE",
+              "normalized": true,
+              "maxInputTokens": 4096,
+              "timeoutSeconds": 60
+            },
+            "multimodalEmbedding": null,
+            "parserRevision": "parser-v1",
+            "splitterRevision": "split-v1",
+            "tokenizerRevision": "tokenizer-test-v1",
+            "sparseRevision": "bm25-test-v1",
+            "sparseCorpusRevision": "corpus-v1",
+            "chunkSizeTokens": 512,
+            "chunkOverlapTokens": 64,
+            "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "manifestRevision": 1
+          }
+        ],
+        "contextBudgetTokens": 4000
+      },
+      "tools": [
+        {
+          "serverId": "31",
+          "serverCode": "weather",
+          "endpoint": "https://mcp.example.invalid/mcp",
+          "authType": "NONE",
+          "credentialKey": null,
+          "connectTimeoutSeconds": 10,
+          "toolId": "32",
+          "toolName": "get_forecast",
+          "qualifiedName": "weather:get_forecast",
+          "inputSchema": "{\"type\":\"object\",\"properties\":{\"city\":{\"type\":\"string\"}}}",
+          "timeoutSeconds": 30
+        }
+      ]
+    }
+  },
+  {
+    "name": "rag-chat-unknown-message-field",
+    "model": "RagChatStreamRequest",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "requestId": "request-0001",
+      "clientRequestId": "client-0001",
+      "sessionId": "session-0001",
+      "actor": {
+        "userId": "21",
+        "roles": [
+          "employee"
+        ]
+      },
+      "input": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "你好",
+            "unexpected": "value"
+          }
+        ]
+      },
+      "modelProfile": {
+        "id": 15,
+        "revision": 1,
+        "modelName": "synthetic-chat",
+        "providerCode": "test-provider",
+        "apiHost": "https://model.example.invalid/",
+        "apiMode": "CHAT_COMPLETIONS",
+        "credentialKey": "chat-test-key",
+        "maxInputTokens": 8000,
+        "maxOutputTokens": 1000
+      },
+      "executionPolicy": {
+        "maxInputTokens": 8000,
+        "maxOutputTokens": 1000,
+        "timeoutSeconds": 60,
+        "maxTotalTokens": null
+      },
+      "rag": {
+        "contractVersion": "rag-v1",
+        "mode": "KNOWLEDGE_QA",
+        "scopeSnapshotId": "601",
+        "expiresAt": "2026-09-15T12:00:00+08:00",
+        "knowledgeScopes": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "permissionRevision": 1,
+            "manifestRevision": 1,
+            "retrievalSettings": {
+              "denseEnabled": true,
+              "sparseEnabled": false,
+              "recallCount": 10,
+              "rrfK": 60,
+              "rerankEnabled": false,
+              "rerankProfile": null,
+              "rerankInputCount": 10,
+              "rerankOutputCount": 5,
+              "relevanceThreshold": null
+            }
+          }
+        ],
+        "retrievalProfile": {
+          "id": "14",
+          "revision": 1
+        },
+        "retrievalSnapshot": {
+          "profile": {
+            "id": "14",
+            "revision": 1
+          },
+          "mode": "DENSE_BM25_RRF_RERANK",
+          "denseTopK": 10,
+          "sparseTopK": 10,
+          "rrfK": 60,
+          "rerankTopK": 10,
+          "finalTopK": 5,
+          "neighborWindow": 1,
+          "maxContextChunks": 10
+        },
+        "indexSnapshots": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "collectionName": "kb_101_v20260924-01",
+            "denseVectorName": "dense",
+            "denseVisionVectorName": null,
+            "sparseVectorName": "sparse",
+            "distance": "COSINE",
+            "embedding": {
+              "profile": {
+                "id": "11",
+                "revision": 1
+              },
+              "providerCode": "doubao",
+              "modelName": "doubao-embedding-vision",
+              "apiHost": "https://model.example.invalid/api/v3/",
+              "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+              "credentialKey": "embedding-test-key",
+              "dimensions": 2048,
+              "documentInputMode": "TEXT_SINGLE",
+              "queryInputMode": "TEXT_SINGLE",
+              "normalized": true,
+              "maxInputTokens": 4096,
+              "timeoutSeconds": 60
+            },
+            "multimodalEmbedding": null,
+            "parserRevision": "parser-v1",
+            "splitterRevision": "split-v1",
+            "tokenizerRevision": "tokenizer-test-v1",
+            "sparseRevision": "bm25-test-v1",
+            "sparseCorpusRevision": "corpus-v1",
+            "chunkSizeTokens": 512,
+            "chunkOverlapTokens": 64,
+            "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "manifestRevision": 1
+          }
+        ],
+        "contextBudgetTokens": 4000
+      },
+      "tools": [
+        {
+          "serverId": "31",
+          "serverCode": "weather",
+          "endpoint": "https://mcp.example.invalid/mcp",
+          "authType": "NONE",
+          "credentialKey": null,
+          "connectTimeoutSeconds": 10,
+          "toolId": "32",
+          "toolName": "get_forecast",
+          "qualifiedName": "weather:get_forecast",
+          "inputSchema": "{\"type\":\"object\",\"properties\":{\"city\":{\"type\":\"string\"}}}",
+          "timeoutSeconds": 30
+        }
+      ]
+    }
+  },
+  {
+    "name": "rag-chat-unknown-actor-field",
+    "model": "RagChatStreamRequest",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "requestId": "request-0001",
+      "clientRequestId": "client-0001",
+      "sessionId": "session-0001",
+      "actor": {
+        "userId": "21",
+        "roles": [
+          "employee"
+        ],
+        "unexpected": "value"
+      },
+      "input": {
+        "messages": [
+          {
+            "role": "user",
+            "content": "你好"
+          }
+        ]
+      },
+      "modelProfile": {
+        "id": 15,
+        "revision": 1,
+        "modelName": "synthetic-chat",
+        "providerCode": "test-provider",
+        "apiHost": "https://model.example.invalid/",
+        "apiMode": "CHAT_COMPLETIONS",
+        "credentialKey": "chat-test-key",
+        "maxInputTokens": 8000,
+        "maxOutputTokens": 1000
+      },
+      "executionPolicy": {
+        "maxInputTokens": 8000,
+        "maxOutputTokens": 1000,
+        "timeoutSeconds": 60,
+        "maxTotalTokens": null
+      },
+      "rag": {
+        "contractVersion": "rag-v1",
+        "mode": "KNOWLEDGE_QA",
+        "scopeSnapshotId": "601",
+        "expiresAt": "2026-09-15T12:00:00+08:00",
+        "knowledgeScopes": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "permissionRevision": 1,
+            "manifestRevision": 1,
+            "retrievalSettings": {
+              "denseEnabled": true,
+              "sparseEnabled": false,
+              "recallCount": 10,
+              "rrfK": 60,
+              "rerankEnabled": false,
+              "rerankProfile": null,
+              "rerankInputCount": 10,
+              "rerankOutputCount": 5,
+              "relevanceThreshold": null
+            }
+          }
+        ],
+        "retrievalProfile": {
+          "id": "14",
+          "revision": 1
+        },
+        "retrievalSnapshot": {
+          "profile": {
+            "id": "14",
+            "revision": 1
+          },
+          "mode": "DENSE_BM25_RRF_RERANK",
+          "denseTopK": 10,
+          "sparseTopK": 10,
+          "rrfK": 60,
+          "rerankTopK": 10,
+          "finalTopK": 5,
+          "neighborWindow": 1,
+          "maxContextChunks": 10
+        },
+        "indexSnapshots": [
+          {
+            "knowledgeId": "101",
+            "indexVersion": "201",
+            "collectionName": "kb_101_v20260924-01",
+            "denseVectorName": "dense",
+            "denseVisionVectorName": null,
+            "sparseVectorName": "sparse",
+            "distance": "COSINE",
+            "embedding": {
+              "profile": {
+                "id": "11",
+                "revision": 1
+              },
+              "providerCode": "doubao",
+              "modelName": "doubao-embedding-vision",
+              "apiHost": "https://model.example.invalid/api/v3/",
+              "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+              "credentialKey": "embedding-test-key",
+              "dimensions": 2048,
+              "documentInputMode": "TEXT_SINGLE",
+              "queryInputMode": "TEXT_SINGLE",
+              "normalized": true,
+              "maxInputTokens": 4096,
+              "timeoutSeconds": 60
+            },
+            "multimodalEmbedding": null,
+            "parserRevision": "parser-v1",
+            "splitterRevision": "split-v1",
+            "tokenizerRevision": "tokenizer-test-v1",
+            "sparseRevision": "bm25-test-v1",
+            "sparseCorpusRevision": "corpus-v1",
+            "chunkSizeTokens": 512,
+            "chunkOverlapTokens": 64,
+            "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "manifestRevision": 1
+          }
+        ],
+        "contextBudgetTokens": 4000
+      },
+      "tools": [
+        {
+          "serverId": "31",
+          "serverCode": "weather",
+          "endpoint": "https://mcp.example.invalid/mcp",
+          "authType": "NONE",
+          "credentialKey": null,
+          "connectTimeoutSeconds": 10,
+          "toolId": "32",
+          "toolName": "get_forecast",
+          "qualifiedName": "weather:get_forecast",
+          "inputSchema": "{\"type\":\"object\",\"properties\":{\"city\":{\"type\":\"string\"}}}",
+          "timeoutSeconds": 30
+        }
+      ]
+    }
+  },
+  {
+    "name": "rag-profile-null-mode",
+    "model": "RagGenerationProfile",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "id": 15,
+      "revision": 1,
+      "modelName": "synthetic-chat",
+      "providerCode": "test-provider",
+      "apiHost": "https://model.example.invalid/",
+      "apiMode": null,
+      "credentialKey": "chat-test-key",
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000
+    }
+  },
+  {
+    "name": "rag-actor-null-roles",
+    "model": "RagChatActor",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "userId": "21",
+      "roles": null
+    }
+  },
+  {
+    "name": "rag-score-not-nan",
+    "model": "RetrievedChunk",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "location": {
+        "source": {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "title": "脱敏测试资料",
+        "titlePath": [
+          "第一章"
+        ],
+        "locator": {
+          "kind": "PDF_PAGE",
+          "pageNumber": 1
+        }
+      },
+      "text": "这是一份脱敏测试资料。",
+      "denseScore": "NaN",
+      "sparseScore": 0.4,
+      "rrfScore": 0.025,
+      "rerankScore": 0.9
+    }
+  },
+  {
+    "name": "rag-score-not-infinity",
+    "model": "RetrievedChunk",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "location": {
+        "source": {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "title": "脱敏测试资料",
+        "titlePath": [
+          "第一章"
+        ],
+        "locator": {
+          "kind": "PDF_PAGE",
+          "pageNumber": 1
+        }
+      },
+      "text": "这是一份脱敏测试资料。",
+      "denseScore": "Infinity",
+      "sparseScore": 0.4,
+      "rrfScore": 0.025,
+      "rerankScore": 0.9
+    }
+  },
+  {
+    "name": "profile-no-secret",
+    "model": "EmbeddingProfile",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "profile": {
+        "id": "11",
+        "revision": 1
+      },
+      "providerCode": "doubao",
+      "modelName": "doubao-embedding-vision",
+      "apiHost": "https://model.example.invalid/api/v3/",
+      "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+      "credentialKey": "embedding-test-key",
+      "dimensions": 2048,
+      "documentInputMode": "TEXT_SINGLE",
+      "queryInputMode": "TEXT_SINGLE",
+      "normalized": true,
+      "maxInputTokens": 4096,
+      "timeoutSeconds": 60,
+      "apiKey": "synthetic-not-a-secret"
+    }
+  },
+  {
+    "name": "embedding-dimensions-zero",
+    "model": "EmbeddingProfile",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "profile": {
+        "id": "11",
+        "revision": 1
+      },
+      "providerCode": "doubao",
+      "modelName": "doubao-embedding-vision",
+      "apiHost": "https://model.example.invalid/api/v3/",
+      "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+      "credentialKey": "embedding-test-key",
+      "dimensions": 0,
+      "documentInputMode": "TEXT_SINGLE",
+      "queryInputMode": "TEXT_SINGLE",
+      "normalized": true,
+      "maxInputTokens": 4096,
+      "timeoutSeconds": 60
+    }
+  },
+  {
+    "name": "embedding-api-mode-empty",
+    "model": "EmbeddingProfile",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "profile": {
+        "id": "11",
+        "revision": 1
+      },
+      "providerCode": "doubao",
+      "modelName": "doubao-embedding-vision",
+      "apiHost": "https://model.example.invalid/api/v3/",
+      "apiMode": "",
+      "credentialKey": "embedding-test-key",
+      "dimensions": 2048,
+      "documentInputMode": "TEXT_SINGLE",
+      "queryInputMode": "TEXT_SINGLE",
+      "normalized": true,
+      "maxInputTokens": 4096,
+      "timeoutSeconds": 60
+    }
+  },
+  {
+    "name": "source-hash-invalid",
+    "model": "SourceRef",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "documentId": "301",
+      "documentVersionId": "401",
+      "generationId": "501",
+      "chunkId": "chunk-0001",
+      "contentHash": "badhash"
+    }
+  },
+  {
+    "name": "scope-empty",
+    "model": "RagExecutionScope",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "mode": "KNOWLEDGE_QA",
+      "scopeSnapshotId": "601",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "knowledgeScopes": [],
+      "retrievalProfile": {
+        "id": "14",
+        "revision": 1
+      },
+      "retrievalSnapshot": {
+        "profile": {
+          "id": "14",
+          "revision": 1
+        },
+        "mode": "DENSE_BM25_RRF_RERANK",
+        "denseTopK": 10,
+        "sparseTopK": 10,
+        "rrfK": 60,
+        "rerankTopK": 10,
+        "finalTopK": 5,
+        "neighborWindow": 1,
+        "maxContextChunks": 10
+      },
+      "indexSnapshots": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "collectionName": "kb_101_v20260924-01",
+          "denseVectorName": "dense",
+          "denseVisionVectorName": null,
+          "sparseVectorName": "sparse",
+          "distance": "COSINE",
+          "embedding": {
+            "profile": {
+              "id": "11",
+              "revision": 1
+            },
+            "providerCode": "doubao",
+            "modelName": "doubao-embedding-vision",
+            "apiHost": "https://model.example.invalid/api/v3/",
+            "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+            "credentialKey": "embedding-test-key",
+            "dimensions": 2048,
+            "documentInputMode": "TEXT_SINGLE",
+            "queryInputMode": "TEXT_SINGLE",
+            "normalized": true,
+            "maxInputTokens": 4096,
+            "timeoutSeconds": 60
+          },
+          "multimodalEmbedding": null,
+          "parserRevision": "parser-v1",
+          "splitterRevision": "split-v1",
+          "tokenizerRevision": "tokenizer-test-v1",
+          "sparseRevision": "bm25-test-v1",
+          "sparseCorpusRevision": "corpus-v1",
+          "chunkSizeTokens": 512,
+          "chunkOverlapTokens": 64,
+          "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "manifestRevision": 1
+        }
+      ],
+      "contextBudgetTokens": 4000
+    }
+  },
+  {
+    "name": "scope-missing-indexes",
+    "model": "RagExecutionScope",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "mode": "KNOWLEDGE_QA",
+      "scopeSnapshotId": "601",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "knowledgeScopes": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "permissionRevision": 1,
+          "manifestRevision": 1,
+          "retrievalSettings": {
+            "denseEnabled": true,
+            "sparseEnabled": false,
+            "recallCount": 10,
+            "rrfK": 60,
+            "rerankEnabled": false,
+            "rerankProfile": null,
+            "rerankInputCount": 10,
+            "rerankOutputCount": 5,
+            "relevanceThreshold": null
+          }
+        }
+      ],
+      "retrievalProfile": {
+        "id": "14",
+        "revision": 1
+      },
+      "retrievalSnapshot": {
+        "profile": {
+          "id": "14",
+          "revision": 1
+        },
+        "mode": "DENSE_BM25_RRF_RERANK",
+        "denseTopK": 10,
+        "sparseTopK": 10,
+        "rrfK": 60,
+        "rerankTopK": 10,
+        "finalTopK": 5,
+        "neighborWindow": 1,
+        "maxContextChunks": 10
+      },
+      "indexSnapshots": [],
+      "contextBudgetTokens": 4000
+    }
+  },
+  {
+    "name": "locator-page-zero",
+    "model": "PdfPageLocator",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "kind": "PDF_PAGE",
+      "pageNumber": 0
+    }
+  },
+  {
+    "name": "locator-extraneous-fields",
+    "model": "SourceLocation",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "source": {
+        "knowledgeId": "101",
+        "indexVersion": "201",
+        "documentId": "301",
+        "documentVersionId": "401",
+        "generationId": "501",
+        "chunkId": "chunk-0001",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "title": "脱敏测试资料",
+      "titlePath": [
+        "第一章"
+      ],
+      "locator": {
+        "kind": "PDF_PAGE",
+        "pageNumber": 1,
+        "blockIndex": 0
+      }
+    }
+  },
+  {
+    "name": "image-locator-pdf-with-offset",
+    "model": "ImageLocator",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "kind": "IMAGE",
+      "container": "PDF",
+      "imageIndex": 0,
+      "pageNumber": 1,
+      "slideNumber": null,
+      "startOffset": 0,
+      "endOffset": null,
+      "sheetName": null,
+      "rowNumber": null,
+      "columnNumber": null,
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mediaType": "image/png"
+    }
+  },
+  {
+    "name": "image-locator-pptx-without-slide",
+    "model": "ImageLocator",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "kind": "IMAGE",
+      "container": "PPTX",
+      "imageIndex": 0,
+      "pageNumber": 1,
+      "slideNumber": null,
+      "startOffset": null,
+      "endOffset": null,
+      "sheetName": null,
+      "rowNumber": null,
+      "columnNumber": null,
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "mediaType": "image/png"
+    }
+  },
+  {
+    "name": "spreadsheet-range-reversed",
+    "model": "SpreadsheetRangeLocator",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "kind": "SPREADSHEET_RANGE",
+      "container": "XLSX",
+      "sheetName": "制度",
+      "rowStart": 1,
+      "rowEnd": 1,
+      "columnStart": 1,
+      "columnEnd": 3
+    }
+  },
+  {
+    "name": "manifest-text-with-media",
+    "model": "ArtifactManifestEntry",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "pointId": "00000000-0000-4000-8000-000000000001",
+      "chunkOrdinal": 0,
+      "tokenCount": 24,
+      "modality": "TEXT",
+      "mediaHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "location": {
+        "source": {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        "title": "脱敏测试资料",
+        "titlePath": [
+          "第一章"
+        ],
+        "locator": {
+          "kind": "PDF_PAGE",
+          "pageNumber": 1
+        }
+      }
+    }
+  },
+  {
+    "name": "ingestion-vision-without-dimensions",
+    "model": "IngestionResult",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "jobType": "INGESTION",
+      "manifestObjectId": "manifest-object-001",
+      "manifestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "chunkCount": 1,
+      "denseCount": 1,
+      "sparseCount": 1,
+      "visionCount": 1,
+      "vectorDimensions": 2048,
+      "visionVectorDimensions": null,
+      "parseStats": {
+        "pageCount": 1,
+        "blockCount": 1,
+        "characterCount": 24,
+        "imageCount": 0,
+        "ocrCharacterCount": 0,
+        "skippedBlockCount": 0,
+        "skippedImageCount": 0,
+        "truncated": false
+      },
+      "usageItems": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "candidate-no-user-query",
+    "model": "ValidateCandidatesRequest",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "requestId": "request-0001",
+      "candidates": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "documentId": "301",
+          "documentVersionId": "401",
+          "generationId": "501",
+          "chunkId": "chunk-0001",
+          "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      ],
+      "purpose": "MODEL_CONTEXT",
+      "userId": "22"
+    }
+  },
+  {
+    "name": "unknown-usage-no-zero",
+    "model": "UnknownMeasurement",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "unit": "UNKNOWN",
+      "reason": "NOT_REPORTED",
+      "quantity": 0
+    }
+  },
+  {
+    "name": "unknown-error",
+    "model": "RagFailedPayload",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "requestId": "request-0001",
+      "errorCode": "STACKTRACE",
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "index-overlap",
+    "model": "IndexSnapshot",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "collectionName": "kb_101_v20260924-01",
+      "denseVectorName": "dense",
+      "denseVisionVectorName": null,
+      "sparseVectorName": "sparse",
+      "distance": "COSINE",
+      "embedding": {
+        "profile": {
+          "id": "11",
+          "revision": 1
+        },
+        "providerCode": "doubao",
+        "modelName": "doubao-embedding-vision",
+        "apiHost": "https://model.example.invalid/api/v3/",
+        "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+        "credentialKey": "embedding-test-key",
+        "dimensions": 2048,
+        "documentInputMode": "TEXT_SINGLE",
+        "queryInputMode": "TEXT_SINGLE",
+        "normalized": true,
+        "maxInputTokens": 4096,
+        "timeoutSeconds": 60
+      },
+      "multimodalEmbedding": null,
+      "parserRevision": "parser-v1",
+      "splitterRevision": "split-v1",
+      "tokenizerRevision": "tokenizer-test-v1",
+      "sparseRevision": "bm25-test-v1",
+      "sparseCorpusRevision": "corpus-v1",
+      "chunkSizeTokens": 512,
+      "chunkOverlapTokens": 512,
+      "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "manifestRevision": 1
+    }
+  },
+  {
+    "name": "index-vector-name-collision",
+    "model": "IndexSnapshot",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "collectionName": "kb_101_v20260924-01",
+      "denseVectorName": "dense",
+      "denseVisionVectorName": null,
+      "sparseVectorName": "dense",
+      "distance": "COSINE",
+      "embedding": {
+        "profile": {
+          "id": "11",
+          "revision": 1
+        },
+        "providerCode": "doubao",
+        "modelName": "doubao-embedding-vision",
+        "apiHost": "https://model.example.invalid/api/v3/",
+        "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+        "credentialKey": "embedding-test-key",
+        "dimensions": 2048,
+        "documentInputMode": "TEXT_SINGLE",
+        "queryInputMode": "TEXT_SINGLE",
+        "normalized": true,
+        "maxInputTokens": 4096,
+        "timeoutSeconds": 60
+      },
+      "multimodalEmbedding": null,
+      "parserRevision": "parser-v1",
+      "splitterRevision": "split-v1",
+      "tokenizerRevision": "tokenizer-test-v1",
+      "sparseRevision": "bm25-test-v1",
+      "sparseCorpusRevision": "corpus-v1",
+      "chunkSizeTokens": 512,
+      "chunkOverlapTokens": 64,
+      "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "manifestRevision": 1
+    }
+  },
+  {
+    "name": "range-reversed",
+    "model": "TextRangeLocator",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "kind": "TEXT_RANGE",
+      "startOffset": 24,
+      "endOffset": 24
+    }
+  },
+  {
+    "name": "table-range-reversed",
+    "model": "TableRangeLocator",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "kind": "TABLE_RANGE",
+      "tableIndex": 0,
+      "rowStart": 0,
+      "rowEnd": 2,
+      "columnStart": 2,
+      "columnEnd": 2
+    }
+  },
+  {
+    "name": "retrieval-limit-inconsistent",
+    "model": "RetrievalProfile",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "profile": {
+        "id": "14",
+        "revision": 1
+      },
+      "mode": "DENSE_BM25_RRF_RERANK",
+      "denseTopK": 10,
+      "sparseTopK": 10,
+      "rrfK": 60,
+      "rerankTopK": 10,
+      "finalTopK": 11,
+      "neighborWindow": 1,
+      "maxContextChunks": 10
+    }
+  },
+  {
+    "name": "incomplete-dense-count",
+    "model": "IngestionResult",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "jobType": "INGESTION",
+      "manifestObjectId": "manifest-object-001",
+      "manifestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "chunkCount": 1,
+      "denseCount": 0,
+      "sparseCount": 1,
+      "visionCount": 0,
+      "vectorDimensions": 2048,
+      "visionVectorDimensions": null,
+      "parseStats": {
+        "pageCount": 1,
+        "blockCount": 1,
+        "characterCount": 24,
+        "imageCount": 0,
+        "ocrCharacterCount": 0,
+        "skippedBlockCount": 0,
+        "skippedImageCount": 0,
+        "truncated": false
+      },
+      "usageItems": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "truncated-ingestion",
+    "model": "IngestionResult",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "jobType": "INGESTION",
+      "manifestObjectId": "manifest-object-001",
+      "manifestHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "chunkCount": 1,
+      "denseCount": 1,
+      "sparseCount": 1,
+      "visionCount": 0,
+      "vectorDimensions": 2048,
+      "visionVectorDimensions": null,
+      "parseStats": {
+        "pageCount": 1,
+        "blockCount": 1,
+        "characterCount": 24,
+        "imageCount": 0,
+        "ocrCharacterCount": 0,
+        "skippedBlockCount": 0,
+        "skippedImageCount": 0,
+        "truncated": true
+      },
+      "usageItems": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "scope-profile-mismatch",
+    "model": "RagExecutionScope",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "mode": "KNOWLEDGE_QA",
+      "scopeSnapshotId": "601",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "knowledgeScopes": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "permissionRevision": 1,
+          "manifestRevision": 1,
+          "retrievalSettings": {
+            "denseEnabled": true,
+            "sparseEnabled": false,
+            "recallCount": 10,
+            "rrfK": 60,
+            "rerankEnabled": false,
+            "rerankProfile": null,
+            "rerankInputCount": 10,
+            "rerankOutputCount": 5,
+            "relevanceThreshold": null
+          }
+        }
+      ],
+      "retrievalProfile": {
+        "id": "14",
+        "revision": 2
+      },
+      "retrievalSnapshot": {
+        "profile": {
+          "id": "14",
+          "revision": 1
+        },
+        "mode": "DENSE_BM25_RRF_RERANK",
+        "denseTopK": 10,
+        "sparseTopK": 10,
+        "rrfK": 60,
+        "rerankTopK": 10,
+        "finalTopK": 5,
+        "neighborWindow": 1,
+        "maxContextChunks": 10
+      },
+      "indexSnapshots": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "collectionName": "kb_101_v20260924-01",
+          "denseVectorName": "dense",
+          "denseVisionVectorName": null,
+          "sparseVectorName": "sparse",
+          "distance": "COSINE",
+          "embedding": {
+            "profile": {
+              "id": "11",
+              "revision": 1
+            },
+            "providerCode": "doubao",
+            "modelName": "doubao-embedding-vision",
+            "apiHost": "https://model.example.invalid/api/v3/",
+            "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+            "credentialKey": "embedding-test-key",
+            "dimensions": 2048,
+            "documentInputMode": "TEXT_SINGLE",
+            "queryInputMode": "TEXT_SINGLE",
+            "normalized": true,
+            "maxInputTokens": 4096,
+            "timeoutSeconds": 60
+          },
+          "multimodalEmbedding": null,
+          "parserRevision": "parser-v1",
+          "splitterRevision": "split-v1",
+          "tokenizerRevision": "tokenizer-test-v1",
+          "sparseRevision": "bm25-test-v1",
+          "sparseCorpusRevision": "corpus-v1",
+          "chunkSizeTokens": 512,
+          "chunkOverlapTokens": 64,
+          "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "manifestRevision": 1
+        }
+      ],
+      "contextBudgetTokens": 4000
+    }
+  },
+  {
+    "name": "scope-index-mismatch",
+    "model": "RagExecutionScope",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "mode": "KNOWLEDGE_QA",
+      "scopeSnapshotId": "601",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "knowledgeScopes": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "permissionRevision": 1,
+          "manifestRevision": 1,
+          "retrievalSettings": {
+            "denseEnabled": true,
+            "sparseEnabled": false,
+            "recallCount": 10,
+            "rrfK": 60,
+            "rerankEnabled": false,
+            "rerankProfile": null,
+            "rerankInputCount": 10,
+            "rerankOutputCount": 5,
+            "relevanceThreshold": null
+          }
+        }
+      ],
+      "retrievalProfile": {
+        "id": "14",
+        "revision": 1
+      },
+      "retrievalSnapshot": {
+        "profile": {
+          "id": "14",
+          "revision": 1
+        },
+        "mode": "DENSE_BM25_RRF_RERANK",
+        "denseTopK": 10,
+        "sparseTopK": 10,
+        "rrfK": 60,
+        "rerankTopK": 10,
+        "finalTopK": 5,
+        "neighborWindow": 1,
+        "maxContextChunks": 10
+      },
+      "indexSnapshots": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "202",
+          "collectionName": "kb_101_v20260924-01",
+          "denseVectorName": "dense",
+          "denseVisionVectorName": null,
+          "sparseVectorName": "sparse",
+          "distance": "COSINE",
+          "embedding": {
+            "profile": {
+              "id": "11",
+              "revision": 1
+            },
+            "providerCode": "doubao",
+            "modelName": "doubao-embedding-vision",
+            "apiHost": "https://model.example.invalid/api/v3/",
+            "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+            "credentialKey": "embedding-test-key",
+            "dimensions": 2048,
+            "documentInputMode": "TEXT_SINGLE",
+            "queryInputMode": "TEXT_SINGLE",
+            "normalized": true,
+            "maxInputTokens": 4096,
+            "timeoutSeconds": 60
+          },
+          "multimodalEmbedding": null,
+          "parserRevision": "parser-v1",
+          "splitterRevision": "split-v1",
+          "tokenizerRevision": "tokenizer-test-v1",
+          "sparseRevision": "bm25-test-v1",
+          "sparseCorpusRevision": "corpus-v1",
+          "chunkSizeTokens": 512,
+          "chunkOverlapTokens": 64,
+          "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "manifestRevision": 1
+        }
+      ],
+      "contextBudgetTokens": 4000
+    }
+  },
+  {
+    "name": "scope-missing-retrieval-settings",
+    "model": "RagExecutionScope",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "mode": "KNOWLEDGE_QA",
+      "scopeSnapshotId": "601",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "knowledgeScopes": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "permissionRevision": 1,
+          "manifestRevision": 1,
+          "retrievalSettings": null
+        }
+      ],
+      "retrievalProfile": {
+        "id": "14",
+        "revision": 1
+      },
+      "retrievalSnapshot": {
+        "profile": {
+          "id": "14",
+          "revision": 1
+        },
+        "mode": "DENSE_BM25_RRF_RERANK",
+        "denseTopK": 10,
+        "sparseTopK": 10,
+        "rrfK": 60,
+        "rerankTopK": 10,
+        "finalTopK": 5,
+        "neighborWindow": 1,
+        "maxContextChunks": 10
+      },
+      "indexSnapshots": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "collectionName": "kb_101_v20260924-01",
+          "denseVectorName": "dense",
+          "denseVisionVectorName": null,
+          "sparseVectorName": "sparse",
+          "distance": "COSINE",
+          "embedding": {
+            "profile": {
+              "id": "11",
+              "revision": 1
+            },
+            "providerCode": "doubao",
+            "modelName": "doubao-embedding-vision",
+            "apiHost": "https://model.example.invalid/api/v3/",
+            "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+            "credentialKey": "embedding-test-key",
+            "dimensions": 2048,
+            "documentInputMode": "TEXT_SINGLE",
+            "queryInputMode": "TEXT_SINGLE",
+            "normalized": true,
+            "maxInputTokens": 4096,
+            "timeoutSeconds": 60
+          },
+          "multimodalEmbedding": null,
+          "parserRevision": "parser-v1",
+          "splitterRevision": "split-v1",
+          "tokenizerRevision": "tokenizer-test-v1",
+          "sparseRevision": "bm25-test-v1",
+          "sparseCorpusRevision": "corpus-v1",
+          "chunkSizeTokens": 512,
+          "chunkOverlapTokens": 64,
+          "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "manifestRevision": 1
+        }
+      ],
+      "contextBudgetTokens": 4000
+    }
+  },
+  {
+    "name": "document-processing-text-with-vision",
+    "model": "DocumentProcessingSnapshot",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "configurationRevision": 1,
+      "processingMode": "TEXT",
+      "textEmbedding": {
+        "profile": {
+          "id": "11",
+          "revision": 1
+        },
+        "providerCode": "doubao",
+        "modelName": "doubao-embedding-vision",
+        "apiHost": "https://model.example.invalid/api/v3/",
+        "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+        "credentialKey": "embedding-test-key",
+        "dimensions": 2048,
+        "documentInputMode": "TEXT_SINGLE",
+        "queryInputMode": "TEXT_SINGLE",
+        "normalized": true,
+        "maxInputTokens": 4096,
+        "timeoutSeconds": 60
+      },
+      "multimodalEmbedding": null,
+      "visionProfile": {
+        "profile": {
+          "id": "15",
+          "revision": 1
+        },
+        "providerCode": "test-provider",
+        "modelName": "synthetic-vision",
+        "apiHost": "https://vision.example.invalid/",
+        "apiMode": "SYNTHETIC_VISION",
+        "credentialKey": "vision-test-key",
+        "maxInputTokens": 4096,
+        "timeoutSeconds": 60
+      },
+      "rerankPolicy": {
+        "mode": "PROFILE",
+        "textProfile": {
+          "profile": {
+            "id": "12",
+            "revision": 1
+          },
+          "providerCode": "test-provider",
+          "modelName": "synthetic-rerank",
+          "apiHost": "https://rerank.example.invalid/",
+          "adapterCode": "SYNTHETIC_TEST",
+          "credentialKey": "rerank-test-key",
+          "inputMode": "TEXT",
+          "maxDocumentTokens": 2048,
+          "timeoutSeconds": 60
+        },
+        "multimodalProfile": null
+      }
+    }
+  },
+  {
+    "name": "document-rerank-none-with-profile",
+    "model": "DocumentRerankPolicy",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "mode": "NONE",
+      "textProfile": {
+        "profile": {
+          "id": "12",
+          "revision": 1
+        },
+        "providerCode": "test-provider",
+        "modelName": "synthetic-rerank",
+        "apiHost": "https://rerank.example.invalid/",
+        "adapterCode": "SYNTHETIC_TEST",
+        "credentialKey": "rerank-test-key",
+        "inputMode": "TEXT",
+        "maxDocumentTokens": 2048,
+        "timeoutSeconds": 60
+      },
+      "multimodalProfile": null
+    }
+  },
+  {
+    "name": "scope-duplicate",
+    "model": "RagExecutionScope",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "rag-v1",
+      "mode": "KNOWLEDGE_QA",
+      "scopeSnapshotId": "601",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "knowledgeScopes": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "permissionRevision": 1,
+          "manifestRevision": 1,
+          "retrievalSettings": {
+            "denseEnabled": true,
+            "sparseEnabled": false,
+            "recallCount": 10,
+            "rrfK": 60,
+            "rerankEnabled": false,
+            "rerankProfile": null,
+            "rerankInputCount": 10,
+            "rerankOutputCount": 5,
+            "relevanceThreshold": null
+          }
+        },
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "permissionRevision": 1,
+          "manifestRevision": 1,
+          "retrievalSettings": {
+            "denseEnabled": true,
+            "sparseEnabled": false,
+            "recallCount": 10,
+            "rrfK": 60,
+            "rerankEnabled": false,
+            "rerankProfile": null,
+            "rerankInputCount": 10,
+            "rerankOutputCount": 5,
+            "relevanceThreshold": null
+          }
+        }
+      ],
+      "retrievalProfile": {
+        "id": "14",
+        "revision": 1
+      },
+      "retrievalSnapshot": {
+        "profile": {
+          "id": "14",
+          "revision": 1
+        },
+        "mode": "DENSE_BM25_RRF_RERANK",
+        "denseTopK": 10,
+        "sparseTopK": 10,
+        "rrfK": 60,
+        "rerankTopK": 10,
+        "finalTopK": 5,
+        "neighborWindow": 1,
+        "maxContextChunks": 10
+      },
+      "indexSnapshots": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "collectionName": "kb_101_v20260924-01",
+          "denseVectorName": "dense",
+          "denseVisionVectorName": null,
+          "sparseVectorName": "sparse",
+          "distance": "COSINE",
+          "embedding": {
+            "profile": {
+              "id": "11",
+              "revision": 1
+            },
+            "providerCode": "doubao",
+            "modelName": "doubao-embedding-vision",
+            "apiHost": "https://model.example.invalid/api/v3/",
+            "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+            "credentialKey": "embedding-test-key",
+            "dimensions": 2048,
+            "documentInputMode": "TEXT_SINGLE",
+            "queryInputMode": "TEXT_SINGLE",
+            "normalized": true,
+            "maxInputTokens": 4096,
+            "timeoutSeconds": 60
+          },
+          "multimodalEmbedding": null,
+          "parserRevision": "parser-v1",
+          "splitterRevision": "split-v1",
+          "tokenizerRevision": "tokenizer-test-v1",
+          "sparseRevision": "bm25-test-v1",
+          "sparseCorpusRevision": "corpus-v1",
+          "chunkSizeTokens": 512,
+          "chunkOverlapTokens": 64,
+          "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "manifestRevision": 1
+        }
+      ],
+      "contextBudgetTokens": 4000
+    }
+  },
+  {
+    "name": "answer-missing-citation",
+    "model": "RagCompletedPayload",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "content": "资料示例。[cite-1]",
+      "usage": {
+        "inputTokens": 8,
+        "outputTokens": 2,
+        "totalTokens": 10
+      },
+      "answerStatus": "ANSWERED",
+      "citations": [],
+      "validationTicket": "synthetic-ticket-0001",
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "answer-missing-ticket",
+    "model": "RagCompletedPayload",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "content": "资料示例。[cite-1]",
+      "usage": {
+        "inputTokens": 8,
+        "outputTokens": 2,
+        "totalTokens": 10
+      },
+      "answerStatus": "ANSWERED",
+      "citations": [
+        {
+          "citationId": "cite-1",
+          "location": {
+            "source": {
+              "knowledgeId": "101",
+              "indexVersion": "201",
+              "documentId": "301",
+              "documentVersionId": "401",
+              "generationId": "501",
+              "chunkId": "chunk-0001",
+              "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "title": "脱敏测试资料",
+            "titlePath": [
+              "第一章"
+            ],
+            "locator": {
+              "kind": "PDF_PAGE",
+              "pageNumber": 1
+            }
+          },
+          "excerpt": "这是一份脱敏测试资料。"
+        }
+      ],
+      "validationTicket": null,
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "answer-duplicate-citation",
+    "model": "RagCompletedPayload",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "content": "资料示例。[cite-1]",
+      "usage": {
+        "inputTokens": 8,
+        "outputTokens": 2,
+        "totalTokens": 10
+      },
+      "answerStatus": "ANSWERED",
+      "citations": [
+        {
+          "citationId": "cite-1",
+          "location": {
+            "source": {
+              "knowledgeId": "101",
+              "indexVersion": "201",
+              "documentId": "301",
+              "documentVersionId": "401",
+              "generationId": "501",
+              "chunkId": "chunk-0001",
+              "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "title": "脱敏测试资料",
+            "titlePath": [
+              "第一章"
+            ],
+            "locator": {
+              "kind": "PDF_PAGE",
+              "pageNumber": 1
+            }
+          },
+          "excerpt": "这是一份脱敏测试资料。"
+        },
+        {
+          "citationId": "cite-1",
+          "location": {
+            "source": {
+              "knowledgeId": "101",
+              "indexVersion": "201",
+              "documentId": "301",
+              "documentVersionId": "401",
+              "generationId": "501",
+              "chunkId": "chunk-0001",
+              "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "title": "脱敏测试资料",
+            "titlePath": [
+              "第一章"
+            ],
+            "locator": {
+              "kind": "PDF_PAGE",
+              "pageNumber": 1
+            }
+          },
+          "excerpt": "这是一份脱敏测试资料。"
+        }
+      ],
+      "validationTicket": "synthetic-ticket-0001",
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "no-evidence-with-citation",
+    "model": "RagCompletedPayload",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "content": "资料示例。[cite-1]",
+      "usage": {
+        "inputTokens": 8,
+        "outputTokens": 2,
+        "totalTokens": 10
+      },
+      "answerStatus": "NO_EVIDENCE",
+      "citations": [
+        {
+          "citationId": "cite-1",
+          "location": {
+            "source": {
+              "knowledgeId": "101",
+              "indexVersion": "201",
+              "documentId": "301",
+              "documentVersionId": "401",
+              "generationId": "501",
+              "chunkId": "chunk-0001",
+              "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            },
+            "title": "脱敏测试资料",
+            "titlePath": [
+              "第一章"
+            ],
+            "locator": {
+              "kind": "PDF_PAGE",
+              "pageNumber": 1
+            }
+          },
+          "excerpt": "这是一份脱敏测试资料。"
+        }
+      ],
+      "validationTicket": "synthetic-ticket-0001",
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "location-TextRangeLocator",
+    "model": "SourceLocation",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "source": {
+        "knowledgeId": "101",
+        "indexVersion": "201",
+        "documentId": "301",
+        "documentVersionId": "401",
+        "generationId": "501",
+        "chunkId": "chunk-0001",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "title": "脱敏测试资料",
+      "titlePath": [
+        "第一章"
+      ],
+      "locator": {
+        "kind": "TEXT_RANGE",
+        "startOffset": 0,
+        "endOffset": 24
+      }
+    }
+  },
+  {
+    "name": "location-DocxBlockLocator",
+    "model": "SourceLocation",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "source": {
+        "knowledgeId": "101",
+        "indexVersion": "201",
+        "documentId": "301",
+        "documentVersionId": "401",
+        "generationId": "501",
+        "chunkId": "chunk-0001",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "title": "脱敏测试资料",
+      "titlePath": [
+        "第一章"
+      ],
+      "locator": {
+        "kind": "DOCX_BLOCK",
+        "blockIndex": 0
+      }
+    }
+  },
+  {
+    "name": "location-PresentationBlockLocator",
+    "model": "SourceLocation",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "source": {
+        "knowledgeId": "101",
+        "indexVersion": "201",
+        "documentId": "301",
+        "documentVersionId": "401",
+        "generationId": "501",
+        "chunkId": "chunk-0001",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "title": "脱敏测试资料",
+      "titlePath": [
+        "第一章"
+      ],
+      "locator": {
+        "kind": "PRESENTATION_BLOCK",
+        "container": "PPTX",
+        "slideNumber": 1,
+        "shapeIndex": 0,
+        "rowIndex": null
+      }
+    }
+  },
+  {
+    "name": "location-SpreadsheetRangeLocator",
+    "model": "SourceLocation",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "source": {
+        "knowledgeId": "101",
+        "indexVersion": "201",
+        "documentId": "301",
+        "documentVersionId": "401",
+        "generationId": "501",
+        "chunkId": "chunk-0001",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "title": "脱敏测试资料",
+      "titlePath": [
+        "第一章"
+      ],
+      "locator": {
+        "kind": "SPREADSHEET_RANGE",
+        "container": "XLSX",
+        "sheetName": "制度",
+        "rowStart": 1,
+        "rowEnd": 2,
+        "columnStart": 1,
+        "columnEnd": 3
+      }
+    }
+  },
+  {
+    "name": "location-TableRangeLocator",
+    "model": "SourceLocation",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "source": {
+        "knowledgeId": "101",
+        "indexVersion": "201",
+        "documentId": "301",
+        "documentVersionId": "401",
+        "generationId": "501",
+        "chunkId": "chunk-0001",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "title": "脱敏测试资料",
+      "titlePath": [
+        "第一章"
+      ],
+      "locator": {
+        "kind": "TABLE_RANGE",
+        "tableIndex": 0,
+        "rowStart": 0,
+        "rowEnd": 2,
+        "columnStart": 0,
+        "columnEnd": 2
+      }
+    }
+  },
+  {
+    "name": "location-ImageLocator",
+    "model": "SourceLocation",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "source": {
+        "knowledgeId": "101",
+        "indexVersion": "201",
+        "documentId": "301",
+        "documentVersionId": "401",
+        "generationId": "501",
+        "chunkId": "chunk-0001",
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      "title": "脱敏测试资料",
+      "titlePath": [
+        "第一章"
+      ],
+      "locator": {
+        "kind": "IMAGE",
+        "container": "PDF",
+        "imageIndex": 0,
+        "pageNumber": 1,
+        "slideNumber": null,
+        "startOffset": null,
+        "endOffset": null,
+        "sheetName": null,
+        "rowNumber": null,
+        "columnNumber": null,
+        "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mediaType": "image/png"
+      }
+    }
+  },
+  {
+    "name": "usage-RequestMeasurement",
+    "model": "ExecutionUsageItem",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "stage": "EMBEDDING",
+      "callId": "call-0001",
+      "attemptId": "attempt-0001",
+      "profile": {
+        "id": "11",
+        "revision": 1
+      },
+      "measurement": {
+        "unit": "DOCUMENT_PAIRS",
+        "quality": "ACTUAL",
+        "quantity": 3
+      }
+    }
+  },
+  {
+    "name": "usage-UnknownMeasurement",
+    "model": "ExecutionUsageItem",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "stage": "EMBEDDING",
+      "callId": "call-0001",
+      "attemptId": "attempt-0001",
+      "profile": {
+        "id": "11",
+        "revision": 1
+      },
+      "measurement": {
+        "unit": "UNKNOWN",
+        "reason": "NOT_REPORTED"
+      }
+    }
+  },
+  {
+    "name": "scope-empty-manifest",
+    "model": "ManifestPageResponse",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "scopeSnapshotId": "601",
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "manifestRevision": 1,
+      "members": [],
+      "nextCursor": null,
+      "expiresAt": "2026-09-15T12:00:00+08:00"
+    }
+  },
+  {
+    "name": "scope-denied-candidates",
+    "model": "CandidateValidationResponse",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "scopeSnapshotId": "601",
+      "allowedCandidates": [],
+      "validationTicket": "synthetic-ticket-0001",
+      "expiresAt": "2026-09-15T12:00:00+08:00"
+    }
+  },
+  {
+    "name": "large-string-id",
+    "model": "SourceRef",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "documentId": "9223372036854775807",
+      "documentVersionId": "401",
+      "generationId": "501",
+      "chunkId": "chunk-0001",
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "name": "unicode-codepoint-boundary",
+    "model": "SourceRef",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "documentId": "301",
+      "documentVersionId": "401",
+      "generationId": "501",
+      "chunkId": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "name": "unicode-too-long",
+    "model": "SourceRef",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "knowledgeId": "101",
+      "indexVersion": "201",
+      "documentId": "301",
+      "documentVersionId": "401",
+      "generationId": "501",
+      "chunkId": "😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀😀",
+      "contentHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  },
+  {
+    "name": "answer-NO_EVIDENCE",
+    "model": "RagCompletedPayload",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "content": "资料示例。[cite-1]",
+      "usage": {
+        "inputTokens": 8,
+        "outputTokens": 2,
+        "totalTokens": 10
+      },
+      "answerStatus": "NO_EVIDENCE",
+      "citations": [],
+      "validationTicket": null,
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "answer-NEEDS_CLARIFICATION",
+    "model": "RagCompletedPayload",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "requestId": "request-0001",
+      "content": "资料示例。[cite-1]",
+      "usage": {
+        "inputTokens": 8,
+        "outputTokens": 2,
+        "totalTokens": 10
+      },
+      "answerStatus": "NEEDS_CLARIFICATION",
+      "citations": [],
+      "validationTicket": null,
+      "executionUsage": [
+        {
+          "stage": "EMBEDDING",
+          "callId": "call-0001",
+          "attemptId": "attempt-0001",
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "measurement": {
+            "unit": "TOKENS",
+            "quality": "ACTUAL",
+            "inputTokens": 8,
+            "outputTokens": 2
+          }
+        }
+      ]
+    }
+  },
+  {
+    "name": "defaults-RagGenerationProfile",
+    "model": "RagGenerationProfile",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "id": 15,
+      "revision": 1,
+      "modelName": "synthetic-chat",
+      "providerCode": "test-provider",
+      "apiHost": "https://model.example.invalid/",
+      "credentialKey": "chat-test-key",
+      "maxInputTokens": 8000
+    },
+    "expectedPayload": {
+      "id": 15,
+      "revision": 1,
+      "modelName": "synthetic-chat",
+      "providerCode": "test-provider",
+      "apiHost": "https://model.example.invalid/",
+      "apiMode": "CHAT_COMPLETIONS",
+      "credentialKey": "chat-test-key",
+      "maxInputTokens": 8000,
+      "maxOutputTokens": null
+    }
+  },
+  {
+    "name": "defaults-RagChatActor",
+    "model": "RagChatActor",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {
+      "userId": "21"
+    },
+    "expectedPayload": {
+      "userId": "21",
+      "roles": []
+    }
+  },
+  {
+    "name": "defaults-RagGenerationUsage",
+    "model": "RagGenerationUsage",
+    "valid": true,
+    "schemaValid": true,
+    "payload": {},
+    "expectedPayload": {
+      "inputTokens": null,
+      "outputTokens": null,
+      "totalTokens": null
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeJobCommand-knowledgeId",
+    "model": "KnowledgeJobCommand",
+    "valid": false,
+    "schemaValid": true,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "message-1",
+      "requestId": "request-1",
+      "jobId": "24",
+      "knowledgeId": "21",
+      "attemptId": "attempt-1",
+      "generationId": "25",
+      "attemptNumber": 1,
+      "createdAt": "2026-09-15T12:00:00+08:00",
+      "deadline": "2026-09-15T12:00:00+08:00",
+      "task": {
+        "jobType": "INGESTION",
+        "documentId": "21",
+        "documentVersionId": "22",
+        "ossId": "23",
+        "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mediaType": "text/plain",
+        "sourceName": "制度说明.txt",
+        "fileSizeBytes": 100,
+        "targetIndexVersion": "201"
+      },
+      "indexSnapshot": {
+        "knowledgeId": "20",
+        "indexVersion": "201",
+        "collectionName": "kb_101_v20260924-01",
+        "denseVectorName": "dense",
+        "denseVisionVectorName": null,
+        "sparseVectorName": "sparse",
+        "distance": "COSINE",
+        "embedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "parserRevision": "parser-v1",
+        "splitterRevision": "split-v1",
+        "tokenizerRevision": "tokenizer-test-v1",
+        "sparseRevision": "bm25-test-v1",
+        "sparseCorpusRevision": "corpus-v1",
+        "chunkSizeTokens": 512,
+        "chunkOverlapTokens": 64,
+        "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifestRevision": 1
+      },
+      "documentProcessingSnapshot": {
+        "configurationRevision": 1,
+        "processingMode": "TEXT",
+        "textEmbedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "visionProfile": null,
+        "rerankPolicy": {
+          "mode": "PROFILE",
+          "textProfile": {
+            "profile": {
+              "id": "12",
+              "revision": 1
+            },
+            "providerCode": "test-provider",
+            "modelName": "synthetic-rerank",
+            "apiHost": "https://rerank.example.invalid/",
+            "adapterCode": "SYNTHETIC_TEST",
+            "credentialKey": "rerank-test-key",
+            "inputMode": "TEXT",
+            "maxDocumentTokens": 2048,
+            "timeoutSeconds": 60
+          },
+          "multimodalProfile": null
+        }
+      },
+      "executionBudget": {
+        "maxTokens": 200000
+      }
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeJobCommand-jobId",
+    "model": "KnowledgeJobCommand",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "message-1",
+      "requestId": "request-1",
+      "jobId": 24,
+      "knowledgeId": "20",
+      "attemptId": "attempt-1",
+      "generationId": "25",
+      "attemptNumber": 1,
+      "createdAt": "2026-09-15T12:00:00+08:00",
+      "deadline": "2026-09-15T12:00:00+08:00",
+      "task": {
+        "jobType": "INGESTION",
+        "documentId": "21",
+        "documentVersionId": "22",
+        "ossId": "23",
+        "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mediaType": "text/plain",
+        "sourceName": "制度说明.txt",
+        "fileSizeBytes": 100,
+        "targetIndexVersion": "201"
+      },
+      "indexSnapshot": {
+        "knowledgeId": "20",
+        "indexVersion": "201",
+        "collectionName": "kb_101_v20260924-01",
+        "denseVectorName": "dense",
+        "denseVisionVectorName": null,
+        "sparseVectorName": "sparse",
+        "distance": "COSINE",
+        "embedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "parserRevision": "parser-v1",
+        "splitterRevision": "split-v1",
+        "tokenizerRevision": "tokenizer-test-v1",
+        "sparseRevision": "bm25-test-v1",
+        "sparseCorpusRevision": "corpus-v1",
+        "chunkSizeTokens": 512,
+        "chunkOverlapTokens": 64,
+        "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifestRevision": 1
+      },
+      "documentProcessingSnapshot": {
+        "configurationRevision": 1,
+        "processingMode": "TEXT",
+        "textEmbedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "visionProfile": null,
+        "rerankPolicy": {
+          "mode": "PROFILE",
+          "textProfile": {
+            "profile": {
+              "id": "12",
+              "revision": 1
+            },
+            "providerCode": "test-provider",
+            "modelName": "synthetic-rerank",
+            "apiHost": "https://rerank.example.invalid/",
+            "adapterCode": "SYNTHETIC_TEST",
+            "credentialKey": "rerank-test-key",
+            "inputMode": "TEXT",
+            "maxDocumentTokens": 2048,
+            "timeoutSeconds": 60
+          },
+          "multimodalProfile": null
+        }
+      },
+      "executionBudget": {
+        "maxTokens": 200000
+      }
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeJobCommand-attemptNumber",
+    "model": "KnowledgeJobCommand",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "message-1",
+      "requestId": "request-1",
+      "jobId": "24",
+      "knowledgeId": "20",
+      "attemptId": "attempt-1",
+      "generationId": "25",
+      "attemptNumber": 0,
+      "createdAt": "2026-09-15T12:00:00+08:00",
+      "deadline": "2026-09-15T12:00:00+08:00",
+      "task": {
+        "jobType": "INGESTION",
+        "documentId": "21",
+        "documentVersionId": "22",
+        "ossId": "23",
+        "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mediaType": "text/plain",
+        "sourceName": "制度说明.txt",
+        "fileSizeBytes": 100,
+        "targetIndexVersion": "201"
+      },
+      "indexSnapshot": {
+        "knowledgeId": "20",
+        "indexVersion": "201",
+        "collectionName": "kb_101_v20260924-01",
+        "denseVectorName": "dense",
+        "denseVisionVectorName": null,
+        "sparseVectorName": "sparse",
+        "distance": "COSINE",
+        "embedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "parserRevision": "parser-v1",
+        "splitterRevision": "split-v1",
+        "tokenizerRevision": "tokenizer-test-v1",
+        "sparseRevision": "bm25-test-v1",
+        "sparseCorpusRevision": "corpus-v1",
+        "chunkSizeTokens": 512,
+        "chunkOverlapTokens": 64,
+        "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifestRevision": 1
+      },
+      "documentProcessingSnapshot": {
+        "configurationRevision": 1,
+        "processingMode": "TEXT",
+        "textEmbedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "visionProfile": null,
+        "rerankPolicy": {
+          "mode": "PROFILE",
+          "textProfile": {
+            "profile": {
+              "id": "12",
+              "revision": 1
+            },
+            "providerCode": "test-provider",
+            "modelName": "synthetic-rerank",
+            "apiHost": "https://rerank.example.invalid/",
+            "adapterCode": "SYNTHETIC_TEST",
+            "credentialKey": "rerank-test-key",
+            "inputMode": "TEXT",
+            "maxDocumentTokens": 2048,
+            "timeoutSeconds": 60
+          },
+          "multimodalProfile": null
+        }
+      },
+      "executionBudget": {
+        "maxTokens": 200000
+      }
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeJobCommand-unexpected",
+    "model": "KnowledgeJobCommand",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "message-1",
+      "requestId": "request-1",
+      "jobId": "24",
+      "knowledgeId": "20",
+      "attemptId": "attempt-1",
+      "generationId": "25",
+      "attemptNumber": 1,
+      "createdAt": "2026-09-15T12:00:00+08:00",
+      "deadline": "2026-09-15T12:00:00+08:00",
+      "task": {
+        "jobType": "INGESTION",
+        "documentId": "21",
+        "documentVersionId": "22",
+        "ossId": "23",
+        "sourceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "mediaType": "text/plain",
+        "sourceName": "制度说明.txt",
+        "fileSizeBytes": 100,
+        "targetIndexVersion": "201"
+      },
+      "indexSnapshot": {
+        "knowledgeId": "20",
+        "indexVersion": "201",
+        "collectionName": "kb_101_v20260924-01",
+        "denseVectorName": "dense",
+        "denseVisionVectorName": null,
+        "sparseVectorName": "sparse",
+        "distance": "COSINE",
+        "embedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "parserRevision": "parser-v1",
+        "splitterRevision": "split-v1",
+        "tokenizerRevision": "tokenizer-test-v1",
+        "sparseRevision": "bm25-test-v1",
+        "sparseCorpusRevision": "corpus-v1",
+        "chunkSizeTokens": 512,
+        "chunkOverlapTokens": 64,
+        "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "manifestRevision": 1
+      },
+      "documentProcessingSnapshot": {
+        "configurationRevision": 1,
+        "processingMode": "TEXT",
+        "textEmbedding": {
+          "profile": {
+            "id": "11",
+            "revision": 1
+          },
+          "providerCode": "doubao",
+          "modelName": "doubao-embedding-vision",
+          "apiHost": "https://model.example.invalid/api/v3/",
+          "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+          "credentialKey": "embedding-test-key",
+          "dimensions": 2048,
+          "documentInputMode": "TEXT_SINGLE",
+          "queryInputMode": "TEXT_SINGLE",
+          "normalized": true,
+          "maxInputTokens": 4096,
+          "timeoutSeconds": 60
+        },
+        "multimodalEmbedding": null,
+        "visionProfile": null,
+        "rerankPolicy": {
+          "mode": "PROFILE",
+          "textProfile": {
+            "profile": {
+              "id": "12",
+              "revision": 1
+            },
+            "providerCode": "test-provider",
+            "modelName": "synthetic-rerank",
+            "apiHost": "https://rerank.example.invalid/",
+            "adapterCode": "SYNTHETIC_TEST",
+            "credentialKey": "rerank-test-key",
+            "inputMode": "TEXT",
+            "maxDocumentTokens": 2048,
+            "timeoutSeconds": 60
+          },
+          "multimodalProfile": null
+        }
+      },
+      "executionBudget": {
+        "maxTokens": 200000
+      },
+      "unexpected": "rejected"
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeJobEvent-sequence",
+    "model": "KnowledgeJobEvent",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "event-1",
+      "requestId": "request-1",
+      "jobId": "24",
+      "attemptId": "attempt-1",
+      "generationId": "25",
+      "workerId": "worker-1",
+      "sequence": 0,
+      "event": {
+        "eventType": "STARTED"
+      }
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeJobEvent-generationId",
+    "model": "KnowledgeJobEvent",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "event-1",
+      "requestId": "request-1",
+      "jobId": "24",
+      "attemptId": "attempt-1",
+      "generationId": 25,
+      "workerId": "worker-1",
+      "sequence": 1,
+      "event": {
+        "eventType": "STARTED"
+      }
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeJobControl-action",
+    "model": "KnowledgeJobControl",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "messageId": "control-1",
+      "jobId": "24",
+      "attemptId": "attempt-1",
+      "action": "DELETE",
+      "expiresAt": "2026-09-15T12:00:00+08:00"
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeFailedEvent-errorCode",
+    "model": "KnowledgeFailedEvent",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "eventType": "FAILED",
+      "errorCode": "UNKNOWN",
+      "usageItems": []
+    }
+  },
+  {
+    "name": "kafka-invalid-KnowledgeDeadLetter-sourceOffset",
+    "model": "KnowledgeDeadLetter",
+    "valid": false,
+    "schemaValid": false,
+    "payload": {
+      "contractVersion": "knowledge-kafka-v1",
+      "sourceTopic": "knowledge.test",
+      "sourcePartition": 0,
+      "sourceOffset": -1,
+      "payloadHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "reason": "INVALID_MESSAGE"
+    }
+  }
+]

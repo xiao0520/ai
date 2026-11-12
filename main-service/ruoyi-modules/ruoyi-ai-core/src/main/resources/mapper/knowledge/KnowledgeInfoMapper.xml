@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.knowledge.KnowledgeInfoMapper">
+
+    <select id="selectAllIds" resultType="java.lang.Long">
+        SELECT id
+        FROM knowledge_info
+        WHERE del_flag = '0'
+    </select>
+
+    <select id="selectAllInternalIds" resultType="java.lang.Long">
+        SELECT id
+        FROM knowledge_info
+        WHERE del_flag = '0'
+          AND access_scope = #{allInternalScope}
+    </select>
+
+    <select id="selectKnowledgeVoByIds" resultType="org.ruoyi.domain.vo.knowledge.KnowledgeInfoVo">
+        SELECT id, library_code AS libraryCode, user_id AS userId, name, access_scope AS accessScope,
+               description, splitter_config AS splitterConfig, retrieval_config AS retrievalConfig, current_index_version AS currentIndexVersion,
+               permission_revision AS permissionRevision, status, remark,
+               create_time AS createTime, update_time AS updateTime
+        FROM knowledge_info
+        WHERE del_flag = '0'
+          AND id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectIdForUpdate" resultType="java.lang.Long">
+        SELECT id
+        FROM knowledge_info
+        WHERE id = #{id}
+          AND del_flag = '0'
+        FOR UPDATE
+    </select>
+
+    <update id="updateCurrentIndexVersion">
+        UPDATE knowledge_info
+        SET current_index_version = #{indexVersion}
+        WHERE id = #{id}
+    </update>
+
+    <update id="clearCurrentIndexVersion">
+        UPDATE knowledge_info
+        SET current_index_version = NULL
+        WHERE id = #{id} AND current_index_version = #{indexVersion}
+    </update>
+
+    <select id="selectKnowledgeList" resultType="org.ruoyi.domain.vo.knowledge.KnowledgeInfoVo">
+        SELECT id, library_code AS libraryCode, user_id AS userId, name, access_scope AS accessScope,
+               description, splitter_config AS splitterConfig, retrieval_config AS retrievalConfig, current_index_version AS currentIndexVersion,
+               permission_revision AS permissionRevision, status, remark,
+               create_time AS createTime, update_time AS updateTime
+        FROM knowledge_info
+        <where>
+            del_flag = '0'
+            <if test="bo != null and bo.userId != null">
+                AND user_id = #{bo.userId}
+            </if>
+            <if test="bo != null and bo.name != null and bo.name != ''">
+                AND name LIKE CONCAT('%', #{bo.name}, '%')
+            </if>
+            <if test="bo != null and bo.libraryCode != null and bo.libraryCode != ''">
+                AND library_code = #{bo.libraryCode}
+            </if>
+            <if test="bo != null and bo.status != null and bo.status != ''">
+                AND status = #{bo.status}
+            </if>
+            <if test="authorizedIds != null">
+                AND id IN
+                <foreach collection="authorizedIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY name ASC, id DESC
+    </select>
+</mapper>

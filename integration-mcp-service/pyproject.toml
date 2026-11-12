@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "integration-mcp-service"
+version = "0.1.0"
+description = "公司内部 HTTP 接口的受控 MCP 适配服务"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "fastmcp==4.0.10",
+    "httpx>=0.28.1,<0.29",
+]
+
+[project.optional-dependencies]
+dev = [
+    "langchain[mcp]==1.4.2",
+    "pytest>=8.4,<10",
+    "pytest-asyncio>=1.1,<2",
+    "ruff>=0.13,<1",
+    "mypy>=1.18,<2",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/integration_mcp_service"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py314"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+python_version = "3.14"
+mypy_path = "src"
+packages = ["integration_mcp_service"]
+strict = true

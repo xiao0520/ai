@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.model.ModelMapper">
+
+    <sql id="modelColumns">
+        id, category, model_name AS modelName, provider_code AS providerCode,
+        model_describe AS modelDescribe, model_show AS modelShow, model_dimension AS modelDimension,
+        api_host AS apiHost, api_mode AS apiMode, credential_key AS credentialKey,
+        published_revision AS publishedRevision,
+        status, capabilities, input_modalities AS inputModalities, adapter_code AS adapterCode,
+        normalized, max_context_tokens AS maxContextTokens,
+        max_input_tokens AS maxInputTokens, max_output_tokens AS maxOutputTokens,
+        max_document_tokens AS maxDocumentTokens,
+        safety_margin_tokens AS safetyMarginTokens, history_max_turns AS historyMaxTurns,
+        knowledge_max_chunks AS knowledgeMaxChunks, knowledge_max_tokens AS knowledgeMaxTokens,
+        tool_result_max_tokens AS toolResultMaxTokens, rate_limit_rpm AS rateLimitRpm,
+        input_cost_per_million AS inputCostPerMillion, output_cost_per_million AS outputCostPerMillion,
+        gray_weight AS grayWeight, remark
+    </sql>
+
+    <select id="selectModelList" resultType="org.ruoyi.domain.vo.model.ModelVo">
+        SELECT <include refid="modelColumns" />
+        FROM model
+        <where>
+            AND del_flag = '0'
+            <if test="bo.category != null and bo.category != ''">
+                AND category = #{bo.category}
+            </if>
+            <if test="bo.modelName != null and bo.modelName != ''">
+                AND model_name LIKE CONCAT('%', #{bo.modelName}, '%')
+            </if>
+            <if test="bo.providerCode != null and bo.providerCode != ''">
+                AND provider_code LIKE CONCAT('%', #{bo.providerCode}, '%')
+            </if>
+            <if test="bo.modelDescribe != null and bo.modelDescribe != ''">
+                AND model_describe = #{bo.modelDescribe}
+            </if>
+            <if test="bo.modelShow != null and bo.modelShow != ''">
+                AND model_show = #{bo.modelShow}
+            </if>
+            <if test="bo.apiHost != null and bo.apiHost != ''">
+                AND api_host = #{bo.apiHost}
+            </if>
+            <if test="bo.credentialKey != null and bo.credentialKey != ''">
+                AND credential_key = #{bo.credentialKey}
+            </if>
+            <if test="bo.status != null and bo.status != ''">
+                AND status = #{bo.status}
+            </if>
+        </where>
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectFirstIdByModelName" resultType="java.lang.Long">
+        SELECT id
+        FROM model
+        WHERE model_name = #{modelName}
+        ORDER BY id ASC
+        LIMIT 1
+    </select>
+
+    <select id="selectModelVoByIds" resultType="org.ruoyi.domain.vo.model.ModelVo">
+        SELECT <include refid="modelColumns" />
+        FROM model WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+        ORDER BY id ASC
+    </select>
+
+    <select id="selectVisibleChatOptions" resultType="org.ruoyi.domain.vo.model.MyModelOptionVo">
+        SELECT id, model_name AS modelName, model_describe AS modelDescribe, remark
+        FROM model
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+          AND category = #{category}
+          AND status = #{status}
+          AND model_show = #{modelShow}
+          AND del_flag = '0'
+        ORDER BY provider_code ASC, model_name ASC
+    </select>
+
+    <select id="selectEnabledOptions" resultType="org.ruoyi.domain.vo.token.AiModelOptionVo">
+        SELECT id AS modelId, model_name AS modelName, provider_code AS providerCode, category
+        FROM model
+        WHERE status = #{status} AND del_flag = '0'
+        ORDER BY provider_code ASC, model_name ASC
+    </select>
+
+    <select id="selectEnabledOptionsByIds" resultType="org.ruoyi.domain.vo.token.AiModelOptionVo">
+        SELECT id AS modelId, model_name AS modelName, provider_code AS providerCode, category
+        FROM model
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+          AND status = #{status} AND del_flag = '0'
+        ORDER BY provider_code ASC, model_name ASC
+    </select>
+
+    <select id="selectKnowledgeOptions" resultType="org.ruoyi.domain.vo.model.KnowledgeModelOptionVo">
+        SELECT id, model_name AS modelName, model_describe AS modelDescribe,
+               provider_code AS providerCode, category, api_mode AS apiMode,
+               adapter_code AS adapterCode, input_modalities AS inputModalities,
+               model_dimension AS modelDimension, normalized,
+               max_input_tokens AS maxInputTokens, max_document_tokens AS maxDocumentTokens,
+               published_revision AS publishedRevision
+        FROM model
+        WHERE category = #{category} AND status = #{status} AND del_flag = '0'
+        ORDER BY provider_code ASC, model_name ASC
+    </select>
+
+    <select id="existsByProviderCodes" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM model WHERE provider_code IN
+            <foreach collection="providerCodes" item="providerCode" open="(" separator="," close=")">#{providerCode}</foreach>
+        )
+    </select>
+
+    <select id="existsByProfile" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM model
+            WHERE provider_code = #{providerCode}
+              AND model_name = #{modelName}
+              AND category = #{category}
+              <if test="excludedId != null">AND id != #{excludedId}</if>
+        )
+    </select>
+
+    <select id="selectByProviderCodeForUpdate" resultType="org.ruoyi.domain.entity.model.Model">
+        SELECT id, category, model_name, provider_code, model_describe, model_show, model_dimension,
+               api_host, api_mode, credential_key, published_revision, status, capabilities,
+               input_modalities, adapter_code, normalized,
+               max_context_tokens, max_input_tokens, max_output_tokens, max_document_tokens, safety_margin_tokens,
+               history_max_turns, knowledge_max_chunks, knowledge_max_tokens, tool_result_max_tokens,
+               rate_limit_rpm, input_cost_per_million, output_cost_per_million, gray_weight, remark,
+               del_flag, create_dept, create_by, create_time, update_by, update_time
+        FROM model
+        WHERE provider_code = #{providerCode} AND del_flag = '0'
+        ORDER BY id ASC
+        FOR UPDATE
+    </select>
+
+    <select id="selectByIdForUpdate" resultType="org.ruoyi.domain.entity.model.Model">
+        SELECT id, category, model_name, provider_code, model_describe, model_show, model_dimension,
+               api_host, api_mode, credential_key, published_revision, status, capabilities,
+               input_modalities, adapter_code, normalized,
+               max_context_tokens, max_input_tokens, max_output_tokens, max_document_tokens, safety_margin_tokens,
+               history_max_turns, knowledge_max_chunks, knowledge_max_tokens, tool_result_max_tokens,
+               rate_limit_rpm, input_cost_per_million, output_cost_per_million, gray_weight, remark,
+               del_flag, create_dept, create_by, create_time, update_by, update_time
+        FROM model
+        WHERE id = #{id} AND del_flag = '0'
+        FOR UPDATE
+    </select>
+</mapper>

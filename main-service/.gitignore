@@ -1,0 +1,23 @@
+# Shared OS, editor, dependency and cache rules are in ../.gitignore.
+
+# Maven / Java output
+target/
+.flattened-pom.xml
+*.class
+*.hprof
+hs_err_pid*
+replay_pid*
+
+# Local Spring overrides; keep shared application*.yml build configuration.
+# Remove real credentials from shared config before the first commit.
+application-local.yml
+application-local.yaml
+application-local.properties
+application-*.local.yml
+application-*.local.yaml
+application-*.local.properties
+
+# Runtime logs
+logs/
+*.log
+*.log.*

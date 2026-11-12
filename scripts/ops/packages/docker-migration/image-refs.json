@@ -1,0 +1,14 @@
+{
+  "centos": {
+    "ref": "public.ecr.aws/docker/library/centos:7.9.2009",
+    "digest": "sha256:dead07b4d8ed7e29e98de0f4504d87e8880d4347859d839686a31da35a3b532f"
+  },
+  "mysql": {
+    "ref": "public.ecr.aws/docker/library/mysql:8.0.46",
+    "digest": "sha256:62fb722c78b24245ddff1796a0fcee4a49cc5b87e0aaaf20c92d1da9e0a2497b"
+  },
+  "redis": {
+    "ref": "public.ecr.aws/docker/library/redis:7.2.16-bookworm",
+    "digest": "sha256:ba2aa7b21f4d81ccbb3d190a26f83f2cab308f014cb10f651b1d86a855d392d7"
+  }
+}

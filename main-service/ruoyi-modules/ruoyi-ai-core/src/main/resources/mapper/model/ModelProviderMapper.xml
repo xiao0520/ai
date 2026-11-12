@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.model.ModelProviderMapper">
+
+    <sql id="providerColumns">
+        id, provider_name AS providerName, provider_code AS providerCode,
+        provider_icon AS providerIcon, provider_desc AS providerDesc, api_host AS apiHost,
+        status, sort_order AS sortOrder, remark, update_ip AS updateIp
+    </sql>
+
+    <select id="selectProviderList" resultType="org.ruoyi.domain.vo.model.ModelProviderVo">
+        SELECT <include refid="providerColumns" />
+        FROM model_provider
+        <where>
+            AND del_flag = 0
+            <if test="bo != null and bo.providerName != null and bo.providerName != ''">
+                AND provider_name LIKE CONCAT('%', #{bo.providerName}, '%')
+            </if>
+            <if test="bo != null and bo.providerCode != null and bo.providerCode != ''">
+                AND provider_code LIKE CONCAT('%', #{bo.providerCode}, '%')
+            </if>
+            <if test="bo != null and bo.providerIcon != null and bo.providerIcon != ''">
+                AND provider_icon = #{bo.providerIcon}
+            </if>
+            <if test="bo != null and bo.providerDesc != null and bo.providerDesc != ''">
+                AND provider_desc = #{bo.providerDesc}
+            </if>
+            <if test="bo != null and bo.apiHost != null and bo.apiHost != ''">
+                AND api_host = #{bo.apiHost}
+            </if>
+            <if test="bo != null and bo.status != null and bo.status != ''">
+                AND status = #{bo.status}
+            </if>
+            <if test="bo != null and bo.sortOrder != null">
+                AND sort_order = #{bo.sortOrder}
+            </if>
+            <if test="bo != null and bo.updateIp != null and bo.updateIp != ''">
+                AND update_ip = #{bo.updateIp}
+            </if>
+        </where>
+        ORDER BY id ASC
+    </select>
+
+    <select id="existsByProviderCode" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1
+            FROM model_provider
+            WHERE provider_code = #{providerCode}
+            AND del_flag = #{normalDelFlag}
+            <if test="excludeId != null">
+                AND id != #{excludeId}
+            </if>
+        )
+    </select>
+
+    <select id="selectEnabledByProviderCode" resultType="org.ruoyi.domain.entity.model.ModelProvider">
+        SELECT id, provider_name, provider_code, provider_icon, provider_desc, api_host,
+               status, sort_order, remark, version, del_flag, update_ip,
+               create_dept, create_by, create_time, update_by, update_time
+        FROM model_provider
+        WHERE provider_code = #{providerCode}
+          AND status = #{normalStatus}
+          AND del_flag = #{normalDelFlag}
+        LIMIT 1
+    </select>
+</mapper>

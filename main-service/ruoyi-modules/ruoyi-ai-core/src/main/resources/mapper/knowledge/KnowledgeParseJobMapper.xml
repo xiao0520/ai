@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.knowledge.KnowledgeParseJobMapper">
+
+    <sql id="jobColumns">
+        id, request_id, job_type, knowledge_id, document_id, document_version_id,
+        target_index_version, idempotency_key, status, list_hidden, progress, attempt_count,
+        max_attempts, last_sequence, lease_owner, lease_expire_time, error_code,
+        error_message, started_at, finished_at, create_dept, create_by, create_time,
+        update_by, update_time, attempt_id, generation_id, last_result_hash, index_snapshot,
+        document_processing_snapshot, rerank_snapshot, parent_job_id, task_payload,
+        budget_account_id, budget_reserved_tokens, execution_budget_tokens, budget_status
+    </sql>
+
+    <select id="selectByIdempotencyKey" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeParseJob">
+        SELECT <include refid="jobColumns"/>
+        FROM knowledge_parse_job
+        WHERE idempotency_key = #{idempotencyKey}
+        ORDER BY id ASC
+        LIMIT 1
+    </select>
+
+    <select id="selectJobList" resultType="org.ruoyi.domain.vo.knowledge.KnowledgeParseJobVo">
+        SELECT <include refid="jobColumns"/>
+        FROM knowledge_parse_job
+        <where>
+            AND list_hidden = '0'
+            <if test="bo != null and bo.knowledgeId != null">
+                AND knowledge_id = #{bo.knowledgeId}
+            </if>
+            <if test="bo != null and bo.documentId != null">
+                AND document_id = #{bo.documentId}
+            </if>
+            <if test="bo != null and bo.documentVersionId != null">
+                AND document_version_id = #{bo.documentVersionId}
+            </if>
+            <if test="bo != null and bo.jobType != null and bo.jobType != ''">
+                AND job_type = #{bo.jobType}
+            </if>
+            <if test="bo != null and bo.status != null and bo.status != ''">
+                AND status = #{bo.status}
+            </if>
+            <if test="bo != null and bo.targetIndexVersion != null and bo.targetIndexVersion != ''">
+                AND target_index_version = #{bo.targetIndexVersion}
+            </if>
+        </where>
+        ORDER BY create_time DESC, id DESC
+    </select>
+    <update id="cancelIfActive">
+        UPDATE knowledge_parse_job SET status = #{cancelledStatus}
+        WHERE id = #{id} AND status IN
+        <foreach collection="activeStatuses" item="status" open="(" separator="," close=")">#{status}</foreach>
+    </update>
+    <update id="retryIfRetryable">
+        UPDATE knowledge_parse_job
+        SET status = #{pendingStatus}, progress = 0, error_code = NULL, error_message = NULL,
+            attempt_count = #{attemptCount}
+        WHERE id = #{id} AND list_hidden = #{visible} AND status IN
+        <foreach collection="retryableStatuses" item="status" open="(" separator="," close=")">#{status}</foreach>
+    </update>
+    <update id="hideTerminalById">
+        UPDATE knowledge_parse_job SET list_hidden = #{hidden}, update_time = NOW()
+        WHERE id = #{id} AND list_hidden = #{visible} AND status IN
+        <foreach collection="terminalStatuses" item="status" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+    </update>
+</mapper>

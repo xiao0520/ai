@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.agent.AgentAclMapper">
+    <delete id="deleteByAgentIds">
+        DELETE FROM agent_acl
+        WHERE agent_id IN
+        <foreach collection="agentIds" item="agentId" open="(" separator="," close=")">#{agentId}</foreach>
+    </delete>
+    <select id="selectByAgentId" resultType="org.ruoyi.domain.entity.agent.AgentAcl">
+        SELECT id, agent_id AS agentId, subject_type AS subjectType, subject_id AS subjectId,
+               permission, effective_time AS effectiveTime, expire_time AS expireTime, status, remark,
+               create_time AS createTime, update_time AS updateTime
+        FROM agent_acl WHERE agent_id = #{agentId}
+        ORDER BY subject_type ASC, subject_id ASC
+    </select>
+    <select id="selectEffectiveAgentIds" resultType="java.lang.Long">
+        SELECT DISTINCT agent_id
+        FROM agent_acl
+        WHERE status = #{status}
+          AND (effective_time IS NULL OR effective_time &lt;= #{effectiveAt})
+          AND (expire_time IS NULL OR expire_time &gt; #{effectiveAt})
+          AND (
+            <trim prefixOverrides="OR">
+                <if test="roleIds != null and !roleIds.isEmpty()">
+                    OR (subject_type = #{roleSubjectType} AND subject_id IN
+                    <foreach collection="roleIds" item="roleId" open="(" separator="," close=")">
+                        #{roleId}
+                    </foreach>)
+                </if>
+                <if test="deptIds != null and !deptIds.isEmpty()">
+                    OR (subject_type = #{deptSubjectType} AND subject_id IN
+                    <foreach collection="deptIds" item="deptId" open="(" separator="," close=")">
+                        #{deptId}
+                    </foreach>)
+                </if>
+            </trim>
+          )
+    </select>
+</mapper>

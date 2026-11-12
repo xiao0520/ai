@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.knowledge.KnowledgeDocumentVersionMapper">
+
+    <select id="selectOssIdsByDocumentId" resultType="java.lang.Long">
+        SELECT oss_id
+        FROM knowledge_document_version
+        WHERE document_id = #{documentId}
+        AND oss_id IS NOT NULL
+    </select>
+
+    <select id="selectOssIdsByKnowledgeId" resultType="java.lang.Long">
+        SELECT oss_id
+        FROM knowledge_document_version
+        WHERE knowledge_id = #{knowledgeId}
+        AND oss_id IS NOT NULL
+    </select>
+
+    <select id="selectMaxVersionNoByDocumentId" resultType="java.lang.Integer">
+        SELECT MAX(version_no)
+        FROM knowledge_document_version
+        WHERE document_id = #{documentId}
+    </select>
+
+    <select id="selectVoListByDocumentId" resultType="org.ruoyi.domain.vo.knowledge.KnowledgeDocumentVersionVo">
+        SELECT id, document_id AS documentId, knowledge_id AS knowledgeId, version_no AS versionNo,
+               oss_id AS ossId, original_name AS originalName, file_suffix AS fileSuffix,
+               mime_type AS mimeType, file_size AS fileSize, file_hash AS fileHash,
+               target_index_version AS targetIndexVersion,
+               configuration_revision AS configurationRevision, processing_mode AS processingMode,
+               text_embedding_profile_id AS textEmbeddingProfileId,
+               text_embedding_profile_revision AS textEmbeddingProfileRevision,
+               multimodal_embedding_profile_id AS multimodalEmbeddingProfileId,
+               multimodal_embedding_profile_revision AS multimodalEmbeddingProfileRevision,
+               vision_profile_id AS visionProfileId, vision_profile_revision AS visionProfileRevision,
+               rerank_mode AS rerankMode, text_rerank_profile_id AS textRerankProfileId,
+               text_rerank_profile_revision AS textRerankProfileRevision,
+               multimodal_rerank_profile_id AS multimodalRerankProfileId,
+               multimodal_rerank_profile_revision AS multimodalRerankProfileRevision,
+               parse_status AS parseStatus, parse_error_code AS parseErrorCode,
+               parse_error_message AS parseErrorMessage, parsed_at AS parsedAt,
+               create_time AS createTime, update_time AS updateTime
+        FROM knowledge_document_version
+        WHERE document_id = #{documentId}
+        ORDER BY version_no DESC
+    </select>
+
+    <select id="selectCurrentPublishedByKnowledgeId" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeDocumentVersion">
+        SELECT v.id, v.document_id, v.knowledge_id, v.version_no, v.oss_id, v.original_name,
+               v.file_suffix, v.mime_type, v.file_size, v.file_hash, v.target_index_version,
+               v.configuration_revision, v.processing_mode, v.text_embedding_profile_id,
+               v.text_embedding_profile_revision, v.multimodal_embedding_profile_id,
+               v.multimodal_embedding_profile_revision, v.vision_profile_id, v.vision_profile_revision,
+               v.rerank_mode, v.text_rerank_profile_id, v.text_rerank_profile_revision,
+               v.multimodal_rerank_profile_id, v.multimodal_rerank_profile_revision,
+               v.document_processing_snapshot, v.parse_status, v.parse_error_code,
+               v.parse_error_message, v.parsed_at, v.create_dept, v.create_by, v.create_time,
+               v.update_by, v.update_time
+        FROM knowledge_document d
+        JOIN knowledge_document_version v ON v.id = d.current_version_id
+        WHERE d.knowledge_id = #{knowledgeId} AND d.status != 'DELETED'
+          AND v.parse_status != 'DELETED'
+        ORDER BY d.id
+    </select>
+    <update id="updateParseStatusByDocumentId">
+        UPDATE knowledge_document_version SET parse_status = #{parseStatus}
+        WHERE document_id = #{documentId}
+    </update>
+</mapper>

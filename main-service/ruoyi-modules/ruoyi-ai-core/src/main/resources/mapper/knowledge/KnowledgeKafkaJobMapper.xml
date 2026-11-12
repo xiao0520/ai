@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.knowledge.KnowledgeKafkaJobMapper">
+    <sql id="jobColumns">
+        id, request_id, job_type, knowledge_id, document_id, document_version_id,
+        target_index_version, idempotency_key, status, list_hidden, progress, attempt_count,
+        max_attempts, last_sequence, lease_owner, lease_expire_time, error_code,
+        error_message, started_at, finished_at, create_dept, create_by, create_time,
+        update_by, update_time, attempt_id, generation_id, last_result_hash, index_snapshot,
+        document_processing_snapshot, rerank_snapshot, parent_job_id, task_payload,
+        budget_account_id, budget_reserved_tokens, execution_budget_tokens, budget_status
+    </sql>
+
+    <select id="lockJob" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeParseJob">
+        SELECT <include refid="jobColumns"/>
+        FROM knowledge_parse_job WHERE id = #{id} FOR UPDATE
+    </select>
+
+    <update id="prepareAttempt">
+        UPDATE knowledge_parse_job
+        SET attempt_id = #{job.attemptId}, generation_id = #{job.generationId},
+            attempt_count = #{job.attemptCount}, status = #{job.status}, progress = 0,
+            last_sequence = 0, last_result_hash = NULL, lease_owner = NULL,
+            lease_expire_time = #{deadline}, error_code = NULL, error_message = NULL,
+            started_at = NULL, finished_at = NULL, index_snapshot = #{job.indexSnapshot},
+            document_processing_snapshot = #{job.documentProcessingSnapshot},
+            rerank_snapshot = NULL, task_payload = #{job.taskPayload},
+            budget_account_id = #{job.budgetAccountId},
+            budget_reserved_tokens = #{job.budgetReservedTokens},
+            execution_budget_tokens = #{job.executionBudgetTokens},
+            budget_status = #{job.budgetStatus}, update_time = NOW()
+        WHERE id = #{job.id}
+    </update>
+
+    <update id="markQueued">
+        UPDATE knowledge_parse_job SET status = 'QUEUED', update_time = NOW()
+        WHERE id = #{id} AND attempt_id = #{attemptId} AND status IN ('PENDING', 'RETRY_WAIT')
+    </update>
+
+    <update id="markDeliveryFailed">
+        UPDATE knowledge_parse_job SET status = 'FAILED', error_code = 'KAFKA_DELIVERY_FAILED',
+            error_message = '消息投递失败，请恢复 Kafka 后重试', finished_at = NOW(),
+            lease_expire_time = NULL, update_time = NOW()
+        WHERE id = #{id} AND attempt_id = #{attemptId}
+          AND status IN ('PENDING', 'QUEUED', 'RETRY_WAIT', 'CANCEL_REQUESTED')
+    </update>
+
+    <update id="acceptEvent">
+        UPDATE knowledge_parse_job
+        SET status = #{status}, progress = GREATEST(progress, #{progress}), last_sequence = #{sequence},
+            last_result_hash = #{hash}, lease_owner = #{workerId},
+            lease_expire_time = CASE WHEN #{status} IN ('RUNNING', 'CANCEL_REQUESTED')
+                THEN DATE_ADD(NOW(), INTERVAL #{leaseSeconds} SECOND) ELSE NULL END,
+            started_at = CASE WHEN #{status} IN ('RUNNING', 'CANCEL_REQUESTED') THEN COALESCE(started_at, NOW()) ELSE started_at END,
+            finished_at = CASE WHEN #{status} IN ('FAILED', 'CANCELLED', 'SUCCEEDED') THEN NOW() ELSE NULL END,
+            error_code = #{errorCode}, error_message = #{errorMessage}, update_time = NOW()
+        WHERE id = #{id} AND attempt_id = #{attemptId} AND last_sequence &lt; #{sequence}
+          AND status IN ('PENDING', 'QUEUED', 'RUNNING', 'RETRY_WAIT', 'CANCEL_REQUESTED')
+    </update>
+
+    <select id="selectExpired" resultType="java.lang.Long">
+        SELECT /* knowledge_periodic_scan */ id FROM knowledge_parse_job
+        WHERE status IN ('RUNNING', 'QUEUED', 'PENDING', 'RETRY_WAIT', 'CANCEL_REQUESTED')
+          AND attempt_id IS NOT NULL AND lease_expire_time &lt; NOW()
+        ORDER BY lease_expire_time, id LIMIT #{limit}
+    </select>
+
+    <update id="requestCancel">
+        UPDATE knowledge_parse_job
+        SET status = 'CANCEL_REQUESTED', error_code = 'CANCEL_REQUESTED',
+            error_message = '已请求停止当前执行批次',
+            lease_expire_time = DATE_ADD(NOW(), INTERVAL #{leaseSeconds} SECOND), update_time = NOW()
+        WHERE id = #{id} AND status IN ('PENDING', 'QUEUED', 'RUNNING', 'RETRY_WAIT')
+    </update>
+
+    <update id="finishCancelled">
+        UPDATE knowledge_parse_job
+        SET status = 'CANCELLED', progress = 0, last_sequence = #{sequence},
+            last_result_hash = #{hash}, lease_owner = #{workerId}, lease_expire_time = NULL,
+            error_code = 'CANCELLED', error_message = '解析任务已取消',
+            finished_at = NOW(), update_time = NOW()
+        WHERE id = #{id} AND attempt_id = #{attemptId}
+          AND status IN ('PENDING', 'QUEUED', 'RUNNING', 'RETRY_WAIT', 'CANCEL_REQUESTED')
+    </update>
+
+    <update id="markBudgetStatus">
+        UPDATE knowledge_parse_job SET budget_status = #{status}, update_time = NOW()
+        WHERE id = #{id} AND attempt_id = #{attemptId} AND budget_status = #{expected}
+    </update>
+
+    <update id="refreshRebuildParent">
+        UPDATE knowledge_parse_job p
+        SET p.progress = COALESCE((SELECT FLOOR(AVG(c.progress)) FROM knowledge_parse_job c
+                                  WHERE c.parent_job_id = p.id), 100),
+            p.status = CASE
+                WHEN EXISTS (SELECT 1 FROM knowledge_parse_job c WHERE c.parent_job_id = p.id
+                             AND c.status IN ('PENDING','QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED'))
+                    THEN 'RUNNING'
+                WHEN EXISTS (SELECT 1 FROM knowledge_parse_job c WHERE c.parent_job_id = p.id
+                             AND c.status IN ('FAILED','CANCELLED'))
+                    THEN 'FAILED'
+                ELSE 'SUCCEEDED' END,
+            p.error_code = CASE
+                WHEN NOT EXISTS (SELECT 1 FROM knowledge_parse_job c WHERE c.parent_job_id = p.id
+                                 AND c.status IN ('PENDING','QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED'))
+                 AND EXISTS (SELECT 1 FROM knowledge_parse_job c WHERE c.parent_job_id = p.id
+                             AND c.status IN ('FAILED','CANCELLED'))
+                    THEN 'REBUILD_CHILD_FAILED' ELSE NULL END,
+            p.error_message = CASE
+                WHEN NOT EXISTS (SELECT 1 FROM knowledge_parse_job c WHERE c.parent_job_id = p.id
+                                 AND c.status IN ('PENDING','QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED'))
+                 AND EXISTS (SELECT 1 FROM knowledge_parse_job c WHERE c.parent_job_id = p.id
+                             AND c.status IN ('FAILED','CANCELLED'))
+                    THEN '部分文档索引重建失败' ELSE NULL END,
+            p.finished_at = CASE
+                WHEN EXISTS (SELECT 1 FROM knowledge_parse_job c WHERE c.parent_job_id = p.id
+                             AND c.status IN ('PENDING','QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED'))
+                    THEN NULL ELSE NOW() END,
+            p.update_time = NOW()
+        WHERE p.id = #{parentJobId} AND p.job_type = 'REBUILD'
+    </update>
+
+    <update id="updateVersionState">
+        UPDATE knowledge_document_version v
+        SET parse_status = #{status}, parse_error_code = #{errorCode}, parse_error_message = #{errorMessage}
+        WHERE v.id = #{versionId} AND v.document_id = #{documentId} AND v.parse_status != 'DELETED'
+          AND NOT EXISTS (SELECT 1 FROM knowledge_document d WHERE d.current_version_id = v.id)
+    </update>
+
+    <update id="updateUnpublishedDocument">
+        UPDATE knowledge_document SET status = #{status}, update_time = NOW()
+        WHERE id = #{documentId} AND current_version_id IS NULL AND status != 'DELETED'
+    </update>
+</mapper>

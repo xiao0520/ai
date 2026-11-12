@@ -1,0 +1,53 @@
+{
+  "status": "DRAFT: signing fixtures only; bodies are not complete endpoint contracts",
+  "vectors": [
+    {
+      "name": "artifact-ticket",
+      "method": "POST",
+      "path": "/internal/knowledge/jobs/101/artifact-tickets",
+      "timestamp": "1800000000",
+      "nonce": "00000000-0000-4000-8000-000000000001",
+      "testSigningKey": "public-fixture-key-not-a-secret",
+      "rawBody": "{\"contractVersion\":\"rag-v1\",\"requestId\":\"request-fixture\",\"attemptId\":\"attempt-fixture\",\"generationId\":\"501\",\"workerId\":\"worker-fixture\",\"operation\":\"READ_SOURCE\",\"objectId\":\"source-object-001\"}",
+      "expectedBodySha256": "f5bbcbefe40d1ddd5b39304e8a53a04fbc7f4420f174e74989745a70e93ae9df",
+      "canonical": "2\nPOST\n/internal/knowledge/jobs/101/artifact-tickets\n1800000000\n00000000-0000-4000-8000-000000000001\nf5bbcbefe40d1ddd5b39304e8a53a04fbc7f4420f174e74989745a70e93ae9df",
+      "expectedSignature": "cdf89610966140c387131aa3a0ea494eb1f611ce99445d0c7e0358a8f0b4f51b"
+    },
+    {
+      "name": "manifest-page",
+      "method": "POST",
+      "path": "/internal/knowledge/scopes/601/manifest-pages",
+      "timestamp": "1800000000",
+      "nonce": "00000000-0000-4000-8000-000000000001",
+      "testSigningKey": "public-fixture-key-not-a-secret",
+      "rawBody": "{\"contractVersion\":\"rag-v1\",\"requestId\":\"request-fixture\",\"knowledgeId\":\"101\",\"indexVersion\":\"201\",\"manifestRevision\":1,\"cursor\":null,\"pageSize\":100}",
+      "expectedBodySha256": "bf37fb74ffe903c8177f367c55c5ac7b5bfaa30aa0aabc5151c941fc53a2d519",
+      "canonical": "2\nPOST\n/internal/knowledge/scopes/601/manifest-pages\n1800000000\n00000000-0000-4000-8000-000000000001\nbf37fb74ffe903c8177f367c55c5ac7b5bfaa30aa0aabc5151c941fc53a2d519",
+      "expectedSignature": "25e9a844dfdbc08565df940ed081330db718d2d1d7a943607f5ecf0eecdcdfd8"
+    },
+    {
+      "name": "rag-chat-fragment",
+      "method": "POST",
+      "path": "/internal/ai/v1/chat/stream",
+      "timestamp": "1800000000",
+      "nonce": "00000000-0000-4000-8000-000000000001",
+      "testSigningKey": "public-fixture-key-not-a-secret",
+      "rawBody": "{\"requestId\":\"request-fixture\",\"rag\":{\"mode\":\"KNOWLEDGE_QA\"},\"question\":\"权限测试\"}",
+      "expectedBodySha256": "770d1d211190a9fb861f936c832f4922e512ad05af881abfd3de6803bac5fef0",
+      "canonical": "2\nPOST\n/internal/ai/v1/chat/stream\n1800000000\n00000000-0000-4000-8000-000000000001\n770d1d211190a9fb861f936c832f4922e512ad05af881abfd3de6803bac5fef0",
+      "expectedSignature": "b9a5a6d55eabef0dd6e6e48ceda40c654a36301c1c42d2efb3254c7d436800d4"
+    },
+    {
+      "name": "raw-whitespace-variant",
+      "method": "POST",
+      "path": "/internal/knowledge/jobs/101/artifact-tickets",
+      "timestamp": "1800000000",
+      "nonce": "00000000-0000-4000-8000-000000000001",
+      "testSigningKey": "public-fixture-key-not-a-secret",
+      "rawBody": " { \"contractVersion\": \"rag-v1\", \"requestId\": \"request-fixture\", \"attemptId\": \"attempt-fixture\", \"generationId\": \"501\", \"workerId\": \"worker-fixture\", \"operation\": \"READ_SOURCE\", \"objectId\": \"source-object-001\" } ",
+      "expectedBodySha256": "7778fbf56759d39076f1d6ab73e772b975b0d04715f72c0de64d04a13d3fd438",
+      "canonical": "2\nPOST\n/internal/knowledge/jobs/101/artifact-tickets\n1800000000\n00000000-0000-4000-8000-000000000001\n7778fbf56759d39076f1d6ab73e772b975b0d04715f72c0de64d04a13d3fd438",
+      "expectedSignature": "a8d0e26739168bfe051445d6fcfecf83f36d8b0cd5bf529b5bed7fced3bbc8d4"
+    }
+  ]
+}

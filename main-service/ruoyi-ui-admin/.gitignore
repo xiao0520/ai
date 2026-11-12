@@ -1,0 +1,55 @@
+# Shared OS/editor rules are in ../../.gitignore.
+# Keep pnpm-lock.yaml, workspace/build config and shared frontend defaults.
+# Lockfiles are not ignored; use pnpm as specified by packageManager.
+
+# Dependencies and generated output
+node_modules/
+.pnpm-store/
+.pnpm-store-clean/
+.cache/
+.turbo/
+.temp/
+.vite/
+.vite-temp/
+dist/
+dist-ssr/
+dev-dist/
+.nitro/
+.output/
+.vitepress/cache/
+.vitepress/dist/
+coverage/
+playwright-report/
+test-results/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+vite.config.*.timestamp-*
+
+# Distribution archives
+dist.zip
+dist.tar
+dist.tar.gz
+dist.war
+*-dist.zip
+*-dist.tar
+*-dist.tar.gz
+*-dist.war
+
+# Generated mock data and component declarations
+**/backend-mock/data/
+/apps/web-antd/types/components.d.ts
+
+# Frontend defaults required by Vite; local overrides stay untracked.
+# Review existing private-key values before the first commit.
+!/apps/web-antd/.env
+!/apps/web-antd/.env.analyze
+!/apps/web-antd/.env.development
+!/apps/web-antd/.env.production
+.env.local
+.env.*.local
+
+# Runtime logs
+logs/
+*.log
+*.log.*

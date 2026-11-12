@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.chat.ChatSessionMapper">
+
+    <select id="selectSessionList" resultType="org.ruoyi.domain.vo.chat.ChatSessionVo">
+        SELECT cs.id, cs.user_id AS userId, su.user_name AS userName,
+               cs.session_title AS sessionTitle, cs.agent_id AS agentId,
+               cs.model_id AS modelId, cs.status, cs.last_message_at AS lastMessageAt,
+               cs.message_count AS messageCount, cs.input_tokens AS inputTokens,
+               cs.output_tokens AS outputTokens, cs.deduct_tokens AS deductTokens,
+               cs.conversation_id AS conversationId, cs.update_time AS updateTime
+        FROM chat_session cs
+        LEFT JOIN sys_user su ON su.user_id = cs.user_id
+        <where>
+            <if test="bo != null and bo.id != null">
+                AND cs.id = #{bo.id}
+            </if>
+            <if test="bo != null and bo.userId != null">
+                AND cs.user_id = #{bo.userId}
+            </if>
+            <if test="bo != null and bo.userName != null and bo.userName != ''">
+                AND su.user_name LIKE CONCAT('%', #{bo.userName}, '%')
+            </if>
+            <if test="bo != null and bo.sessionTitle != null and bo.sessionTitle != ''">
+                AND cs.session_title LIKE CONCAT('%', #{bo.sessionTitle}, '%')
+            </if>
+            <if test="bo != null and bo.agentId != null">
+                AND cs.agent_id = #{bo.agentId}
+            </if>
+            <if test="bo != null and bo.modelId != null">
+                AND cs.model_id = #{bo.modelId}
+            </if>
+            <if test="bo != null and bo.status != null and bo.status != ''">
+                AND cs.status = #{bo.status}
+            </if>
+            <if test="bo != null and bo.conversationId != null and bo.conversationId != ''">
+                AND cs.conversation_id LIKE CONCAT('%', #{bo.conversationId}, '%')
+            </if>
+        </where>
+        ORDER BY cs.last_message_at DESC, cs.id DESC
+    </select>
+    <update id="updateSessionTitle">
+        UPDATE chat_session SET session_title = #{sessionTitle}, update_time = #{updateTime}
+        WHERE id = #{id}
+        <if test="ownerUserId != null">AND user_id = #{ownerUserId}</if>
+    </update>
+    <update id="updateStatus">
+        UPDATE chat_session SET status = #{status}, update_time = #{updateTime}
+        WHERE id = #{id}
+        <if test="ownerUserId != null">AND user_id = #{ownerUserId}</if>
+    </update>
+    <select id="selectByIdForUpdate" resultType="org.ruoyi.domain.entity.chat.ChatSession">
+        SELECT id, user_id, session_title, agent_id, model_id, status, last_message_at, message_count,
+               input_tokens, output_tokens, deduct_tokens, conversation_id
+        FROM chat_session
+        WHERE id = #{id}
+        FOR UPDATE
+    </select>
+    <update id="recordUserTurn">
+        UPDATE chat_session
+        SET agent_id = #{agentId}, model_id = #{modelId}, message_count = message_count + 1,
+            last_message_at = #{updateTime}, update_time = #{updateTime}
+        WHERE id = #{id} AND user_id = #{userId} AND status = 'ACTIVE'
+    </update>
+    <update id="recordAssistantTurn">
+        UPDATE chat_session
+        SET model_id = #{modelId}, message_count = message_count + 1,
+            input_tokens = input_tokens + #{inputTokens}, output_tokens = output_tokens + #{outputTokens},
+            deduct_tokens = deduct_tokens + #{deductTokens}, last_message_at = #{updateTime}, update_time = #{updateTime}
+        WHERE id = #{id} AND user_id = #{userId} AND status = 'ACTIVE'
+    </update>
+</mapper>

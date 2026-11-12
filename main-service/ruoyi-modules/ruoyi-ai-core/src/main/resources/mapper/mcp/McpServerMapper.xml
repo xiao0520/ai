@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.mcp.McpServerMapper">
+
+    <sql id="serverColumns">
+        id, server_code AS serverCode, server_name AS serverName, server_type AS serverType,
+        transport_type AS transportType, endpoint, runtime_key AS runtimeKey,
+        protocol_version AS protocolVersion, auth_type AS authType, credential_key AS credentialKey,
+        connect_timeout AS connectTimeout, default_risk_level AS defaultRiskLevel,
+        status, runtime_status AS runtimeStatus, runtime_message AS runtimeMessage,
+        last_discovered_at AS lastDiscoveredAt, remark,
+        create_time AS createTime, update_time AS updateTime
+    </sql>
+
+    <select id="selectServerList" resultType="org.ruoyi.domain.entity.mcp.McpServer">
+        SELECT <include refid="serverColumns" />
+        FROM mcp_server_info
+        <where>
+            AND del_flag = 0
+            <if test="bo != null and bo.serverName != null and bo.serverName != ''">
+                AND server_name LIKE CONCAT('%', #{bo.serverName}, '%')
+            </if>
+            <if test="bo != null and bo.serverCode != null and bo.serverCode != ''">
+                AND server_code LIKE CONCAT('%', #{bo.serverCode}, '%')
+            </if>
+            <if test="bo != null and bo.serverType != null and bo.serverType != ''">
+                AND server_type = #{bo.serverType}
+            </if>
+            <if test="bo != null and bo.transportType != null and bo.transportType != ''">
+                AND transport_type = #{bo.transportType}
+            </if>
+            <if test="bo != null and bo.status != null and bo.status != ''">
+                AND status = #{bo.status}
+            </if>
+        </where>
+        ORDER BY server_name ASC, id ASC
+    </select>
+
+    <select id="selectAllOrderByName" resultType="org.ruoyi.domain.entity.mcp.McpServer">
+        SELECT <include refid="serverColumns" />
+        FROM mcp_server_info
+        ORDER BY server_name ASC, id ASC
+    </select>
+
+    <select id="existsByServerCode" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM mcp_server_info
+        WHERE server_code = #{serverCode}
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+</mapper>

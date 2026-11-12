@@ -1,0 +1,122 @@
+# mjn-ai: shared rules; service-specific rules live in each service.
+# Keep source, SQL, docs, Dockerfiles, build config and dependency locks.
+# Do not ignore all JAR/ZIP/SQL/YAML files: some may be required source assets.
+
+# Operating system and editor state
+.DS_Store
+._*
+Thumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.factorypath
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+*.suo
+*.user
+*.swp
+*.swo
+*~
+.history/
+.VSCodeCounter/
+
+# Local assistant state (keep project instruction files)
+.claude/
+.cursor/
+
+# Logs, process files and temporary caches
+logs/
+*.log
+*.log.*
+*.pid
+*.pid.lock
+*.seed
+*.stackdump
+.cache/
+.temp/
+*.tmp
+*.temp
+
+# Local environment and credentials; sanitized templates belong in Git.
+.env
+.env.*
+!.env.example
+!.env.*.example
+!.env.sample
+!.env.*.sample
+!.env.template
+!.env.*.template
+.envrc
+*.key
+*.p12
+*.pfx
+*.jks
+*.keystore
+
+# Shared test reports
+coverage/
+htmlcov/
+playwright-report/
+test-results/
+
+# Java build output
+target/
+.flattened-pom.xml
+*.class
+*.hprof
+hs_err_pid*
+replay_pid*
+
+# JavaScript dependencies and output (including pnpm workspaces)
+node_modules/
+.pnpm-store/
+.pnpm-store-clean/
+.npm/
+.turbo/
+.vite/
+.vite-temp/
+dist/
+dist-ssr/
+dev-dist/
+.nitro/
+.output/
+.vitepress/cache/
+.vitepress/dist/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+vite.config.*.timestamp-*
+
+# Python environments and caches, including bundled helper scripts
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.hypothesis/
+.uv-cache/
+.coverage
+.coverage.*
+coverage.xml
+*.egg-info/
+scripts/ops/packages/*.tar 
+scripts/ops/packages/*.tar.gz 
+scripts/ops/packages/docker-migration/*.tar 
+scripts/ops/packages/*.tar 
+scripts/ops/packages/*.tar.gz 
+scripts/ops/packages/docker-migration/*.tar 

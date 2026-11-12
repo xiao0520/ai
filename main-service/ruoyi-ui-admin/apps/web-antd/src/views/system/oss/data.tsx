@@ -1,0 +1,87 @@
+import type { FormSchemaGetter } from '#/adapter/form';
+import type { VxeGridProps } from '#/adapter/vxe-table';
+
+export const querySchema: FormSchemaGetter = () => [
+  {
+    component: 'Input',
+    fieldName: 'fileName',
+    label: '文件名',
+    componentProps: {
+      style: { width: '240px' },
+    },
+  },
+  {
+    component: 'Input',
+    fieldName: 'originalName',
+    label: '原名',
+    componentProps: {
+      style: { width: '240px' },
+    },
+  },
+  {
+    component: 'Input',
+    fieldName: 'fileSuffix',
+    label: '拓展名',
+    componentProps: {
+      style: { width: '240px' },
+    },
+  },
+  {
+    component: 'Input',
+    fieldName: 'service',
+    label: '配置名称',
+    componentProps: {
+      style: { width: '240px' },
+    },
+  },
+  {
+    component: 'RangePicker',
+    fieldName: 'createTime',
+    label: '创建时间',
+    formItemClass: 'col-start-1 row-start-2',
+  },
+];
+
+export const columns: VxeGridProps['columns'] = [
+  { type: 'checkbox', width: 60 },
+  {
+    title: '文件名',
+    field: 'fileName',
+    showOverflow: true,
+  },
+  {
+    title: '文件原名',
+    field: 'originalName',
+    showOverflow: true,
+  },
+  {
+    title: '文件拓展名',
+    field: 'fileSuffix',
+  },
+  {
+    title: '文件预览',
+    field: 'url',
+    showOverflow: true,
+    slots: { default: 'url' },
+  },
+  {
+    title: '创建时间',
+    field: 'createTime',
+    sortable: true,
+  },
+  {
+    title: '上传人',
+    field: 'createByName',
+  },
+  {
+    title: '服务商',
+    field: 'service',
+  },
+  {
+    field: 'action',
+    fixed: 'right',
+    slots: { default: 'action' },
+    title: '操作',
+    width: 200,
+  },
+];

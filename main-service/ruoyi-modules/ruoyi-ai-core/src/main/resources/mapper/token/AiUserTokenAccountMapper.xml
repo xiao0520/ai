@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.token.AiUserTokenAccountMapper">
+
+    <select id="selectAccountPage" resultType="org.ruoyi.domain.entity.token.AiUserTokenAccount">
+        SELECT id, user_id, cycle_type, cycle_no, total_tokens, used_tokens, reserved_tokens,
+               unlimited, warning_threshold, cycle_start, cycle_end, status, version, remark,
+               create_dept, create_by, create_time, update_by, update_time
+        FROM user_token_account
+        WHERE user_id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+        <if test="query != null and query.cycleType != null and query.cycleType != ''">
+            AND cycle_type = #{query.cycleType}
+        </if>
+        <if test="query != null and query.status != null and query.status != ''">
+            AND status = #{query.status}
+        </if>
+        <if test="query != null and query.unlimited != null and query.unlimited != ''">
+            AND unlimited = #{query.unlimited}
+        </if>
+        ORDER BY update_time DESC, user_id ASC
+    </select>
+
+    <select id="selectManualByUserId" resultType="org.ruoyi.domain.entity.token.AiUserTokenAccount">
+        SELECT id, user_id, cycle_type, cycle_no, total_tokens, used_tokens, reserved_tokens,
+               unlimited, warning_threshold, cycle_start, cycle_end, status, version, remark,
+               create_dept, create_by, create_time, update_by, update_time
+        FROM user_token_account
+        WHERE user_id = #{userId}
+          AND cycle_no = #{cycleNo}
+        ORDER BY id ASC
+        LIMIT 1
+    </select>
+
+    <select id="selectConfiguredUserIds" resultType="java.lang.Long">
+        SELECT user_id
+        FROM user_token_account
+        WHERE cycle_no = #{cycleNo}
+        AND user_id IN
+        <foreach collection="userIds" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </select>
+
+    <update id="reserveTokens">
+        UPDATE user_token_account
+        SET reserved_tokens = reserved_tokens + #{tokens}, version = version + 1
+        WHERE id = #{accountId}
+          AND status = '0'
+          AND unlimited = '0'
+          AND total_tokens - used_tokens - reserved_tokens >= #{tokens}
+    </update>
+
+    <update id="settleTokens">
+        UPDATE user_token_account
+        SET reserved_tokens = reserved_tokens - #{reservedTokens},
+            used_tokens = used_tokens + #{chargedTokens},
+            version = version + 1
+        WHERE id = #{accountId}
+          AND status = '0'
+          AND unlimited = '0'
+          AND reserved_tokens >= #{reservedTokens}
+          AND total_tokens - used_tokens >= #{chargedTokens}
+    </update>
+
+    <update id="releaseTokens">
+        UPDATE user_token_account
+        SET reserved_tokens = reserved_tokens - #{reservedTokens}, version = version + 1
+        WHERE id = #{accountId}
+          AND reserved_tokens >= #{reservedTokens}
+    </update>
+</mapper>

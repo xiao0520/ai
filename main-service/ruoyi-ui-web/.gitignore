@@ -1,0 +1,35 @@
+# Shared OS/editor rules are in ../../.gitignore.
+# Keep dependency locks, .build/ plugins, types/ and frontend build settings.
+
+# Dependencies and generated output
+node_modules/
+.pnpm-store/
+.pnpm-store-clean/
+.turbo/
+.vite/
+.vite-temp/
+dist/
+dist-ssr/
+coverage/
+*.tsbuildinfo
+.eslintcache
+.stylelintcache
+vite.config.*.timestamp-*
+
+# Distribution archives
+dist.zip
+dist.tar
+dist.tar.gz
+dist.war
+
+# Frontend defaults; use .env.*.local for machine overrides.
+# Frontend environment values are public: never put server secrets here.
+!/.env.development
+!/.env.production
+.env.local
+.env.*.local
+
+# Runtime logs
+logs/
+*.log
+*.log.*

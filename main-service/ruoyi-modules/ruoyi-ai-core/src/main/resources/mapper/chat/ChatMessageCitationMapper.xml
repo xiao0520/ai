@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.chat.ChatMessageCitationMapper">
+    <select id="selectByMessageIds" resultType="org.ruoyi.domain.entity.chat.ChatMessageCitation">
+        SELECT id, message_id, citation_id, knowledge_id, index_version_id, document_id,
+               document_version_id, generation_id, chunk_id, content_hash, title,
+               title_path_json, locator_json, excerpt, create_time
+        FROM chat_message_citation
+        WHERE message_id IN
+        <foreach collection="messageIds" item="messageId" open="(" separator="," close=")">
+            #{messageId}
+        </foreach>
+        ORDER BY message_id ASC, id ASC
+    </select>
+
+    <select id="selectOwnedCitation" resultType="org.ruoyi.domain.entity.chat.ChatMessageCitation">
+        SELECT c.id, c.message_id, c.citation_id, c.knowledge_id, c.index_version_id,
+               c.document_id, c.document_version_id, c.generation_id, c.chunk_id,
+               c.content_hash, c.title, c.title_path_json, c.locator_json, c.excerpt,
+               c.create_time
+        FROM chat_message_citation c
+        INNER JOIN chat_message m ON m.id = c.message_id
+        INNER JOIN chat_session s ON s.id = m.session_id
+        WHERE c.message_id = #{messageId}
+          AND c.citation_id = #{citationId}
+          AND s.user_id = #{userId}
+        LIMIT 1
+    </select>
+</mapper>

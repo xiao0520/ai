@@ -1,0 +1,1 @@
+from arkruntime.resources.multimodal_embeddings import AsyncMultimodalEmbeddings as AsyncMultimodalEmbeddings

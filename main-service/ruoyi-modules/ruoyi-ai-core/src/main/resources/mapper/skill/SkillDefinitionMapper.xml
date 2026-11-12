@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.skill.SkillDefinitionMapper">
+
+    <sql id="skillColumns">
+        id, skill_name, display_name, description, runtime, entrypoint, artifact_oss_id, digest,
+        parameter_schema, output_schema, allowed_tool_ids, resource_limits, status, create_dept,
+        create_by, create_time, update_by, update_time
+    </sql>
+
+    <sql id="skillWhere">
+        <where>
+            AND del_flag = 0
+            <if test="bo != null and bo.skillName != null and bo.skillName.trim() != ''">
+                AND skill_name LIKE CONCAT('%', #{bo.skillName}, '%')
+            </if>
+            <if test="bo != null and bo.displayName != null and bo.displayName.trim() != ''">
+                AND display_name LIKE CONCAT('%', #{bo.displayName}, '%')
+            </if>
+            <if test="bo != null and bo.runtime != null and bo.runtime.trim() != ''">
+                AND runtime = #{bo.runtime}
+            </if>
+            <if test="bo != null and bo.status != null and bo.status.trim() != ''">
+                AND status = #{bo.status}
+            </if>
+        </where>
+    </sql>
+
+    <select id="selectSkillPage" resultType="org.ruoyi.domain.entity.skill.SkillDefinition">
+        SELECT <include refid="skillColumns"/>
+        FROM skill
+        <include refid="skillWhere"/>
+        ORDER BY skill_name ASC
+    </select>
+
+    <select id="selectSkillList" resultType="org.ruoyi.domain.entity.skill.SkillDefinition">
+        SELECT <include refid="skillColumns"/>
+        FROM skill
+        <include refid="skillWhere"/>
+        ORDER BY skill_name ASC
+    </select>
+
+    <select id="selectEnabledOptions" resultType="org.ruoyi.domain.vo.skill.SkillOptionVo">
+        SELECT skill_name AS name,
+               CASE WHEN display_name IS NULL OR TRIM(display_name) = '' THEN description ELSE display_name END AS description
+        FROM skill
+        WHERE status = '0'
+        ORDER BY skill_name ASC
+    </select>
+
+    <select id="existsBySkillName" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM skill
+        WHERE skill_name = #{skillName}
+        <if test="excludeId != null">
+            AND id != #{excludeId}
+        </if>
+    </select>
+
+    <select id="existsByArtifactOssId" resultType="boolean">
+        SELECT COUNT(1) > 0
+        FROM skill
+        WHERE artifact_oss_id = #{artifactOssId}
+    </select>
+
+    <update id="updateWithNullableArtifact">
+        UPDATE skill
+        <set>
+            <if test="displayName != null">display_name = #{displayName},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="runtime != null">runtime = #{runtime},</if>
+            <if test="entrypoint != null">entrypoint = #{entrypoint},</if>
+            artifact_oss_id = #{artifactOssId},
+            <if test="digest != null">digest = #{digest},</if>
+            <if test="parameterSchema != null">parameter_schema = #{parameterSchema},</if>
+            <if test="outputSchema != null">output_schema = #{outputSchema},</if>
+            <if test="allowedToolIds != null">allowed_tool_ids = #{allowedToolIds},</if>
+            <if test="resourceLimits != null">resource_limits = #{resourceLimits},</if>
+            <if test="status != null">status = #{status},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+</mapper>

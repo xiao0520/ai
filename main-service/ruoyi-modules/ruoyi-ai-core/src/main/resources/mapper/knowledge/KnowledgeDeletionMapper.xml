@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.knowledge.KnowledgeDeletionMapper">
+
+    <sql id="generationColumns">
+        generation_id, job_id, attempt_id, knowledge_id, index_version_id,
+        document_id, document_version_id, manifest_oss_id, manifest_hash, manifest_size,
+        config_hash, source_hash, vector_dimensions, vision_vector_dimensions,
+        chunk_count, dense_count, sparse_count, vision_count, status,
+        cleanup_after, cleaned_at, cleanup_error, create_time, update_time
+    </sql>
+
+    <select id="countActiveJobsByKnowledge" resultType="int">
+        SELECT COUNT(*) FROM knowledge_parse_job
+        WHERE knowledge_id = #{knowledgeId} AND status IN
+        <foreach collection="activeStatuses" item="status" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+    </select>
+
+    <select id="countActiveJobsByDocument" resultType="int">
+        SELECT COUNT(*) FROM knowledge_parse_job
+        WHERE document_id = #{documentId} AND status IN
+        <foreach collection="activeStatuses" item="status" open="(" separator="," close=")">
+            #{status}
+        </foreach>
+    </select>
+
+    <select id="selectIndexVersionIdsByDocument" resultType="java.lang.Long">
+        SELECT DISTINCT index_version_id FROM knowledge_index_document
+        WHERE document_id = #{documentId}
+        ORDER BY index_version_id
+    </select>
+
+    <select id="selectGenerationsByKnowledge"
+            resultType="org.ruoyi.domain.entity.knowledge.KnowledgeArtifactGeneration">
+        SELECT <include refid="generationColumns"/>
+        FROM knowledge_artifact_generation
+        WHERE knowledge_id = #{knowledgeId}
+        ORDER BY generation_id
+    </select>
+
+    <select id="selectGenerationsByDocument"
+            resultType="org.ruoyi.domain.entity.knowledge.KnowledgeArtifactGeneration">
+        SELECT <include refid="generationColumns"/>
+        FROM knowledge_artifact_generation
+        WHERE document_id = #{documentId}
+        ORDER BY generation_id
+    </select>
+
+    <update id="markDocumentsDeletedByKnowledge">
+        UPDATE knowledge_document SET status = #{deletedStatus}, update_time = NOW()
+        WHERE knowledge_id = #{knowledgeId} AND status != #{deletedStatus}
+    </update>
+
+    <update id="markDocumentVersionsDeletedByKnowledge">
+        UPDATE knowledge_document_version SET parse_status = #{deletedStatus}, update_time = NOW()
+        WHERE knowledge_id = #{knowledgeId} AND parse_status != #{deletedStatus}
+    </update>
+
+    <update id="markIndexVersionsDeletedByKnowledge">
+        UPDATE knowledge_index_version SET status = #{deletedStatus}, update_time = NOW()
+        WHERE knowledge_id = #{knowledgeId} AND status != #{deletedStatus}
+    </update>
+
+    <delete id="deleteIndexDocumentsByKnowledge">
+        DELETE FROM knowledge_index_document WHERE knowledge_id = #{knowledgeId}
+    </delete>
+
+    <delete id="deleteIndexDocumentsByDocument">
+        DELETE FROM knowledge_index_document WHERE document_id = #{documentId}
+    </delete>
+
+    <delete id="deleteAclByKnowledge">
+        DELETE FROM knowledge_acl WHERE knowledge_id = #{knowledgeId}
+    </delete>
+
+    <delete id="deleteAgentBindingsByKnowledge">
+        DELETE FROM agent_knowledge WHERE knowledge_id = #{knowledgeId}
+    </delete>
+
+    <select id="selectDeletedSourceOssIds" resultType="java.lang.Long">
+        SELECT DISTINCT v.oss_id
+        FROM knowledge_document_version v
+        JOIN knowledge_document d ON d.id = v.document_id
+        JOIN sys_oss o ON o.oss_id = v.oss_id
+        WHERE d.status = #{deletedStatus}
+        ORDER BY v.oss_id
+        LIMIT #{limit}
+    </select>
+
+    <select id="selectPurgeableDeletedDocumentIds" resultType="java.lang.Long">
+        SELECT d.id
+        FROM knowledge_document d
+        WHERE d.status = #{deletedStatus}
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_parse_job j
+              WHERE j.document_id = d.id AND j.status IN
+              <foreach collection="activeStatuses" item="status" open="(" separator="," close=")">
+                  #{status}
+              </foreach>
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_index_document x WHERE x.document_id = d.id
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_artifact_generation g
+              WHERE g.document_id = d.id AND g.status != #{cleanedStatus}
+          )
+          AND NOT EXISTS (
+              SELECT 1
+              FROM knowledge_document_version v
+              JOIN sys_oss o ON o.oss_id = v.oss_id
+              WHERE v.document_id = d.id
+          )
+        ORDER BY d.id
+        LIMIT #{limit}
+    </select>
+
+    <delete id="deleteOutboxByDocument">
+        DELETE o FROM knowledge_message_outbox o
+        JOIN knowledge_parse_job j ON j.id = o.job_id
+        WHERE j.document_id = #{documentId}
+           OR (
+               j.job_type = 'CLEANUP'
+               AND j.idempotency_key IN (
+                   SELECT CONCAT('CLEANUP:', g.generation_id)
+                   FROM knowledge_artifact_generation g
+                   WHERE g.document_id = #{documentId}
+               )
+           )
+    </delete>
+
+    <delete id="deleteCleanedGenerationsByDocument">
+        DELETE FROM knowledge_artifact_generation
+        WHERE document_id = #{documentId} AND status = #{cleanedStatus}
+    </delete>
+
+    <delete id="deleteJobsByDocument">
+        DELETE j FROM knowledge_parse_job j
+        WHERE j.document_id = #{documentId}
+           OR (
+               j.job_type = 'CLEANUP'
+               AND j.idempotency_key IN (
+                   SELECT CONCAT('CLEANUP:', g.generation_id)
+                   FROM knowledge_artifact_generation g
+                   WHERE g.document_id = #{documentId}
+               )
+           )
+    </delete>
+
+    <delete id="deleteDocumentVersions">
+        DELETE FROM knowledge_document_version WHERE document_id = #{documentId}
+    </delete>
+
+    <delete id="deleteDocument">
+        DELETE FROM knowledge_document WHERE id = #{documentId} AND status = #{deletedStatus}
+    </delete>
+
+    <select id="selectPurgeableDeletedIndexVersionIds" resultType="java.lang.Long">
+        SELECT i.id
+        FROM knowledge_index_version i
+        WHERE i.status = #{deletedStatus}
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_index_document d WHERE d.index_version_id = i.id
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_artifact_generation g
+              WHERE g.index_version_id = i.id AND g.status != #{cleanedStatus}
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_parse_job j
+              WHERE j.knowledge_id = i.knowledge_id
+                AND j.target_index_version = i.index_version
+                AND j.status IN
+                <foreach collection="activeStatuses" item="status" open="(" separator="," close=")">
+                    #{status}
+                </foreach>
+          )
+        ORDER BY i.id
+        LIMIT #{limit}
+    </select>
+
+    <delete id="deleteOutboxByIndex">
+        DELETE o FROM knowledge_message_outbox o
+        JOIN knowledge_parse_job j ON j.id = o.job_id
+        JOIN knowledge_index_version i ON i.knowledge_id = j.knowledge_id
+             AND i.index_version = j.target_index_version
+        WHERE i.id = #{indexVersionId}
+    </delete>
+
+    <delete id="deleteJobsByIndex">
+        DELETE j FROM knowledge_parse_job j
+        JOIN knowledge_index_version i ON i.knowledge_id = j.knowledge_id
+             AND i.index_version = j.target_index_version
+        WHERE i.id = #{indexVersionId}
+    </delete>
+
+    <delete id="deleteCleanedGenerationsByIndex">
+        DELETE FROM knowledge_artifact_generation
+        WHERE index_version_id = #{indexVersionId} AND status = #{cleanedStatus}
+    </delete>
+
+    <delete id="deleteIndexVersion">
+        DELETE FROM knowledge_index_version
+        WHERE id = #{indexVersionId} AND status = #{deletedStatus}
+    </delete>
+
+    <select id="selectPurgeableDeletedKnowledgeIds" resultType="java.lang.Long">
+        SELECT k.id
+        FROM knowledge_info k
+        WHERE k.del_flag = '1'
+          AND NOT EXISTS (SELECT 1 FROM knowledge_document d WHERE d.knowledge_id = k.id)
+          AND NOT EXISTS (SELECT 1 FROM knowledge_index_document x WHERE x.knowledge_id = k.id)
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_artifact_generation g
+              WHERE g.knowledge_id = k.id AND g.status != #{cleanedStatus}
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_index_version i
+              WHERE i.knowledge_id = k.id AND i.status != #{deletedStatus}
+          )
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_parse_job j
+              WHERE j.knowledge_id = k.id AND j.status IN
+              <foreach collection="activeStatuses" item="status" open="(" separator="," close=")">
+                  #{status}
+              </foreach>
+          )
+        ORDER BY k.id
+        LIMIT #{limit}
+    </select>
+
+    <delete id="deleteOutboxByKnowledge">
+        DELETE o FROM knowledge_message_outbox o
+        JOIN knowledge_parse_job j ON j.id = o.job_id
+        WHERE j.knowledge_id = #{knowledgeId}
+    </delete>
+
+    <delete id="deleteCleanedGenerationsByKnowledge">
+        DELETE FROM knowledge_artifact_generation
+        WHERE knowledge_id = #{knowledgeId} AND status = #{cleanedStatus}
+    </delete>
+
+    <delete id="deleteJobsByKnowledge">
+        DELETE FROM knowledge_parse_job WHERE knowledge_id = #{knowledgeId}
+    </delete>
+
+    <delete id="deleteIndexVersionsByKnowledge">
+        DELETE FROM knowledge_index_version
+        WHERE knowledge_id = #{knowledgeId} AND status = #{deletedStatus}
+    </delete>
+
+    <delete id="deleteKnowledgePhysically">
+        DELETE FROM knowledge_info WHERE id = #{knowledgeId} AND del_flag = '1'
+    </delete>
+</mapper>

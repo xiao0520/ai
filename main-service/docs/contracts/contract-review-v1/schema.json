@@ -1,0 +1,2151 @@
+{
+  "$defs": {
+    "ContractFinding": {
+      "additionalProperties": false,
+      "description": "一条可回溯到合同原文的风险结果。",
+      "properties": {
+        "findingId": {
+          "pattern": "^F-[0-9]{3}$",
+          "title": "Findingid",
+          "type": "string"
+        },
+        "category": {
+          "pattern": "^[A-Z][A-Z0-9_]{1,31}$",
+          "title": "Category",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "HIGH",
+            "MEDIUM",
+            "LOW"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "title": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "description": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/ContractLocation"
+        },
+        "suggestion": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Suggestion",
+          "type": "string"
+        },
+        "basis": {
+          "maxLength": 4000,
+          "minLength": 1,
+          "title": "Basis",
+          "type": "string"
+        },
+        "evidences": {
+          "items": {
+            "$ref": "#/$defs/KnowledgeEvidence"
+          },
+          "maxItems": 20,
+          "title": "Evidences",
+          "type": "array"
+        }
+      },
+      "required": [
+        "findingId",
+        "category",
+        "severity",
+        "title",
+        "description",
+        "quote",
+        "location",
+        "suggestion",
+        "basis"
+      ],
+      "title": "ContractFinding",
+      "type": "object"
+    },
+    "ContractInformation": {
+      "additionalProperties": false,
+      "description": "第一版固定提取的合同关键信息。",
+      "properties": {
+        "title": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Title"
+        },
+        "partyA": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Partya"
+        },
+        "partyB": {
+          "anyOf": [
+            {
+              "maxLength": 1000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Partyb"
+        },
+        "otherParties": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 20,
+          "title": "Otherparties",
+          "type": "array"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "maxLength": 32,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "effectiveDate": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Effectivedate"
+        },
+        "startDate": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Startdate"
+        },
+        "endDate": {
+          "anyOf": [
+            {
+              "maxLength": 100,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Enddate"
+        },
+        "term": {
+          "anyOf": [
+            {
+              "maxLength": 2000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Term"
+        },
+        "paymentTerms": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Paymentterms"
+        },
+        "deliveryAndAcceptance": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Deliveryandacceptance"
+        },
+        "breachLiability": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Breachliability"
+        },
+        "terminationTerms": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Terminationterms"
+        },
+        "disputeResolution": {
+          "anyOf": [
+            {
+              "maxLength": 4000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Disputeresolution"
+        }
+      },
+      "title": "ContractInformation",
+      "type": "object"
+    },
+    "ContractLocation": {
+      "additionalProperties": false,
+      "description": "风险原文在上传合同中的稳定位置。",
+      "properties": {
+        "pageNumber": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pagenumber"
+        },
+        "clauseNumber": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Clausenumber"
+        },
+        "blockIndex": {
+          "minimum": 0,
+          "title": "Blockindex",
+          "type": "integer"
+        },
+        "startOffset": {
+          "minimum": 0,
+          "title": "Startoffset",
+          "type": "integer"
+        },
+        "endOffset": {
+          "minimum": 1,
+          "title": "Endoffset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "blockIndex",
+        "startOffset",
+        "endOffset"
+      ],
+      "title": "ContractLocation",
+      "type": "object"
+    },
+    "ContractReviewCompletedPayload": {
+      "additionalProperties": false,
+      "description": "合同审查成功终态。",
+      "properties": {
+        "requestId": {
+          "title": "Requestid",
+          "type": "string"
+        },
+        "result": {
+          "$ref": "#/$defs/ContractReviewResult"
+        },
+        "executionUsage": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Executionusage",
+          "type": "array"
+        }
+      },
+      "required": [
+        "requestId",
+        "result"
+      ],
+      "title": "ContractReviewCompletedPayload",
+      "type": "object"
+    },
+    "ContractReviewExecutionPolicy": {
+      "description": "Java 账户已批准的整次合同审查 Token 硬上限。",
+      "properties": {
+        "maxInputTokens": {
+          "exclusiveMinimum": 0,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "maxOutputTokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 2000000,
+          "title": "Maxoutputtokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "exclusiveMinimum": 0,
+          "maximum": 300,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        },
+        "maxTotalTokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 2147483647,
+          "title": "Maxtotaltokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "maxInputTokens",
+        "maxOutputTokens",
+        "timeoutSeconds",
+        "maxTotalTokens"
+      ],
+      "title": "ContractReviewExecutionPolicy",
+      "type": "object"
+    },
+    "ContractReviewExecutionRequest": {
+      "additionalProperties": false,
+      "description": "Java 已完成权限裁定后的合同审查执行快照。",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0",
+          "title": "Schemaversion",
+          "type": "string"
+        },
+        "requestId": {
+          "maxLength": 128,
+          "minLength": 6,
+          "title": "Requestid",
+          "type": "string"
+        },
+        "taskId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Taskid",
+          "type": "string"
+        },
+        "userId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Userid",
+          "type": "string"
+        },
+        "fileName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Filename",
+          "type": "string"
+        },
+        "mediaType": {
+          "enum": [
+            "application/pdf",
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            "image/png",
+            "image/jpeg"
+          ],
+          "title": "Mediatype",
+          "type": "string"
+        },
+        "contractType": {
+          "enum": [
+            "PURCHASE",
+            "SALES",
+            "SERVICE",
+            "OTHER"
+          ],
+          "title": "Contracttype",
+          "type": "string"
+        },
+        "partyPosition": {
+          "enum": [
+            "PARTY_A",
+            "PARTY_B",
+            "NEUTRAL"
+          ],
+          "title": "Partyposition",
+          "type": "string"
+        },
+        "systemPrompt": {
+          "anyOf": [
+            {
+              "maxLength": 20000,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Systemprompt"
+        },
+        "modelProfile": {
+          "$ref": "#/$defs/ModelProfile"
+        },
+        "executionPolicy": {
+          "$ref": "#/$defs/ContractReviewExecutionPolicy"
+        },
+        "rag": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RagExecutionScope"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "operation": {
+          "default": "REVIEW",
+          "enum": [
+            "REVIEW",
+            "EXTRACT"
+          ],
+          "title": "Operation",
+          "type": "string"
+        },
+        "visionProfile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/VisionProfile"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "visionMaxOutputTokens": {
+          "default": 2048,
+          "maximum": 32768,
+          "minimum": 1,
+          "title": "Visionmaxoutputtokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "requestId",
+        "taskId",
+        "userId",
+        "fileName",
+        "mediaType",
+        "contractType",
+        "partyPosition",
+        "modelProfile",
+        "executionPolicy"
+      ],
+      "title": "ContractReviewExecutionRequest",
+      "type": "object"
+    },
+    "ContractReviewFailedPayload": {
+      "additionalProperties": false,
+      "description": "合同审查失败终态，只暴露稳定错误码。",
+      "properties": {
+        "requestId": {
+          "title": "Requestid",
+          "type": "string"
+        },
+        "errorCode": {
+          "enum": [
+            "VALIDATION",
+            "MODEL_UNAVAILABLE",
+            "RATE_LIMITED",
+            "TIMEOUT",
+            "INTERNAL",
+            "CONTRACT_FILE_UNSUPPORTED",
+            "CONTRACT_PARSE_FAILED",
+            "CONTRACT_TEXT_EMPTY",
+            "KNOWLEDGE_ACCESS_DENIED",
+            "KNOWLEDGE_NOT_READY",
+            "BUDGET_EXCEEDED",
+            "CONTRACT_OCR_REQUIRED",
+            "CONTRACT_OCR_FAILED"
+          ],
+          "title": "Errorcode",
+          "type": "string"
+        },
+        "executionUsage": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Executionusage",
+          "type": "array"
+        }
+      },
+      "required": [
+        "requestId",
+        "errorCode"
+      ],
+      "title": "ContractReviewFailedPayload",
+      "type": "object"
+    },
+    "ContractReviewProgressPayload": {
+      "additionalProperties": false,
+      "description": "合同审查阶段进度，仅用于当前 SSE 展示。",
+      "properties": {
+        "requestId": {
+          "title": "Requestid",
+          "type": "string"
+        },
+        "stage": {
+          "enum": [
+            "PARSING",
+            "EXTRACTING",
+            "RETRIEVING",
+            "REVIEWING",
+            "NORMALIZING"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "progress": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Progress",
+          "type": "integer"
+        },
+        "message": {
+          "maxLength": 100,
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requestId",
+        "stage",
+        "progress",
+        "message"
+      ],
+      "title": "ContractReviewProgressPayload",
+      "type": "object"
+    },
+    "ContractReviewResult": {
+      "additionalProperties": false,
+      "description": "Python 交给 Java 持久化的完整合同审查结果。",
+      "properties": {
+        "schemaVersion": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schemaversion",
+          "type": "string"
+        },
+        "taskId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Taskid",
+          "type": "string"
+        },
+        "information": {
+          "$ref": "#/$defs/ContractInformation"
+        },
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/ContractFinding"
+          },
+          "maxItems": 100,
+          "title": "Findings",
+          "type": "array"
+        },
+        "summary": {
+          "$ref": "#/$defs/ContractRiskSummary"
+        },
+        "warnings": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 100,
+          "title": "Warnings",
+          "type": "array"
+        },
+        "engineVersion": {
+          "const": "contract-review-v1",
+          "default": "contract-review-v1",
+          "title": "Engineversion",
+          "type": "string"
+        }
+      },
+      "required": [
+        "taskId",
+        "information",
+        "findings",
+        "summary"
+      ],
+      "title": "ContractReviewResult",
+      "type": "object"
+    },
+    "ContractReviewUsagePayload": {
+      "additionalProperties": false,
+      "description": "Java 在阶段间保存累计计量，终态断连时仍能结算此前已发生的调用。",
+      "properties": {
+        "requestId": {
+          "title": "Requestid",
+          "type": "string"
+        },
+        "executionUsage": {
+          "items": {
+            "$ref": "#/$defs/ExecutionUsageItem"
+          },
+          "maxItems": 1000,
+          "title": "Executionusage",
+          "type": "array"
+        }
+      },
+      "required": [
+        "requestId",
+        "executionUsage"
+      ],
+      "title": "ContractReviewUsagePayload",
+      "type": "object"
+    },
+    "ContractRiskSummary": {
+      "additionalProperties": false,
+      "description": "按风险等级汇总数量。",
+      "properties": {
+        "high": {
+          "minimum": 0,
+          "title": "High",
+          "type": "integer"
+        },
+        "medium": {
+          "minimum": 0,
+          "title": "Medium",
+          "type": "integer"
+        },
+        "low": {
+          "minimum": 0,
+          "title": "Low",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "high",
+        "medium",
+        "low"
+      ],
+      "title": "ContractRiskSummary",
+      "type": "object"
+    },
+    "DocxBlockLocator": {
+      "additionalProperties": false,
+      "description": "DOCX 块序号从 0 开始，标题路径保存在来源对象上。",
+      "properties": {
+        "kind": {
+          "const": "DOCX_BLOCK",
+          "title": "Kind",
+          "type": "string"
+        },
+        "blockIndex": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Blockindex",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "blockIndex"
+      ],
+      "title": "DocxBlockLocator",
+      "type": "object"
+    },
+    "EmbeddingProfile": {
+      "additionalProperties": false,
+      "description": "模型管理发布的向量执行快照；供应商能力由 Python 适配器注册表裁定。\n\n字段分为三组：\n  标识 — 配置引用 + 模型定位\n  连接 — API 端点与凭证\n  能力 — 向量维度、输入模式、归一化、Token 与超时限制",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "providerCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "apiHost": {
+          "maxLength": 2048,
+          "pattern": "^https?://[^\\s?#]+$",
+          "title": "Apihost",
+          "type": "string"
+        },
+        "apiMode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Apimode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "dimensions": {
+          "maximum": 65536,
+          "minimum": 1,
+          "title": "Dimensions",
+          "type": "integer"
+        },
+        "documentInputMode": {
+          "enum": [
+            "TEXT_SINGLE",
+            "MULTIMODAL_SINGLE"
+          ],
+          "title": "Documentinputmode",
+          "type": "string"
+        },
+        "queryInputMode": {
+          "const": "TEXT_SINGLE",
+          "title": "Queryinputmode",
+          "type": "string"
+        },
+        "normalized": {
+          "title": "Normalized",
+          "type": "boolean"
+        },
+        "maxInputTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "providerCode",
+        "modelName",
+        "apiHost",
+        "apiMode",
+        "credentialKey",
+        "dimensions",
+        "documentInputMode",
+        "queryInputMode",
+        "normalized",
+        "maxInputTokens",
+        "timeoutSeconds"
+      ],
+      "title": "EmbeddingProfile",
+      "type": "object"
+    },
+    "ExecutionUsageItem": {
+      "additionalProperties": false,
+      "description": "Java 按调用标识去重计费；Python 不计算价格。\n\n每条用量记录绑定唯一的 (stage, call_id, attempt_id, profile) 四元组，\nJava 端按此去重。measurement 通过 discriminator 按 unit 分发到具体计量类型。",
+      "properties": {
+        "stage": {
+          "enum": [
+            "VISION",
+            "EMBEDDING",
+            "RERANK",
+            "CHAT"
+          ],
+          "title": "Stage",
+          "type": "string"
+        },
+        "callId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Callid",
+          "type": "string"
+        },
+        "attemptId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Attemptid",
+          "type": "string"
+        },
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "measurement": {
+          "discriminator": {
+            "mapping": {
+              "DOCUMENT_PAIRS": "#/$defs/RequestMeasurement",
+              "REQUESTS": "#/$defs/RequestMeasurement",
+              "TOKENS": "#/$defs/TokenMeasurement",
+              "UNKNOWN": "#/$defs/UnknownMeasurement"
+            },
+            "propertyName": "unit"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/TokenMeasurement"
+            },
+            {
+              "$ref": "#/$defs/RequestMeasurement"
+            },
+            {
+              "$ref": "#/$defs/UnknownMeasurement"
+            }
+          ],
+          "title": "Measurement"
+        }
+      },
+      "required": [
+        "stage",
+        "callId",
+        "attemptId",
+        "profile",
+        "measurement"
+      ],
+      "title": "ExecutionUsageItem",
+      "type": "object"
+    },
+    "ImageLocator": {
+      "additionalProperties": false,
+      "description": "图片来源定位到原文件容器；媒体摘要用于防止位置复用到不同内容。",
+      "properties": {
+        "kind": {
+          "const": "IMAGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "container": {
+          "enum": [
+            "PDF",
+            "DOCX",
+            "MARKDOWN",
+            "PPTX",
+            "XLSX"
+          ],
+          "title": "Container",
+          "type": "string"
+        },
+        "imageIndex": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Imageindex",
+          "type": "integer"
+        },
+        "pageNumber": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Pagenumber"
+        },
+        "slideNumber": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Slidenumber"
+        },
+        "startOffset": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Startoffset"
+        },
+        "endOffset": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Endoffset"
+        },
+        "sheetName": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sheetname"
+        },
+        "rowNumber": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rownumber"
+        },
+        "columnNumber": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Columnnumber"
+        },
+        "contentHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        },
+        "mediaType": {
+          "maxLength": 32,
+          "pattern": "^image/(?:png|jpeg)$",
+          "title": "Mediatype",
+          "type": "string"
+        }
+      },
+      "required": [
+        "kind",
+        "container",
+        "imageIndex",
+        "pageNumber",
+        "slideNumber",
+        "startOffset",
+        "endOffset",
+        "sheetName",
+        "rowNumber",
+        "columnNumber",
+        "contentHash",
+        "mediaType"
+      ],
+      "title": "ImageLocator",
+      "type": "object"
+    },
+    "IndexSnapshot": {
+      "additionalProperties": false,
+      "description": "不可变索引配置；collection 与全部编码版本必须与 Java 发布记录一致。\n\n字段分为三组：\n  集合定义 — 知识库归属、索引版本、collection 名称和距离度量\n  向量定义 — 文本 dense + 图片 dense + 文本 sparse 的名称和模型配置\n  处理链 — 解析、分割、分词、稀疏编码和清单的版本号",
+      "properties": {
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "collectionName": {
+          "pattern": "^[A-Za-z0-9_-]{1,128}$",
+          "title": "Collectionname",
+          "type": "string"
+        },
+        "distance": {
+          "enum": [
+            "COSINE",
+            "DOT",
+            "EUCLID"
+          ],
+          "title": "Distance",
+          "type": "string"
+        },
+        "denseVectorName": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Densevectorname",
+          "type": "string"
+        },
+        "denseVisionVectorName": {
+          "anyOf": [
+            {
+              "maxLength": 128,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Densevisionvectorname"
+        },
+        "sparseVectorName": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sparsevectorname",
+          "type": "string"
+        },
+        "embedding": {
+          "$ref": "#/$defs/EmbeddingProfile"
+        },
+        "multimodalEmbedding": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EmbeddingProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "parserRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Parserrevision",
+          "type": "string"
+        },
+        "splitterRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Splitterrevision",
+          "type": "string"
+        },
+        "tokenizerRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Tokenizerrevision",
+          "type": "string"
+        },
+        "sparseRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sparserevision",
+          "type": "string"
+        },
+        "sparseCorpusRevision": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sparsecorpusrevision",
+          "type": "string"
+        },
+        "chunkSizeTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Chunksizetokens",
+          "type": "integer"
+        },
+        "chunkOverlapTokens": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Chunkoverlaptokens",
+          "type": "integer"
+        },
+        "configHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Confighash",
+          "type": "string"
+        },
+        "manifestRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Manifestrevision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "knowledgeId",
+        "indexVersion",
+        "collectionName",
+        "distance",
+        "denseVectorName",
+        "denseVisionVectorName",
+        "sparseVectorName",
+        "embedding",
+        "multimodalEmbedding",
+        "parserRevision",
+        "splitterRevision",
+        "tokenizerRevision",
+        "sparseRevision",
+        "sparseCorpusRevision",
+        "chunkSizeTokens",
+        "chunkOverlapTokens",
+        "configHash",
+        "manifestRevision"
+      ],
+      "title": "IndexSnapshot",
+      "type": "object"
+    },
+    "KnowledgeEvidence": {
+      "additionalProperties": false,
+      "description": "经授权检索链返回并由风险项实际引用的知识证据。",
+      "properties": {
+        "evidenceId": {
+          "maxLength": 256,
+          "minLength": 1,
+          "title": "Evidenceid",
+          "type": "string"
+        },
+        "sourceTitle": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Sourcetitle",
+          "type": "string"
+        },
+        "quote": {
+          "maxLength": 40000,
+          "minLength": 1,
+          "title": "Quote",
+          "type": "string"
+        },
+        "location": {
+          "$ref": "#/$defs/SourceLocation"
+        }
+      },
+      "required": [
+        "evidenceId",
+        "sourceTitle",
+        "quote",
+        "location"
+      ],
+      "title": "KnowledgeEvidence",
+      "type": "object"
+    },
+    "KnowledgeRetrievalSettings": {
+      "additionalProperties": false,
+      "description": "单个知识库在本次请求中冻结的召回、重排和命中阈值。",
+      "properties": {
+        "denseEnabled": {
+          "title": "Denseenabled",
+          "type": "boolean"
+        },
+        "sparseEnabled": {
+          "title": "Sparseenabled",
+          "type": "boolean"
+        },
+        "recallCount": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Recallcount",
+          "type": "integer"
+        },
+        "rrfK": {
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Rrfk",
+          "type": "integer"
+        },
+        "rerankEnabled": {
+          "title": "Rerankenabled",
+          "type": "boolean"
+        },
+        "rerankProfile": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RerankProfile"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rerankInputCount": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Rerankinputcount",
+          "type": "integer"
+        },
+        "rerankOutputCount": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Rerankoutputcount",
+          "type": "integer"
+        },
+        "relevanceThreshold": {
+          "anyOf": [
+            {
+              "maximum": 1,
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Relevancethreshold"
+        }
+      },
+      "required": [
+        "denseEnabled",
+        "sparseEnabled",
+        "recallCount",
+        "rrfK",
+        "rerankEnabled",
+        "rerankProfile",
+        "rerankInputCount",
+        "rerankOutputCount",
+        "relevanceThreshold"
+      ],
+      "title": "KnowledgeRetrievalSettings",
+      "type": "object"
+    },
+    "KnowledgeScope": {
+      "additionalProperties": false,
+      "description": "Java 授权后固定库、索引和修订号，不能独立笛卡尔积过滤。\n\n每个 scope 绑定一个 (knowledge_id, index_version)，permission_revision\n和 manifest_revision 用于 Java 端判断快照是否过期。",
+      "properties": {
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "permissionRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Permissionrevision",
+          "type": "integer"
+        },
+        "manifestRevision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Manifestrevision",
+          "type": "integer"
+        },
+        "retrievalSettings": {
+          "$ref": "#/$defs/KnowledgeRetrievalSettings"
+        }
+      },
+      "required": [
+        "knowledgeId",
+        "indexVersion",
+        "permissionRevision",
+        "manifestRevision",
+        "retrievalSettings"
+      ],
+      "title": "KnowledgeScope",
+      "type": "object"
+    },
+    "ModelProfile": {
+      "description": "不含明文凭证的已发布模型配置快照。\n\ncredential_key 是凭证别名，Python 通过内部注册表查找实际 API Key，\n不在消息中传递明文凭证。",
+      "properties": {
+        "id": {
+          "exclusiveMinimum": 0,
+          "title": "Id",
+          "type": "integer"
+        },
+        "revision": {
+          "exclusiveMinimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "providerCode": {
+          "maxLength": 50,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "apiHost": {
+          "format": "uri",
+          "maxLength": 2083,
+          "minLength": 1,
+          "title": "Apihost",
+          "type": "string"
+        },
+        "apiMode": {
+          "default": "CHAT_COMPLETIONS",
+          "enum": [
+            "CHAT_COMPLETIONS",
+            "RESPONSES"
+          ],
+          "title": "Apimode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "maxInputTokens": {
+          "exclusiveMinimum": 0,
+          "maximum": 2000000,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "maxOutputTokens": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0,
+              "maximum": 2000000,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maxoutputtokens"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "modelName",
+        "providerCode",
+        "apiHost",
+        "credentialKey",
+        "maxInputTokens"
+      ],
+      "title": "ModelProfile",
+      "type": "object"
+    },
+    "PdfPageLocator": {
+      "additionalProperties": false,
+      "description": "PDF 页码从 1 开始，不以预览页排序替代原文件位置。",
+      "properties": {
+        "kind": {
+          "const": "PDF_PAGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "pageNumber": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Pagenumber",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "pageNumber"
+      ],
+      "title": "PdfPageLocator",
+      "type": "object"
+    },
+    "PresentationBlockLocator": {
+      "additionalProperties": false,
+      "description": "PPTX 内容定位到幻灯片、形状及可选表格行。",
+      "properties": {
+        "kind": {
+          "const": "PRESENTATION_BLOCK",
+          "title": "Kind",
+          "type": "string"
+        },
+        "container": {
+          "const": "PPTX",
+          "title": "Container",
+          "type": "string"
+        },
+        "slideNumber": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Slidenumber",
+          "type": "integer"
+        },
+        "shapeIndex": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Shapeindex",
+          "type": "integer"
+        },
+        "rowIndex": {
+          "anyOf": [
+            {
+              "maximum": 2147483647,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Rowindex"
+        }
+      },
+      "required": [
+        "kind",
+        "container",
+        "slideNumber",
+        "shapeIndex",
+        "rowIndex"
+      ],
+      "title": "PresentationBlockLocator",
+      "type": "object"
+    },
+    "ProfileRef": {
+      "additionalProperties": false,
+      "description": "引用 Java 已发布配置；执行请求还需携带对应完整快照。",
+      "properties": {
+        "id": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Id",
+          "type": "string"
+        },
+        "revision": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "id",
+        "revision"
+      ],
+      "title": "ProfileRef",
+      "type": "object"
+    },
+    "RagExecutionScope": {
+      "additionalProperties": false,
+      "description": "Java 为单次调用绑定授权和执行配置；空范围禁止执行检索。\n\n字段分为四层：\n  授权 — 快照 ID + 过期时间 + 知识库范围列表\n  检索 — 检索策略引用与完整快照\n  索引 — 每个知识库的完整索引配置快照\n  限额 — 模型可使用的知识上下文预算",
+      "properties": {
+        "contractVersion": {
+          "const": "rag-v1",
+          "title": "Contractversion",
+          "type": "string"
+        },
+        "mode": {
+          "const": "KNOWLEDGE_QA",
+          "title": "Mode",
+          "type": "string"
+        },
+        "scopeSnapshotId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Scopesnapshotid",
+          "type": "string"
+        },
+        "expiresAt": {
+          "format": "date-time",
+          "title": "Expiresat",
+          "type": "string"
+        },
+        "knowledgeScopes": {
+          "items": {
+            "$ref": "#/$defs/KnowledgeScope"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Knowledgescopes",
+          "type": "array"
+        },
+        "retrievalProfile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "retrievalSnapshot": {
+          "$ref": "#/$defs/RetrievalProfile"
+        },
+        "indexSnapshots": {
+          "items": {
+            "$ref": "#/$defs/IndexSnapshot"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Indexsnapshots",
+          "type": "array"
+        },
+        "contextBudgetTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Contextbudgettokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "contractVersion",
+        "mode",
+        "scopeSnapshotId",
+        "expiresAt",
+        "knowledgeScopes",
+        "retrievalProfile",
+        "retrievalSnapshot",
+        "indexSnapshots",
+        "contextBudgetTokens"
+      ],
+      "title": "RagExecutionScope",
+      "type": "object"
+    },
+    "RequestMeasurement": {
+      "additionalProperties": false,
+      "description": "按请求或文档对计量，不伪装为 Token。",
+      "properties": {
+        "unit": {
+          "enum": [
+            "REQUESTS",
+            "DOCUMENT_PAIRS"
+          ],
+          "title": "Unit",
+          "type": "string"
+        },
+        "quality": {
+          "enum": [
+            "ACTUAL",
+            "ESTIMATED"
+          ],
+          "title": "Quality",
+          "type": "string"
+        },
+        "quantity": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Quantity",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "unit",
+        "quality",
+        "quantity"
+      ],
+      "title": "RequestMeasurement",
+      "type": "object"
+    },
+    "RerankProfile": {
+      "additionalProperties": false,
+      "description": "发布后的重排适配契约；不指定尚未选择的供应商或模型。",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "providerCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "apiHost": {
+          "maxLength": 2048,
+          "pattern": "^https?://[^\\s?#]+$",
+          "title": "Apihost",
+          "type": "string"
+        },
+        "adapterCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Adaptercode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "inputMode": {
+          "enum": [
+            "TEXT",
+            "MULTIMODAL"
+          ],
+          "title": "Inputmode",
+          "type": "string"
+        },
+        "maxDocumentTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxdocumenttokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "providerCode",
+        "modelName",
+        "apiHost",
+        "adapterCode",
+        "credentialKey",
+        "inputMode",
+        "maxDocumentTokens",
+        "timeoutSeconds"
+      ],
+      "title": "RerankProfile",
+      "type": "object"
+    },
+    "RetrievalProfile": {
+      "additionalProperties": false,
+      "description": "生产与检索测试共用的候选数量和上下文参数。\n\n两阶段检索流水线：\n  DENSE_BM25_RRF_RERANK — 生产模式，dense + sparse → RRF 融合 → Rerank → 最终 Top-K\n  DEVELOPMENT_NO_RERANK — 开发模式，跳过 Rerank 阶段",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "mode": {
+          "enum": [
+            "DENSE_BM25_RRF_RERANK",
+            "DEVELOPMENT_NO_RERANK"
+          ],
+          "title": "Mode",
+          "type": "string"
+        },
+        "denseTopK": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Densetopk",
+          "type": "integer"
+        },
+        "sparseTopK": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Sparsetopk",
+          "type": "integer"
+        },
+        "rrfK": {
+          "maximum": 1000,
+          "minimum": 1,
+          "title": "Rrfk",
+          "type": "integer"
+        },
+        "rerankTopK": {
+          "maximum": 200,
+          "minimum": 1,
+          "title": "Reranktopk",
+          "type": "integer"
+        },
+        "finalTopK": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Finaltopk",
+          "type": "integer"
+        },
+        "neighborWindow": {
+          "maximum": 3,
+          "minimum": 0,
+          "title": "Neighborwindow",
+          "type": "integer"
+        },
+        "maxContextChunks": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Maxcontextchunks",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "mode",
+        "denseTopK",
+        "sparseTopK",
+        "rrfK",
+        "rerankTopK",
+        "finalTopK",
+        "neighborWindow",
+        "maxContextChunks"
+      ],
+      "title": "RetrievalProfile",
+      "type": "object"
+    },
+    "SourceLocation": {
+      "additionalProperties": false,
+      "description": "可持久化引用位置；不包含对象存储下载链接。\n\n三个组成部分：\n  source  — 不可变的来源元组引用\n  title   — 文档标题与标题路径（面包屑）\n  locator — 文件内具体位置（按 kind 区分定位器类型）",
+      "properties": {
+        "source": {
+          "$ref": "#/$defs/SourceRef"
+        },
+        "title": {
+          "maxLength": 512,
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "titlePath": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 32,
+          "title": "Titlepath",
+          "type": "array"
+        },
+        "locator": {
+          "discriminator": {
+            "mapping": {
+              "DOCX_BLOCK": "#/$defs/DocxBlockLocator",
+              "IMAGE": "#/$defs/ImageLocator",
+              "PDF_PAGE": "#/$defs/PdfPageLocator",
+              "PRESENTATION_BLOCK": "#/$defs/PresentationBlockLocator",
+              "SPREADSHEET_RANGE": "#/$defs/SpreadsheetRangeLocator",
+              "TABLE_RANGE": "#/$defs/TableRangeLocator",
+              "TEXT_RANGE": "#/$defs/TextRangeLocator"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/PdfPageLocator"
+            },
+            {
+              "$ref": "#/$defs/TextRangeLocator"
+            },
+            {
+              "$ref": "#/$defs/DocxBlockLocator"
+            },
+            {
+              "$ref": "#/$defs/PresentationBlockLocator"
+            },
+            {
+              "$ref": "#/$defs/SpreadsheetRangeLocator"
+            },
+            {
+              "$ref": "#/$defs/TableRangeLocator"
+            },
+            {
+              "$ref": "#/$defs/ImageLocator"
+            }
+          ],
+          "title": "Locator"
+        }
+      },
+      "required": [
+        "source",
+        "title",
+        "titlePath",
+        "locator"
+      ],
+      "title": "SourceLocation",
+      "type": "object"
+    },
+    "SourceRef": {
+      "additionalProperties": false,
+      "description": "候选复核使用完整不可变来源元组，禁止只按 chunkId 授权。\n\n六元组唯一标识一个 chunk：(knowledge_id, index_version, document_id,\ndocument_version_id, generation_id, chunk_id)，加上 content_hash\n确保指向的内容未被篡改。",
+      "properties": {
+        "knowledgeId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Knowledgeid",
+          "type": "string"
+        },
+        "indexVersion": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Indexversion",
+          "type": "string"
+        },
+        "documentId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentid",
+          "type": "string"
+        },
+        "documentVersionId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Documentversionid",
+          "type": "string"
+        },
+        "generationId": {
+          "pattern": "^[1-9][0-9]{0,18}$",
+          "title": "Generationid",
+          "type": "string"
+        },
+        "chunkId": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Chunkid",
+          "type": "string"
+        },
+        "contentHash": {
+          "pattern": "^[a-f0-9]{64}$",
+          "title": "Contenthash",
+          "type": "string"
+        }
+      },
+      "required": [
+        "knowledgeId",
+        "indexVersion",
+        "documentId",
+        "documentVersionId",
+        "generationId",
+        "chunkId",
+        "contentHash"
+      ],
+      "title": "SourceRef",
+      "type": "object"
+    },
+    "SpreadsheetRangeLocator": {
+      "additionalProperties": false,
+      "description": "CSV/XLSX 单行内容的工作表和单元格范围，坐标从 1 开始。",
+      "properties": {
+        "kind": {
+          "const": "SPREADSHEET_RANGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "container": {
+          "enum": [
+            "CSV",
+            "XLSX"
+          ],
+          "title": "Container",
+          "type": "string"
+        },
+        "sheetName": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Sheetname",
+          "type": "string"
+        },
+        "rowStart": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Rowstart",
+          "type": "integer"
+        },
+        "rowEnd": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Rowend",
+          "type": "integer"
+        },
+        "columnStart": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Columnstart",
+          "type": "integer"
+        },
+        "columnEnd": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Columnend",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "container",
+        "sheetName",
+        "rowStart",
+        "rowEnd",
+        "columnStart",
+        "columnEnd"
+      ],
+      "title": "SpreadsheetRangeLocator",
+      "type": "object"
+    },
+    "TableRangeLocator": {
+      "additionalProperties": false,
+      "description": "表格与行列序号从 0 开始，结束行列为不包含的边界。",
+      "properties": {
+        "kind": {
+          "const": "TABLE_RANGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "tableIndex": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Tableindex",
+          "type": "integer"
+        },
+        "rowStart": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Rowstart",
+          "type": "integer"
+        },
+        "rowEnd": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Rowend",
+          "type": "integer"
+        },
+        "columnStart": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Columnstart",
+          "type": "integer"
+        },
+        "columnEnd": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Columnend",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "tableIndex",
+        "rowStart",
+        "rowEnd",
+        "columnStart",
+        "columnEnd"
+      ],
+      "title": "TableRangeLocator",
+      "type": "object"
+    },
+    "TextRangeLocator": {
+      "additionalProperties": false,
+      "description": "文本偏移按 Unicode 码点，区间为左闭右开。",
+      "properties": {
+        "kind": {
+          "const": "TEXT_RANGE",
+          "title": "Kind",
+          "type": "string"
+        },
+        "startOffset": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Startoffset",
+          "type": "integer"
+        },
+        "endOffset": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Endoffset",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "kind",
+        "startOffset",
+        "endOffset"
+      ],
+      "title": "TextRangeLocator",
+      "type": "object"
+    },
+    "TokenMeasurement": {
+      "additionalProperties": false,
+      "description": "有实际或估算 Token 用量时才发送数量。",
+      "properties": {
+        "unit": {
+          "const": "TOKENS",
+          "title": "Unit",
+          "type": "string"
+        },
+        "quality": {
+          "enum": [
+            "ACTUAL",
+            "ESTIMATED"
+          ],
+          "title": "Quality",
+          "type": "string"
+        },
+        "inputTokens": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Inputtokens",
+          "type": "integer"
+        },
+        "outputTokens": {
+          "maximum": 2147483647,
+          "minimum": 0,
+          "title": "Outputtokens",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "unit",
+        "quality",
+        "inputTokens",
+        "outputTokens"
+      ],
+      "title": "TokenMeasurement",
+      "type": "object"
+    },
+    "UnknownMeasurement": {
+      "additionalProperties": false,
+      "description": "供应商未报告用量时不使用零占位。",
+      "properties": {
+        "unit": {
+          "const": "UNKNOWN",
+          "title": "Unit",
+          "type": "string"
+        },
+        "reason": {
+          "enum": [
+            "NOT_REPORTED",
+            "INTERRUPTED"
+          ],
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "unit",
+        "reason"
+      ],
+      "title": "UnknownMeasurement",
+      "type": "object"
+    },
+    "VisionProfile": {
+      "additionalProperties": false,
+      "description": "文档图片/OCR 处理模型快照；只保存凭证别名和精确发布修订。",
+      "properties": {
+        "profile": {
+          "$ref": "#/$defs/ProfileRef"
+        },
+        "providerCode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Providercode",
+          "type": "string"
+        },
+        "modelName": {
+          "maxLength": 255,
+          "minLength": 1,
+          "title": "Modelname",
+          "type": "string"
+        },
+        "apiHost": {
+          "maxLength": 2048,
+          "pattern": "^https?://[^\\s?#]+$",
+          "title": "Apihost",
+          "type": "string"
+        },
+        "apiMode": {
+          "maxLength": 128,
+          "minLength": 1,
+          "title": "Apimode",
+          "type": "string"
+        },
+        "credentialKey": {
+          "pattern": "^[A-Za-z0-9_.-]{1,100}$",
+          "title": "Credentialkey",
+          "type": "string"
+        },
+        "maxInputTokens": {
+          "maximum": 2147483647,
+          "minimum": 1,
+          "title": "Maxinputtokens",
+          "type": "integer"
+        },
+        "timeoutSeconds": {
+          "maximum": 300,
+          "minimum": 1,
+          "title": "Timeoutseconds",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "profile",
+        "providerCode",
+        "modelName",
+        "apiHost",
+        "apiMode",
+        "credentialKey",
+        "maxInputTokens",
+        "timeoutSeconds"
+      ],
+      "title": "VisionProfile",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

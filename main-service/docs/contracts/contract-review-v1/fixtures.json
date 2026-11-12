@@ -1,0 +1,195 @@
+{
+  "request": {
+    "schemaVersion": "1.0",
+    "requestId": "contract-review-0001",
+    "taskId": "2076944338398593026",
+    "userId": "9",
+    "fileName": "sample.pdf",
+    "mediaType": "application/pdf",
+    "contractType": "PURCHASE",
+    "partyPosition": "PARTY_A",
+    "systemPrompt": "从采购方立场审查，重点关注付款、交付验收和违约责任。",
+    "modelProfile": {
+      "id": 15,
+      "revision": 1,
+      "modelName": "synthetic-chat",
+      "providerCode": "test-provider",
+      "apiHost": "https://model.example.invalid/",
+      "apiMode": "CHAT_COMPLETIONS",
+      "credentialKey": "chat-test-key",
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000
+    },
+    "executionPolicy": {
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000,
+      "timeoutSeconds": 60,
+      "maxTotalTokens": 100000
+    },
+    "rag": {
+      "contractVersion": "rag-v1",
+      "mode": "KNOWLEDGE_QA",
+      "scopeSnapshotId": "601",
+      "expiresAt": "2026-09-15T12:00:00+08:00",
+      "knowledgeScopes": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "permissionRevision": 1,
+          "manifestRevision": 1,
+          "retrievalSettings": {
+            "denseEnabled": true,
+            "sparseEnabled": true,
+            "recallCount": 30,
+            "rrfK": 60,
+            "rerankEnabled": false,
+            "rerankProfile": null,
+            "rerankInputCount": 10,
+            "rerankOutputCount": 5,
+            "relevanceThreshold": null
+          }
+        }
+      ],
+      "retrievalProfile": {
+        "id": "14",
+        "revision": 1
+      },
+      "retrievalSnapshot": {
+        "profile": {
+          "id": "14",
+          "revision": 1
+        },
+        "mode": "DENSE_BM25_RRF_RERANK",
+        "denseTopK": 10,
+        "sparseTopK": 10,
+        "rrfK": 60,
+        "rerankTopK": 10,
+        "finalTopK": 5,
+        "neighborWindow": 1,
+        "maxContextChunks": 10
+      },
+      "indexSnapshots": [
+        {
+          "knowledgeId": "101",
+          "indexVersion": "201",
+          "collectionName": "kb_101_v20260924-01",
+          "distance": "COSINE",
+          "denseVectorName": "dense",
+          "denseVisionVectorName": null,
+          "sparseVectorName": "sparse",
+          "embedding": {
+            "profile": {
+              "id": "11",
+              "revision": 1
+            },
+            "providerCode": "doubao",
+            "modelName": "doubao-embedding-vision",
+            "apiHost": "https://model.example.invalid/api/v3/",
+            "apiMode": "ARK_MULTIMODAL_EMBEDDINGS",
+            "credentialKey": "embedding-test-key",
+            "dimensions": 2048,
+            "documentInputMode": "TEXT_SINGLE",
+            "queryInputMode": "TEXT_SINGLE",
+            "normalized": true,
+            "maxInputTokens": 4096,
+            "timeoutSeconds": 60
+          },
+          "multimodalEmbedding": null,
+          "parserRevision": "parser-v1",
+          "splitterRevision": "split-v1",
+          "tokenizerRevision": "tokenizer-test-v1",
+          "sparseRevision": "bm25-test-v1",
+          "sparseCorpusRevision": "corpus-v1",
+          "chunkSizeTokens": 512,
+          "chunkOverlapTokens": 64,
+          "configHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "manifestRevision": 1
+        }
+      ],
+      "contextBudgetTokens": 4000
+    },
+    "operation": "REVIEW",
+    "visionProfile": null,
+    "visionMaxOutputTokens": 2048
+  },
+  "result": {
+    "schemaVersion": "1.0",
+    "taskId": "2076944338398593026",
+    "information": {
+      "title": "测试采购合同",
+      "partyA": "测试甲方",
+      "partyB": null,
+      "otherParties": [],
+      "amount": null,
+      "currency": null,
+      "effectiveDate": null,
+      "startDate": null,
+      "endDate": null,
+      "term": null,
+      "paymentTerms": null,
+      "deliveryAndAcceptance": null,
+      "breachLiability": null,
+      "terminationTerms": null,
+      "disputeResolution": null
+    },
+    "findings": [
+      {
+        "findingId": "F-001",
+        "category": "BREACH_LIABILITY",
+        "severity": "HIGH",
+        "title": "逾期交付责任约定不足",
+        "description": "应结合履约风险明确违约金与损失赔偿关系。",
+        "quote": "逾期交付支付违约金。",
+        "location": {
+          "pageNumber": 1,
+          "clauseNumber": null,
+          "blockIndex": 0,
+          "startOffset": 0,
+          "endOffset": 10
+        },
+        "suggestion": "补充违约金计算方式及损失赔偿约定。",
+        "basis": "基于条款完整性分析，未引用外部法规。",
+        "evidences": []
+      }
+    ],
+    "summary": {
+      "high": 1,
+      "medium": 0,
+      "low": 0
+    },
+    "warnings": [],
+    "engineVersion": "contract-review-v1"
+  },
+  "extractionRequest": {
+    "schemaVersion": "1.0",
+    "requestId": "contract-review-0001",
+    "taskId": "2076944338398593026",
+    "userId": "9",
+    "fileName": "sample.pdf",
+    "mediaType": "application/pdf",
+    "contractType": "PURCHASE",
+    "partyPosition": "PARTY_A",
+    "systemPrompt": "从采购方立场审查，重点关注付款、交付验收和违约责任。",
+    "modelProfile": {
+      "id": 15,
+      "revision": 1,
+      "modelName": "synthetic-chat",
+      "providerCode": "test-provider",
+      "apiHost": "https://model.example.invalid/",
+      "apiMode": "CHAT_COMPLETIONS",
+      "credentialKey": "chat-test-key",
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000
+    },
+    "executionPolicy": {
+      "maxInputTokens": 8000,
+      "maxOutputTokens": 1000,
+      "timeoutSeconds": 60,
+      "maxTotalTokens": 100000
+    },
+    "rag": null,
+    "operation": "EXTRACT",
+    "visionProfile": null,
+    "visionMaxOutputTokens": 2048
+  }
+}

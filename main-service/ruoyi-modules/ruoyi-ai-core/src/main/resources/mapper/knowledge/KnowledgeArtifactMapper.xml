@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.knowledge.KnowledgeArtifactMapper">
+    <sql id="generationColumns">
+        generation_id, job_id, attempt_id, knowledge_id, index_version_id,
+        document_id, document_version_id, manifest_oss_id, manifest_hash, manifest_size,
+        config_hash, source_hash, vector_dimensions, vision_vector_dimensions,
+        chunk_count, dense_count, sparse_count, vision_count, status,
+        cleanup_after, cleaned_at, cleanup_error, create_time, update_time
+    </sql>
+
+    <select id="selectGeneration" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeArtifactGeneration">
+        SELECT <include refid="generationColumns"/>
+        FROM knowledge_artifact_generation WHERE generation_id = #{generationId}
+    </select>
+
+    <select id="selectIndexDocument" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeIndexDocument">
+        SELECT id, knowledge_id, index_version_id, document_id, document_version_id,
+               generation_id, manifest_hash, chunk_count, member_revision, create_time, update_time
+        FROM knowledge_index_document
+        WHERE index_version_id = #{indexVersionId} AND document_id = #{documentId}
+        LIMIT 1
+    </select>
+
+    <insert id="insertGenerationIgnore">
+        INSERT IGNORE INTO knowledge_artifact_generation (
+            generation_id, job_id, attempt_id, knowledge_id, index_version_id,
+            document_id, document_version_id, manifest_oss_id, manifest_hash, manifest_size,
+            config_hash, source_hash, vector_dimensions, vision_vector_dimensions,
+            chunk_count, vision_count, status, cleanup_after, cleaned_at, cleanup_error,
+            create_time, update_time
+        ) VALUES (
+            #{generation.generationId}, #{generation.jobId}, #{generation.attemptId},
+            #{generation.knowledgeId}, #{generation.indexVersionId}, #{generation.documentId},
+            #{generation.documentVersionId}, #{generation.manifestOssId}, #{generation.manifestHash},
+            #{generation.manifestSize}, #{generation.configHash}, #{generation.sourceHash},
+            #{generation.vectorDimensions}, #{generation.visionVectorDimensions},
+            #{generation.chunkCount}, #{generation.visionCount}, #{generation.status},
+            #{generation.cleanupAfter}, #{generation.cleanedAt}, #{generation.cleanupError}, NOW(), NOW()
+        )
+    </insert>
+
+    <update id="markGenerationReady">
+        UPDATE knowledge_artifact_generation
+        SET dense_count = #{denseCount}, sparse_count = #{sparseCount}, vision_count = #{visionCount},
+            status = 'READY', cleanup_after = NULL, cleanup_error = NULL, update_time = NOW()
+        WHERE generation_id = #{generationId} AND status IN ('UPLOADED', 'READY')
+    </update>
+
+    <update id="markGenerationRetired">
+        UPDATE knowledge_artifact_generation
+        SET status = 'RETIRED', cleanup_after = #{cleanupAfter}, cleanup_error = NULL, update_time = NOW()
+        WHERE generation_id = #{generationId} AND status IN ('UPLOADED', 'READY', 'ORPHANED', 'RETIRED')
+          AND NOT EXISTS (SELECT 1 FROM knowledge_index_document d
+                          WHERE d.generation_id = knowledge_artifact_generation.generation_id)
+    </update>
+
+    <update id="markGenerationOrphaned">
+        UPDATE knowledge_artifact_generation
+        SET status = 'ORPHANED', cleanup_after = #{cleanupAfter}, cleanup_error = #{cleanupError}, update_time = NOW()
+        WHERE generation_id = #{generationId} AND status NOT IN ('CLEANED')
+          AND NOT EXISTS (SELECT 1 FROM knowledge_index_document d
+                          WHERE d.generation_id = knowledge_artifact_generation.generation_id)
+    </update>
+
+    <select id="selectCleanupCandidates" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeArtifactGeneration">
+        SELECT /* knowledge_periodic_scan */ <include refid="generationColumns"/>
+        FROM knowledge_artifact_generation g
+        WHERE g.status IN ('RETIRED', 'ORPHANED') AND g.cleanup_after &lt;= NOW()
+          AND NOT EXISTS (SELECT 1 FROM knowledge_index_document d WHERE d.generation_id = g.generation_id)
+        ORDER BY g.cleanup_after, g.generation_id LIMIT #{limit}
+    </select>
+
+    <select id="countIndexReferences" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM knowledge_index_document WHERE generation_id = #{generationId}
+    </select>
+
+    <update id="markGenerationVectorCleaned">
+        UPDATE knowledge_artifact_generation
+        SET status = 'VECTOR_CLEANED', cleanup_error = NULL, update_time = NOW()
+        WHERE generation_id = #{generationId} AND status IN ('RETIRED', 'ORPHANED', 'VECTOR_CLEANED')
+          AND NOT EXISTS (SELECT 1 FROM knowledge_index_document d
+                          WHERE d.generation_id = knowledge_artifact_generation.generation_id)
+    </update>
+
+    <select id="selectManifestCleanupCandidates" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeArtifactGeneration">
+        SELECT /* knowledge_periodic_scan */ <include refid="generationColumns"/>
+        FROM knowledge_artifact_generation
+        WHERE status = 'VECTOR_CLEANED' ORDER BY update_time, generation_id LIMIT #{limit}
+    </select>
+    <update id="markGenerationCleaned">
+        UPDATE knowledge_artifact_generation
+        SET status = 'CLEANED', cleaned_at = NOW(), cleanup_error = NULL, update_time = NOW()
+        WHERE generation_id = #{generationId} AND status IN ('VECTOR_CLEANED', 'CLEANED')
+          AND NOT EXISTS (SELECT 1 FROM knowledge_index_document d
+                          WHERE d.generation_id = knowledge_artifact_generation.generation_id)
+    </update>
+
+    <update id="markCleanupFailed">
+        UPDATE knowledge_artifact_generation SET cleanup_error = #{cleanupError}, update_time = NOW()
+        WHERE generation_id = #{generationId} AND status = 'VECTOR_CLEANED'
+    </update>
+
+    <select id="selectRetainedGenerationIds" resultType="java.lang.Long">
+        SELECT generation_id FROM knowledge_index_document WHERE index_version_id = #{indexVersionId}
+        UNION
+        SELECT j.generation_id
+        FROM knowledge_parse_job j
+        JOIN knowledge_index_version i ON i.knowledge_id = j.knowledge_id
+             AND i.index_version = j.target_index_version
+        WHERE i.id = #{indexVersionId} AND j.generation_id IS NOT NULL
+          AND j.job_type = 'INGESTION'
+          AND j.status IN ('PENDING','QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED')
+    </select>
+
+    <select id="selectIndexMemberGenerationIds" resultType="java.lang.Long">
+        SELECT generation_id FROM knowledge_index_document
+        WHERE index_version_id = #{indexVersionId} ORDER BY generation_id
+    </select>
+
+    <select id="countIndexDocuments" resultType="int">
+        SELECT COUNT(*) FROM knowledge_index_document WHERE index_version_id = #{indexVersionId}
+    </select>
+
+    <select id="selectGenerationsByIndex" resultType="org.ruoyi.domain.entity.knowledge.KnowledgeArtifactGeneration">
+        SELECT <include refid="generationColumns"/>
+        FROM knowledge_artifact_generation WHERE index_version_id = #{indexVersionId}
+        ORDER BY generation_id
+    </select>
+
+    <delete id="deleteIndexDocuments">
+        DELETE FROM knowledge_index_document WHERE index_version_id = #{indexVersionId}
+    </delete>
+
+    <insert id="upsertIndexDocument">
+        INSERT INTO knowledge_index_document (
+            id, knowledge_id, index_version_id, document_id, document_version_id,
+            generation_id, manifest_hash, chunk_count, member_revision, create_time, update_time
+        ) VALUES (
+            #{member.id}, #{member.knowledgeId}, #{member.indexVersionId}, #{member.documentId},
+            #{member.documentVersionId}, #{member.generationId}, #{member.manifestHash},
+            #{member.chunkCount}, 1, NOW(), NOW()
+        )
+        ON DUPLICATE KEY UPDATE
+            document_version_id = VALUES(document_version_id), generation_id = VALUES(generation_id),
+            manifest_hash = VALUES(manifest_hash), chunk_count = VALUES(chunk_count),
+            member_revision = member_revision + 1, update_time = NOW()
+    </insert>
+
+    <update id="refreshIndexStats">
+        UPDATE knowledge_index_version i
+        SET i.document_count = (SELECT COUNT(*) FROM knowledge_index_document d WHERE d.index_version_id = i.id),
+            i.fragment_count = (SELECT COALESCE(SUM(d.chunk_count), 0) FROM knowledge_index_document d
+                                WHERE d.index_version_id = i.id),
+            i.update_time = NOW()
+        WHERE i.id = #{indexVersionId}
+    </update>
+
+    <update id="markIndexReadyIfComplete">
+        UPDATE knowledge_index_version i
+        SET i.status = 'READY', i.update_time = NOW()
+        WHERE i.id = #{indexVersionId} AND i.knowledge_id = #{knowledgeId} AND i.status = 'BUILDING'
+          AND NOT EXISTS (
+              SELECT 1 FROM knowledge_parse_job j
+              WHERE j.knowledge_id = #{knowledgeId}
+                AND j.target_index_version = i.index_version
+                AND j.job_type != 'REBUILD'
+                AND j.status IN ('PENDING','QUEUED','RUNNING','RETRY_WAIT','CANCEL_REQUESTED','FAILED')
+          )
+    </update>
+
+    <update id="publishDocumentForActiveIndex">
+        UPDATE knowledge_document d
+        JOIN knowledge_document_version v ON v.id = #{documentVersionId}
+        JOIN knowledge_index_version i ON i.id = #{indexVersionId} AND i.status = 'ACTIVE'
+        SET d.current_version_id = v.id, d.current_version_no = v.version_no,
+            d.status = 'READY', d.update_time = NOW()
+        WHERE d.id = #{documentId} AND v.document_id = d.id AND i.knowledge_id = d.knowledge_id
+          AND d.status != 'DELETED'
+    </update>
+
+    <!-- 构造请求级授权范围时只接受正常知识库及已激活索引。 -->
+    <select id="selectRetrievalScope"
+            resultType="org.ruoyi.domain.vo.knowledge.KnowledgeRetrievalScopeRow">
+        SELECT k.id AS knowledgeId, k.permission_revision AS permissionRevision,
+               MAX(CAST(k.retrieval_config AS CHAR)) AS retrievalConfig,
+               i.id AS indexVersionId, i.index_version AS indexVersionCode,
+               CAST(COALESCE(SUM(d.member_revision), 0) AS SIGNED) AS manifestRevision,
+               COUNT(d.id) AS memberCount,
+               (
+                   SELECT j.index_snapshot
+                   FROM knowledge_parse_job j
+                   JOIN knowledge_index_document x ON x.generation_id = j.generation_id
+                   WHERE x.index_version_id = i.id
+                     AND j.status = #{jobStatus}
+                     AND j.index_snapshot IS NOT NULL
+                   ORDER BY j.id DESC
+                   LIMIT 1
+               ) AS indexSnapshot
+        FROM knowledge_info k
+        JOIN knowledge_index_version i
+          ON i.knowledge_id = k.id AND i.index_version = k.current_index_version
+        LEFT JOIN knowledge_index_document d ON d.index_version_id = i.id
+        WHERE k.id = #{knowledgeId} AND k.status = #{knowledgeStatus}
+          AND k.del_flag = #{delFlag} AND i.status = #{indexStatus}
+        GROUP BY k.id, k.permission_revision, i.id, i.index_version
+    </select>
+
+    <sql id="validIndexMemberJoins">
+        JOIN knowledge_index_version i ON i.id = d.index_version_id
+        JOIN knowledge_info k ON k.id = d.knowledge_id
+        JOIN knowledge_document doc
+          ON doc.id = d.document_id AND doc.knowledge_id = d.knowledge_id
+          AND doc.current_version_id = d.document_version_id
+        JOIN knowledge_document_version v
+          ON v.id = d.document_version_id AND v.document_id = d.document_id
+          AND v.knowledge_id = d.knowledge_id
+        JOIN knowledge_artifact_generation g
+          ON g.generation_id = d.generation_id AND g.index_version_id = d.index_version_id
+    </sql>
+
+    <select id="selectManifestMembers"
+            resultType="org.ruoyi.domain.vo.knowledge.KnowledgeManifestMemberRow">
+        SELECT d.document_id AS documentId, d.document_version_id AS documentVersionId,
+               d.generation_id AS generationId
+        FROM knowledge_index_document d
+        <include refid="validIndexMemberJoins"/>
+        WHERE d.index_version_id = #{indexVersionId}
+          AND k.status = #{knowledgeStatus} AND k.del_flag = #{delFlag}
+          AND i.status = #{indexStatus} AND doc.status = #{documentStatus}
+          AND v.parse_status = #{versionStatus} AND g.status = #{generationStatus}
+        ORDER BY d.document_id, d.id
+        LIMIT #{offset}, #{limit}
+    </select>
+
+    <select id="selectDocumentRoutes"
+            resultType="org.ruoyi.domain.vo.knowledge.KnowledgeManifestMemberRow">
+        SELECT d.document_id AS documentId, d.document_version_id AS documentVersionId,
+               d.generation_id AS generationId,
+               v.document_processing_snapshot AS documentProcessingSnapshot
+        FROM knowledge_index_document d
+        <include refid="validIndexMemberJoins"/>
+        WHERE d.index_version_id = #{indexVersionId}
+          AND k.status = #{knowledgeStatus} AND k.del_flag = #{delFlag}
+          AND i.status = #{indexStatus} AND doc.status = #{documentStatus}
+          AND v.parse_status = #{versionStatus} AND g.status = #{generationStatus}
+        ORDER BY d.document_id, d.id
+    </select>
+
+    <select id="selectValidMembers"
+            resultType="org.ruoyi.domain.vo.knowledge.KnowledgeManifestMemberRow">
+        SELECT d.document_id AS documentId, d.document_version_id AS documentVersionId,
+               d.generation_id AS generationId
+        FROM knowledge_index_document d
+        <include refid="validIndexMemberJoins"/>
+        WHERE d.index_version_id = #{indexVersionId}
+          AND k.status = #{knowledgeStatus} AND k.del_flag = #{delFlag}
+          AND i.status = #{indexStatus} AND doc.status = #{documentStatus}
+          AND v.parse_status = #{versionStatus} AND g.status = #{generationStatus}
+          AND d.generation_id IN
+          <foreach collection="generationIds" item="generationId" open="(" separator="," close=")">
+              #{generationId}
+          </foreach>
+        ORDER BY d.generation_id
+    </select>
+
+</mapper>

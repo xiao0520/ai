@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.knowledge.KnowledgeOutboxMapper">
+    <insert id="insertMessage">
+        INSERT INTO knowledge_message_outbox
+        (id, job_id, attempt_id, topic, message_key, payload, status, send_attempts, available_at, created_at)
+        VALUES (#{message.id}, #{message.jobId}, #{message.attemptId}, #{message.topic}, #{message.messageKey},
+                #{message.payload}, 'PENDING', 0, DATE_ADD(NOW(3), INTERVAL #{delaySeconds} SECOND), NOW(3))
+    </insert>
+    <select id="selectDue" resultType="org.ruoyi.integration.kafka.KnowledgeOutboxMessage">
+        SELECT /* knowledge_periodic_scan */ id, job_id, attempt_id, topic, message_key, payload, send_attempts
+        FROM knowledge_message_outbox
+        WHERE status = 'PENDING' AND available_at &lt;= NOW(3)
+          AND (claim_until IS NULL OR claim_until &lt; NOW(3))
+        ORDER BY available_at, id LIMIT #{limit}
+    </select>
+    <update id="claim">
+        UPDATE knowledge_message_outbox
+        SET claim_token = #{token}, claim_until = DATE_ADD(NOW(3), INTERVAL #{leaseSeconds} SECOND)
+        WHERE id = #{id} AND status = 'PENDING' AND available_at &lt;= NOW(3)
+          AND (claim_until IS NULL OR claim_until &lt; NOW(3))
+    </update>
+    <update id="markSent">
+        UPDATE knowledge_message_outbox SET status = 'SENT', sent_at = NOW(3), claim_token = NULL, claim_until = NULL
+        WHERE id = #{id} AND status = 'PENDING' AND claim_token = #{token}
+    </update>
+    <update id="markFailure">
+        UPDATE knowledge_message_outbox
+        SET status = CASE WHEN send_attempts + 1 &gt;= #{maxAttempts} THEN 'DEAD' ELSE 'PENDING' END,
+            send_attempts = send_attempts + 1, available_at = DATE_ADD(NOW(3), INTERVAL #{delaySeconds} SECOND),
+            claim_token = NULL, claim_until = NULL, last_error_code = 'KAFKA_DELIVERY_FAILED'
+        WHERE id = #{id} AND status = 'PENDING' AND claim_token = #{token}
+    </update>
+    <update id="cancelCommands">
+        UPDATE knowledge_message_outbox SET status = 'CANCELLED', claim_token = NULL, claim_until = NULL
+        WHERE job_id = #{jobId} AND attempt_id = #{attemptId} AND topic = #{topic} AND status = 'PENDING'
+    </update>
+</mapper>

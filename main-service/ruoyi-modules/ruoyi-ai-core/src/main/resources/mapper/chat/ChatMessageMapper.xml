@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.ruoyi.mapper.chat.ChatMessageMapper">
+
+    <select id="selectMessageList" resultType="org.ruoyi.domain.vo.chat.ChatMessageVo">
+        SELECT cm.id, cm.session_id AS sessionId, cm.message_seq AS messageSeq,
+               cm.user_id AS userId, su.user_name AS userName, cm.content, cm.role,
+               cm.model_id AS modelId, cm.model_selection_mode AS modelSelectionMode,
+               cm.model_revision AS modelRevision, cm.route_reason_code AS routeReasonCode,
+               cm.route_policy_revision AS routePolicyRevision,
+               cm.candidate_snapshot_hash AS candidateSnapshotHash,
+               cm.total_tokens AS totalTokens,
+               cm.input_tokens AS inputTokens, cm.output_tokens AS outputTokens,
+               cm.deduct_tokens AS deductTokens, cm.model_name AS modelName,
+               cm.call_status AS callStatus, cm.request_id AS requestId,
+               cm.error_code AS errorCode, cm.error_message AS errorMessage,
+               cm.create_time AS createTime, cm.update_time AS updateTime
+        FROM chat_message cm
+        LEFT JOIN sys_user su ON su.user_id = cm.user_id
+        <where>
+            <if test="bo != null and bo.sessionId != null">
+                AND cm.session_id = #{bo.sessionId}
+            </if>
+            <if test="bo != null and bo.userId != null">
+                AND cm.user_id = #{bo.userId}
+            </if>
+            <if test="bo != null and bo.userName != null and bo.userName != ''">
+                AND su.user_name LIKE CONCAT('%', #{bo.userName}, '%')
+            </if>
+            <if test="bo != null and bo.content != null and bo.content != ''">
+                AND cm.content LIKE CONCAT('%', #{bo.content}, '%')
+            </if>
+            <if test="bo != null and bo.role != null and bo.role != ''">
+                AND cm.role = #{bo.role}
+            </if>
+            <if test="bo != null and bo.callStatus != null and bo.callStatus != ''">
+                AND cm.call_status = #{bo.callStatus}
+            </if>
+            <if test="bo != null and bo.totalTokens != null">
+                AND cm.total_tokens = #{bo.totalTokens}
+            </if>
+            <if test="bo != null and bo.modelName != null and bo.modelName != ''">
+                AND cm.model_name LIKE CONCAT('%', #{bo.modelName}, '%')
+            </if>
+        </where>
+        ORDER BY cm.message_seq ASC, cm.id ASC
+    </select>
+
+    <select id="selectRecentHistory" resultType="org.ruoyi.domain.entity.chat.ChatMessage">
+        SELECT id, session_id, message_seq, content, role, call_status, request_id
+        FROM chat_message
+        WHERE session_id = #{sessionId}
+        <if test="coveredMessageSeq &gt; 0">
+            AND message_seq &gt; #{coveredMessageSeq}
+        </if>
+        <if test="requestId != null and requestId != ''">
+            AND (request_id IS NULL OR request_id != #{requestId})
+        </if>
+        AND role IN (#{userRole}, #{assistantRole})
+        AND call_status != #{failedStatus}
+        ORDER BY message_seq DESC, id DESC
+        LIMIT #{limit}
+    </select>
+</mapper>

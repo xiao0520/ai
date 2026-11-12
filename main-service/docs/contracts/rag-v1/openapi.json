@@ -1,0 +1,1058 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "RAG Java/Python 内部契约",
+    "version": "rag-v1",
+    "description": "DTO 与结构契约；不表示路由已实现。签名语义见 内部签名规范.md。"
+  },
+  "paths": {
+    "/internal/knowledge/jobs/{id}/artifact-tickets": {
+      "post": {
+        "operationId": "issueArtifactTicket",
+        "tags": [
+          "Python → Java"
+        ],
+        "x-implemented": true,
+        "description": "Java 已实现任务绑定的 READ_SOURCE 与 WRITE_MANIFEST 票据。",
+        "security": [
+          {
+            "InternalServiceToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-AI-Signature-Version",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "2"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Timestamp",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Nonce",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{16,128}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Signature",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schema.json#/$defs/ArtifactTicketRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功；直接返回 DTO，不包装 Java R 对象。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/ArtifactTicketResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求不合法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "内部认证或授权拒绝",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "租约、版本或幂等冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "字段校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "依赖暂不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/knowledge/scopes/{snapshotId}/manifest-pages": {
+      "post": {
+        "operationId": "pageScopeManifest",
+        "tags": [
+          "Python → Java"
+        ],
+        "x-implemented": true,
+        "description": "Java 已实现授权清单分页。",
+        "security": [
+          {
+            "InternalServiceToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-AI-Signature-Version",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "2"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Timestamp",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Nonce",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{16,128}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Signature",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "snapshotId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schema.json#/$defs/ManifestPageRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功；直接返回 DTO，不包装 Java R 对象。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/ManifestPageResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求不合法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "内部认证或授权拒绝",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "租约、版本或幂等冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "字段校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "依赖暂不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/knowledge/scopes/{snapshotId}/validate-candidates": {
+      "post": {
+        "operationId": "validateScopeCandidates",
+        "tags": [
+          "Python → Java"
+        ],
+        "x-implemented": true,
+        "description": "Java 已实现候选有效性与当前权限复核。",
+        "security": [
+          {
+            "InternalServiceToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-AI-Signature-Version",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "2"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Timestamp",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Nonce",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{16,128}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Signature",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "snapshotId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schema.json#/$defs/ValidateCandidatesRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功；直接返回 DTO，不包装 Java R 对象。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/CandidateValidationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求不合法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "内部认证或授权拒绝",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "租约、版本或幂等冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "字段校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "依赖暂不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/ai/v1/knowledge/retrieval-tests": {
+      "post": {
+        "operationId": "testKnowledgeRetrieval",
+        "tags": [
+          "Java → Python"
+        ],
+        "x-implemented": true,
+        "description": "Python 已实现 RRF、Java 候选复核和知识库级分组 Rerank。",
+        "security": [
+          {
+            "InternalServiceToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-AI-Signature-Version",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "2"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Timestamp",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Nonce",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{16,128}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Signature",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schema.json#/$defs/RetrievalTestRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "成功；直接返回 DTO，不包装 Java R 对象。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/RetrievalTestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "请求不合法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "内部认证或授权拒绝",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "租约、版本或幂等冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "字段校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "依赖暂不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/ai/v1/chat/rag/stream": {
+      "post": {
+        "operationId": "streamRagChat",
+        "tags": [
+          "Java → Python"
+        ],
+        "x-implemented": true,
+        "description": "仅定义待实现的 RAG 协议。普通聊天现有协议保持不变。",
+        "security": [
+          {
+            "InternalServiceToken": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-AI-Signature-Version",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "const": "2"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Timestamp",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^(0|[1-9][0-9]*)$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Nonce",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9_-]{16,128}$"
+            }
+          },
+          {
+            "in": "header",
+            "name": "X-AI-Signature",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "./schema.json#/$defs/RagChatStreamRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "SSE；每次运行最多一个 completed/failed 终态。",
+            "content": {
+              "text/event-stream": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            },
+            "x-sse-events": {
+              "delta": {
+                "$ref": "./schema.json#/$defs/DeltaPayload"
+              },
+              "keepalive": {
+                "$ref": "./schema.json#/$defs/KeepalivePayload"
+              },
+              "usage": {
+                "$ref": "./schema.json#/$defs/Usage"
+              },
+              "citation": {
+                "$ref": "./schema.json#/$defs/RagCitationPayload"
+              },
+              "completed": {
+                "$ref": "./schema.json#/$defs/RagCompletedPayload"
+              },
+              "failed": {
+                "$ref": "./schema.json#/$defs/RagFailedPayload"
+              }
+            }
+          },
+          "400": {
+            "description": "请求不合法",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "内部认证或授权拒绝",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "租约、版本或幂等冲突",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "字段校验失败",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "依赖暂不可用",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/InternalError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/internal/knowledge/jobs/{id}/manifests/{generationId}": {
+      "put": {
+        "operationId": "writeArtifactManifest",
+        "tags": [
+          "Python → Java"
+        ],
+        "x-implemented": true,
+        "description": "使用 WRITE_MANIFEST 短期 Bearer 能力上传当前 generation 的不可变清单。",
+        "security": [
+          {
+            "ArtifactTicketBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "generationId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "string",
+                "format": "binary"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "清单已幂等保存。",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "./schema.json#/$defs/ArtifactUploadResponse"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "票据无效、过期或任务绑定已失效"
+          },
+          "409": {
+            "description": "任务批次冲突或同一 generation 清单内容冲突"
+          },
+          "422": {
+            "description": "清单字段与任务快照不一致"
+          },
+          "503": {
+            "description": "对象存储暂不可用"
+          }
+        }
+      }
+    },
+    "/internal/knowledge/jobs/{id}/artifacts/{objectId}": {
+      "get": {
+        "operationId": "readSourceArtifact",
+        "tags": [
+          "Python → Java"
+        ],
+        "x-implemented": true,
+        "description": "使用 artifact-tickets 返回的短期 Bearer 能力读取当前任务绑定的源文件。",
+        "security": [
+          {
+            "ArtifactTicketBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          },
+          {
+            "in": "path",
+            "name": "objectId",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "pattern": "^[1-9][0-9]{0,18}$"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "源文件原始字节。",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "票据无效、过期或任务绑定已失效"
+          },
+          "409": {
+            "description": "任务 attempt、generation 或执行者已变化"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "InternalServiceToken": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-AI-Service-Token"
+      },
+      "ArtifactTicketBearer": {
+        "type": "http",
+        "scheme": "bearer"
+      }
+    },
+    "schemas": {
+      "ArtifactManifest": {
+        "$ref": "./schema.json#/$defs/ArtifactManifest"
+      },
+      "ArtifactManifestEntry": {
+        "$ref": "./schema.json#/$defs/ArtifactManifestEntry"
+      },
+      "ArtifactTicket": {
+        "$ref": "./schema.json#/$defs/ArtifactTicket"
+      },
+      "ArtifactTicketRequest": {
+        "$ref": "./schema.json#/$defs/ArtifactTicketRequest"
+      },
+      "ArtifactTicketResponse": {
+        "$ref": "./schema.json#/$defs/ArtifactTicketResponse"
+      },
+      "ArtifactUploadResponse": {
+        "$ref": "./schema.json#/$defs/ArtifactUploadResponse"
+      },
+      "CandidateValidationResponse": {
+        "$ref": "./schema.json#/$defs/CandidateValidationResponse"
+      },
+      "ChatActor": {
+        "$ref": "./schema.json#/$defs/ChatActor"
+      },
+      "ChatInput": {
+        "$ref": "./schema.json#/$defs/ChatInput"
+      },
+      "ChatMessage": {
+        "$ref": "./schema.json#/$defs/ChatMessage"
+      },
+      "Citation": {
+        "$ref": "./schema.json#/$defs/Citation"
+      },
+      "DeltaPayload": {
+        "$ref": "./schema.json#/$defs/DeltaPayload"
+      },
+      "DocumentProcessingSnapshot": {
+        "$ref": "./schema.json#/$defs/DocumentProcessingSnapshot"
+      },
+      "DocumentRerankPolicy": {
+        "$ref": "./schema.json#/$defs/DocumentRerankPolicy"
+      },
+      "DocxBlockLocator": {
+        "$ref": "./schema.json#/$defs/DocxBlockLocator"
+      },
+      "EmbeddingProfile": {
+        "$ref": "./schema.json#/$defs/EmbeddingProfile"
+      },
+      "ExecutionPolicy": {
+        "$ref": "./schema.json#/$defs/ExecutionPolicy"
+      },
+      "ExecutionUsageItem": {
+        "$ref": "./schema.json#/$defs/ExecutionUsageItem"
+      },
+      "ImageLocator": {
+        "$ref": "./schema.json#/$defs/ImageLocator"
+      },
+      "IndexSnapshot": {
+        "$ref": "./schema.json#/$defs/IndexSnapshot"
+      },
+      "IngestionResult": {
+        "$ref": "./schema.json#/$defs/IngestionResult"
+      },
+      "InternalError": {
+        "$ref": "./schema.json#/$defs/InternalError"
+      },
+      "KeepalivePayload": {
+        "$ref": "./schema.json#/$defs/KeepalivePayload"
+      },
+      "KnowledgeArtifactsEvent": {
+        "$ref": "./schema.json#/$defs/KnowledgeArtifactsEvent"
+      },
+      "KnowledgeCancelledEvent": {
+        "$ref": "./schema.json#/$defs/KnowledgeCancelledEvent"
+      },
+      "KnowledgeCleanupTask": {
+        "$ref": "./schema.json#/$defs/KnowledgeCleanupTask"
+      },
+      "KnowledgeDeadLetter": {
+        "$ref": "./schema.json#/$defs/KnowledgeDeadLetter"
+      },
+      "KnowledgeDocumentTask": {
+        "$ref": "./schema.json#/$defs/KnowledgeDocumentTask"
+      },
+      "KnowledgeExecutionBudget": {
+        "$ref": "./schema.json#/$defs/KnowledgeExecutionBudget"
+      },
+      "KnowledgeFailedEvent": {
+        "$ref": "./schema.json#/$defs/KnowledgeFailedEvent"
+      },
+      "KnowledgeJobCommand": {
+        "$ref": "./schema.json#/$defs/KnowledgeJobCommand"
+      },
+      "KnowledgeJobControl": {
+        "$ref": "./schema.json#/$defs/KnowledgeJobControl"
+      },
+      "KnowledgeJobEvent": {
+        "$ref": "./schema.json#/$defs/KnowledgeJobEvent"
+      },
+      "KnowledgeMaintenanceEvent": {
+        "$ref": "./schema.json#/$defs/KnowledgeMaintenanceEvent"
+      },
+      "KnowledgeMaintenanceResult": {
+        "$ref": "./schema.json#/$defs/KnowledgeMaintenanceResult"
+      },
+      "KnowledgeProgressEvent": {
+        "$ref": "./schema.json#/$defs/KnowledgeProgressEvent"
+      },
+      "KnowledgeReconcileTask": {
+        "$ref": "./schema.json#/$defs/KnowledgeReconcileTask"
+      },
+      "KnowledgeRetrievalSettings": {
+        "$ref": "./schema.json#/$defs/KnowledgeRetrievalSettings"
+      },
+      "KnowledgeScope": {
+        "$ref": "./schema.json#/$defs/KnowledgeScope"
+      },
+      "KnowledgeStartedEvent": {
+        "$ref": "./schema.json#/$defs/KnowledgeStartedEvent"
+      },
+      "ManifestMember": {
+        "$ref": "./schema.json#/$defs/ManifestMember"
+      },
+      "ManifestPageRequest": {
+        "$ref": "./schema.json#/$defs/ManifestPageRequest"
+      },
+      "ManifestPageResponse": {
+        "$ref": "./schema.json#/$defs/ManifestPageResponse"
+      },
+      "McpToolGrant": {
+        "$ref": "./schema.json#/$defs/McpToolGrant"
+      },
+      "ModelProfile": {
+        "$ref": "./schema.json#/$defs/ModelProfile"
+      },
+      "ParseStats": {
+        "$ref": "./schema.json#/$defs/ParseStats"
+      },
+      "PdfPageLocator": {
+        "$ref": "./schema.json#/$defs/PdfPageLocator"
+      },
+      "PresentationBlockLocator": {
+        "$ref": "./schema.json#/$defs/PresentationBlockLocator"
+      },
+      "ProfileRef": {
+        "$ref": "./schema.json#/$defs/ProfileRef"
+      },
+      "RagChatActor": {
+        "$ref": "./schema.json#/$defs/RagChatActor"
+      },
+      "RagChatInput": {
+        "$ref": "./schema.json#/$defs/RagChatInput"
+      },
+      "RagChatMessage": {
+        "$ref": "./schema.json#/$defs/RagChatMessage"
+      },
+      "RagChatModelProfile": {
+        "$ref": "./schema.json#/$defs/RagChatModelProfile"
+      },
+      "RagChatStreamRequest": {
+        "$ref": "./schema.json#/$defs/RagChatStreamRequest"
+      },
+      "RagCitationPayload": {
+        "$ref": "./schema.json#/$defs/RagCitationPayload"
+      },
+      "RagCompletedPayload": {
+        "$ref": "./schema.json#/$defs/RagCompletedPayload"
+      },
+      "RagExecutionPolicy": {
+        "$ref": "./schema.json#/$defs/RagExecutionPolicy"
+      },
+      "RagExecutionScope": {
+        "$ref": "./schema.json#/$defs/RagExecutionScope"
+      },
+      "RagFailedPayload": {
+        "$ref": "./schema.json#/$defs/RagFailedPayload"
+      },
+      "RagGenerationProfile": {
+        "$ref": "./schema.json#/$defs/RagGenerationProfile"
+      },
+      "RagGenerationUsage": {
+        "$ref": "./schema.json#/$defs/RagGenerationUsage"
+      },
+      "RequestMeasurement": {
+        "$ref": "./schema.json#/$defs/RequestMeasurement"
+      },
+      "RerankProfile": {
+        "$ref": "./schema.json#/$defs/RerankProfile"
+      },
+      "RetrievalProfile": {
+        "$ref": "./schema.json#/$defs/RetrievalProfile"
+      },
+      "RetrievalStageStats": {
+        "$ref": "./schema.json#/$defs/RetrievalStageStats"
+      },
+      "RetrievalTestRequest": {
+        "$ref": "./schema.json#/$defs/RetrievalTestRequest"
+      },
+      "RetrievalTestResponse": {
+        "$ref": "./schema.json#/$defs/RetrievalTestResponse"
+      },
+      "RetrievedChunk": {
+        "$ref": "./schema.json#/$defs/RetrievedChunk"
+      },
+      "SourceLocation": {
+        "$ref": "./schema.json#/$defs/SourceLocation"
+      },
+      "SourceRef": {
+        "$ref": "./schema.json#/$defs/SourceRef"
+      },
+      "SpreadsheetRangeLocator": {
+        "$ref": "./schema.json#/$defs/SpreadsheetRangeLocator"
+      },
+      "TableRangeLocator": {
+        "$ref": "./schema.json#/$defs/TableRangeLocator"
+      },
+      "TextRangeLocator": {
+        "$ref": "./schema.json#/$defs/TextRangeLocator"
+      },
+      "TokenMeasurement": {
+        "$ref": "./schema.json#/$defs/TokenMeasurement"
+      },
+      "UnknownMeasurement": {
+        "$ref": "./schema.json#/$defs/UnknownMeasurement"
+      },
+      "Usage": {
+        "$ref": "./schema.json#/$defs/Usage"
+      },
+      "ValidateCandidatesRequest": {
+        "$ref": "./schema.json#/$defs/ValidateCandidatesRequest"
+      },
+      "VersionedRequest": {
+        "$ref": "./schema.json#/$defs/VersionedRequest"
+      },
+      "VisionProfile": {
+        "$ref": "./schema.json#/$defs/VisionProfile"
+      }
+    }
+  }
+}
